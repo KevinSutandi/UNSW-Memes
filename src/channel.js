@@ -1,5 +1,5 @@
-function channelInviteV1 ( authUserId, channelId, uId ) {
+function channelInviteV1(authUserId, channelId, uId) {
   return {
-    
+
   }
 }
