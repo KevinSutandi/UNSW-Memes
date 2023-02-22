@@ -1,4 +1,3 @@
-<<<<<<< src/channel.js
 function channelMessagesV1(authUserId, channelId, start) {
   return {
     messages: [
