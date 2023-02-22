@@ -1,3 +1,9 @@
+function channelsCreateV1(authUserId, name, isPublic) {
+  return {
+    channelId: 1,
+  }
+}
+
 function channelsListAllV1 (authUserId) {
   return {
     channels: [
@@ -8,4 +14,5 @@ function channelsListAllV1 (authUserId) {
     ],
   }
 }
+
 
