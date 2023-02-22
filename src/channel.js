@@ -1,4 +1,4 @@
-function channelMessagesV1 ( authUserId, channelId, start ) {
+function channelMessagesV1(authUserId, channelId, start) {
   return {
     messages: [
       {
