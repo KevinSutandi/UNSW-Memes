@@ -1,18 +1,13 @@
 import {
-  authLoginV1,
   authRegisterV1,
 } from "./auth";
 
 import {
   channelsCreateV1,
-  channelsListV1,
-  channelsListAllV1,
 } from "./channels";
 
 import {
   channelJoinV1,
-  channelInviteV1,
-  channelMessagesV1,
 } from "./channel"
 
 
