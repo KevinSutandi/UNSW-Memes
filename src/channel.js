@@ -1,5 +1,4 @@
-import { data } from './dataStore';
-
+import { data } from "./dataStore";
 
 function channelMessagesV1(authUserId, channelId, start) {
   return {
@@ -7,88 +6,106 @@ function channelMessagesV1(authUserId, channelId, start) {
       {
         messageId: 1,
         uId: 1,
-        message: 'Hello world',
+        message: "Hello world",
         timeSent: 1582426789,
-      }
+      },
     ],
     start: 0,
     end: 50,
-  }
+  };
 }
 
 /**
-  * Given a channelId of a channel that the authorised user
-  * can join, adds them to the channel.
-  * 
-  * @param {number} authUserId - description of paramter
-  * @param {number} channelId - description of parameter
-  * ...
-  * 
-  * @returns {data type} - description of condition for return
-  * @returns {data type} - description of condition for return
-*/
+ * Given a channelId of a channel that the authorised user
+ * can join, adds them to the channel.
+ *
+ * @param {number} authUserId - description of paramter
+ * @param {number} channelId - description of parameter
+ * ...
+ *
+ * @returns {data type} - description of condition for return
+ * @returns {data type} - description of condition for return
+ */
 
 export function channelJoinV1(authUserId, channelId) {
+  // Function for finding authUserId in data store
   function findAuthUser(users) {
     return users.authUserId === authUserId;
   }
+  // Function for finding channelId in data store
   function findChannel(channels) {
     return channels.channelId === channelId;
   }
-
+  // Get the particular user index in data store
   const user = data.users.find(findAuthUser);
+  const globalPerm = user.isGlobalOwner;
   const uId = user.uId;
-  const getAllUId = data.channels.map(channel =>
-    channel.allMembers.map(member => member.uId)
-  ).flat();
 
+  // Get the particular channel index from data store
+  const channel = data.channels.find(findChannel);
+  const isPublic = channel.isPublic;
+
+  // Get all uIds in the channel
+  const allMemberIds = channel
+    ? channel.allMembers.map((member) => member.uId)
+    : null;
+  // Error if the user is not registered
   if (data.users.find(findAuthUser) === undefined) {
-    return { error: 'User Not Found' };
+    return { error: "User Not Found" };
   }
+  // Error if the channel is not found
   if (data.channels.find(findChannel) === undefined) {
-    return { error: 'Channel Not Found' };
+    return { error: "Channel Not Found" };
   }
-  if (getAllUId.includes(uId) === true) {
-    return { error: 'User is already in channel' };
+  // Error if the user is already in the channel
+  if (allMemberIds.includes(uId) === true) {
+    return { error: "User is already in channel" };
+  }
+  // Error if the channels is private and not global owner
+  if (isPublic === false && globalPerm === false) {
+    if (isPublic === false) {
+      return { error: "Channel is not public" };
+    } else {
+      return { error: "User is not global owner" };
+    }
   }
 
-
-
-
-
-
+  // Add the user to the channel
+  data.channels[channelId].allMembers.push({
+    uId: uId,
+    email: user.email,
+    nameFirst: user.nameFirst,
+    nameLast: user.nameLast,
+    handleStr: user.handleStr,
+  });
 
   return {};
 }
 
 function channelInviteV1(authUserId, channelId, uId) {
-  return {
-
-  }
+  return {};
 }
-
 
 function channelDetailsV1(authUserId, channelId) {
   return {
-    name: 'Hayden',
+    name: "Hayden",
     ownerMembers: [
       {
         uId: 1,
-        email: 'example@gmail.com',
-        nameFirst: 'Hayden',
-        nameLast: 'Jacobs',
-        handleStr: 'haydenjacobs',
-      }
+        email: "example@gmail.com",
+        nameFirst: "Hayden",
+        nameLast: "Jacobs",
+        handleStr: "haydenjacobs",
+      },
     ],
     allMembers: [
       {
         uId: 1,
-        email: 'example@gmail.com',
-        nameFirst: 'Hayden',
-        nameLast: 'Jacobs',
-        handleStr: 'haydenjacobs',
-      }
+        email: "example@gmail.com",
+        nameFirst: "Hayden",
+        nameLast: "Jacobs",
+        handleStr: "haydenjacobs",
+      },
     ],
-  }
+  };
 }
-
