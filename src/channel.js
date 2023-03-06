@@ -1,4 +1,4 @@
-import { data } from "./dataStore";
+import { getData, setData } from "./dataStore";
 
 function channelMessagesV1(authUserId, channelId, start) {
   return {
@@ -40,6 +40,8 @@ export function channelJoinV1(authUserId, channelId) {
   function findChannel(channels) {
     return channels.channelId === channelId;
   }
+  const data = getData();
+
   // Get the particular user index in data store
   const user = data.users.find(findAuthUser);
   const globalPerm = user.isGlobalOwner;
@@ -82,6 +84,7 @@ export function channelJoinV1(authUserId, channelId) {
     nameLast: user.nameLast,
     handleStr: user.handleStr,
   });
+  setData(data);
 
   return {};
 }
