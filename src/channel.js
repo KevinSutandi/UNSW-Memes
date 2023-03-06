@@ -27,26 +27,23 @@ function channelInviteV1(authUserId, channelId, uId) {
 
 
 function channelDetailsV1(authUserId, channelId) {
-  return {
-    name: 'Hayden',
-    ownerMembers: [
-      {
-        uId: 1,
-        email: 'example@gmail.com',
-        nameFirst: 'Hayden',
-        nameLast: 'Jacobs',
-        handleStr: 'haydenjacobs',
-      }
-    ],
-    allMembers: [
-      {
-        uId: 1,
-        email: 'example@gmail.com',
-        nameFirst: 'Hayden',
-        nameLast: 'Jacobs',
-        handleStr: 'haydenjacobs',
-      }
-    ],
+  // If channelId doesn't refer to a valid channel,
+  // returns error
+  if (!findChannel) {
+    return {error: 'channelId does not refer to a valid channel'};
   }
+  // If authUserId is invalid, returns error
+  else if (!isUser) {
+    return {error: 'Invalid authUserId'};
+  }
+  const channelObj = findCourse(channelId);
+  // If the user is not a member of the channel
+  if (!channelObj.users.some(a => a.authUserId === authUserId)) {
+    return {error: authUserId + ' is not a member of the channel'};
+  }
+
+  return {
+    channel: channelObj
+  };
 }
 
