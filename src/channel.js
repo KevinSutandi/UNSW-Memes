@@ -19,12 +19,16 @@ function channelMessagesV1(authUserId, channelId, start) {
  * Given a channelId of a channel that the authorised user
  * can join, adds them to the channel.
  *
- * @param {number} authUserId - description of paramter
- * @param {number} channelId - description of parameter
+ * @param {number} authUserId - The authenticated user Id
+ * @param {number} channelId - The channel Id to join
  * ...
  *
- * @returns {data type} - description of condition for return
- * @returns {data type} - description of condition for return
+ * @returns {} - returns {} when successful
+ * @returns {error : 'error message'} - returns an error when
+ *                                    = channelId is invalid
+ *                                    = Member is already in channel
+ *                                    = Channel is private and not a global owner
+ *                                    = User is invalid
  */
 
 export function channelJoinV1(authUserId, channelId) {
