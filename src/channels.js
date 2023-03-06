@@ -1,3 +1,10 @@
+// Helper functions
+// Finds out whether the given userId is valid or not
+// returns bool
+export function isUser(userId) {
+  return data.users.some(a => a.authUserId === userId);
+}
+
 function channelsCreateV1(authUserId, name, isPublic) {
   return {
     channelId: 1,
