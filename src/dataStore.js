@@ -1,6 +1,6 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW
 let data = {
-  authers: [],
+  authers: []
 };
 
 // YOU SHOULDNT NEED TO MODIFY THE FUNCTIONS BELOW IN ITERATION 1
