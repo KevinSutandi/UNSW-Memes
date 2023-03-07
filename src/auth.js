@@ -8,6 +8,8 @@ export function authLoginV1(email, password) {
 
 export function authRegisterV1(email, password, nameFirst, nameLast) {
     const dataStore = getData();
+
+    const validator = require('validator');
     if (validator.isEmail(email) !== true) {
         return {error: "Please enter valid email!"};
     }

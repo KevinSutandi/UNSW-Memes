@@ -6,30 +6,31 @@
 
 import {authRegisterV1} from './auth.js';
 const ERROR = { error: expect.any(String) };
+const IDPASS = { authUserId: expect.any(Number) };
 
 describe('testing authRegisterV1', () => {
     
     test('Test successful authRegister, without non-alphanumeric', () => {
         let result = authRegisterV1('onlyfortest00@gmail.com', 'testpw0000', 'EL_001', 'YIU');
-        expect(result).toBe('el001yiu');
+        expect(result).toStrictEqual(IDPASS);
     });
 
     // for too long user handle- cut at 20th character; convert to lower cases as well
     test('Test successful authRegister with cut-off name', () => {
         let result = authRegisterV1('onlyfortest01@gmail.com', 'testpw0001', 'abcdefghijklm', 'YIUopqrst');
-        expect(result).toBe('abcdefghijklmyiuopqr');
+        expect(result).toStrictEqual(IDPASS);
     });
 
     // one userid has already been taken, append the smallest number after
     test('Test successful authRegister with ID already be used', () => {
         let result = authRegisterV1('onlyfortest02@gmail.com', 'testpw0002', 'abcdefghijklm', 'YIUopqrst');
-        expect(result).toBe('abcdefghijklmyiuopqr0');
+        expect(result).toStrictEqual(IDPASS);
     });
 
     // one userid has already been taken, append the smallest number after again
     test('Test successful authRegister with ID already be used.2', () => {
         let result = authRegisterV1('onlyfortest03@gmail.com', 'testpw0003', 'abcdefghijklm', 'YIUopqrst');
-        expect(result).toBe('abcdefghijklmyiuopqr1');
+        expect(result).toStrictEqual(IDPASS);
     });
     
     test('Test invalid email', () => {
@@ -50,6 +51,6 @@ describe('testing authRegisterV1', () => {
     });
 
     test('Test too long nameLast', () => {
-        expect(authRegisterV1('onlyfortest06@gmail.com', 'testpw0005', 'EL0002','qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop9')).t09oStrictEqual(ERROR);
+        expect(authRegisterV1('onlyfortest06@gmail.com', 'testpw0005', 'EL0002','qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop9')).toStrictEqual(ERROR);
     });
 })
