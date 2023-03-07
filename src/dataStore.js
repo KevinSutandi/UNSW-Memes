@@ -1,11 +1,7 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW
 let data = {
   users: [],
-<<<<<<< HEAD
-  channels: []
-=======
   channels: [],
->>>>>>> a97cdfa393e95bb078b98217c0a5dfe0f4d8dffd
 };
 
 // YOU SHOULDNT NEED TO MODIFY THE FUNCTIONS BELOW IN ITERATION 1
