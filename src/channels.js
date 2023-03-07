@@ -4,13 +4,14 @@ import {getData, setData} from "./dataStore";
 // Finds out whether the given userId is valid or not
 // returns bool
 export function isUser(userId) {
+  const data = getData();
   return data.users.some(a => a.authUserId === userId);
 }
 
 export function findUser (userId) {
+  const data = getData();
   return data.users.find(a => a.authUserId === userId);
 }
-
 
 export function channelsCreateV1(authUserId, name, isPublic) {
   // Gets the data from database
@@ -24,7 +25,7 @@ export function channelsCreateV1(authUserId, name, isPublic) {
   }
   let newId = Math.floor(Math.random() * 10000);
   // Finds the user data
-  const user = findUser(academicId);
+  const user = findUser(authUserId);
   // Pushes the new channel's data into data
   data.channels.push(
     {
