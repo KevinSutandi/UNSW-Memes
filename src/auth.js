@@ -1,8 +1,5 @@
 import {validator} from 'validator';
-
-const dataStore = {
-    authers: []
-};
+import { getData, setData } from "./dataStore";
 
 export function authLoginV1(email, password) {
     
@@ -10,6 +7,7 @@ export function authLoginV1(email, password) {
 }
 
 export function authRegisterV1(email, password, nameFirst, nameLast) {
+    const dataStore = getData();
     if (validator.isEmail(email) !== true) {
         return {error: "Please enter valid email!"};
     }
@@ -62,6 +60,7 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
         authfirstname: nameFirst,
         authlastname: nameLast,
     });
+    setData(dataStore);
 
     return { authUserId: authId };
 }

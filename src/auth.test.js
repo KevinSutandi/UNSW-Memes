@@ -4,7 +4,7 @@
 // email not matched;
 // password not correct
 
-import {authRegisterV1} from 'auth.js';
+import {authRegisterV1} from './auth.js';
 const ERROR = { error: expect.any(String) };
 
 describe('testing authRegisterV1', () => {
