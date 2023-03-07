@@ -20,7 +20,7 @@ export function channelsCreateV1(authUserId, name, isPublic) {
   if (name.length < 1 || name.length > 20) {
     return {error: 'Invalid name length'};
   }
-  if (!isUser) {
+  if (!isUser(authUserId)) {
     return {error: 'Invalid authUserId'};
   }
   let newId = Math.floor(Math.random() * 10000);
@@ -34,20 +34,12 @@ export function channelsCreateV1(authUserId, name, isPublic) {
       isPublic: isPublic,
       ownerMembers: [
         {
-          uId: authUserId,
-          email: user.email,
-          nameFirst: user.nameFirst,
-          nameLast: user.nameLast,
-          handleStr: user.handleStr
+          user
         }
       ],
       allMembers: [
         {
-          uId: authUserId,
-          email: user.email,
-          nameFirst: user.nameFirst,
-          nameLast: user.nameLast,
-          handleStr: user.handleStr
+          user
         }
       ],
       messages: [],
