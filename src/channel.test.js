@@ -13,6 +13,7 @@ import {
   channelJoinV1,
   channelInviteV1,
   channelMessagesV1,
+  channelDetailsV1
 } from "./channel"
 
 const ERROR = { error: expect.any(String) };
@@ -39,7 +40,7 @@ describe('channelDetailsV1 Iteration 1 tests', () => {
   });
 
   test('valid input', () => {
-    expect(channelDetailsV1(user.authUserId, channel.channelId + 1)).toStrictEqual({
+    expect(channelDetailsV1(user.authUserId, channel.channelId)).toStrictEqual({
       name: 'general',
       isPublic: true,
       ownerMembers: [
