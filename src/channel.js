@@ -22,6 +22,29 @@ export function isUser(authUserId) {
   return data.users.some(a => a.authUserId === authUserId);
 }
 
+function channelMessagesV1(authUserId, channelId, start) {
+  return {
+    messages: [
+      {
+        messageId: 1,
+        uId: 1,
+        message: "Hello world",
+        timeSent: 1582426789,
+      },
+    ],
+    start: 0,
+    end: 50,
+  };
+}
+
+function channelJoinV1(authUserId, channelId) {
+  return {};
+}
+
+function channelInviteV1(authUserId, channelId, uId) {
+  return {};
+}
+
 export function channelDetailsV1(authUserId, channelId) {
   // Gets the data
   const data = getData();
