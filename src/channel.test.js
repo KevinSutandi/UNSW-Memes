@@ -1,136 +1,70 @@
-import { authRegisterV1 } from "./auth";
-import { channelsCreateV1 } from "./channels";
-import { channelJoinV1 } from "./channel";
-import { clearV1 } from "./other";
+import {
+  authLoginV1,
+  authRegisterV1,
+} from "./auth";
 
-describe("testing channelJoinV1", () => {
-  let user1, user2, user3;
-  let channel1, channel2, channel3;
-  beforeEach(() => {
-    user1 = authRegisterV1(
-      "kevins050324@gmail.com",
-      "kevin1001",
-      "Kevin",
-      "Sutandi"
-    );
-    user2 = authRegisterV1(
-      "someotheremail@gmail.com",
-      "someone2031",
-      "Jonah",
-      "Meggs"
-    );
-    user3 = authRegisterV1(
-      "z5352065@ad.unsw.edu.au",
-      "big!password3",
-      "Zombie",
-      "Ibrahim"
-    );
-    channel1 = channelsCreateV1(user1.authUserId, true);
-    channel2 = channelsCreateV1(user2.authUserId, true);
-    channel3 = channelsCreateV1(user3.authUserId, false);
-  });
-  test("channelId does not exist test 1", () => {
-    expect(
-      channelJoinV1(user1.authUserId, channel2.channelId + 5)
-    ).toStrictEqual(ERROR);
-  });
-  test("channelId does not exist test 2", () => {
-    expect(
-      channelJoinV1(user3.authUserId, channel2.channelId + 3)
-    ).toStrictEqual(ERROR);
-  });
-  test("invalid authUserId test 1", () => {
-    expect(
-      channelJoinV1(user1.authUserId + 4, channel3.channelId)
-    ).toStrictEqual(ERROR);
-  });
-  test("invalid authUserId test 2", () => {
-    expect(
-      channelJoinV1(user3.authUserId + 10, channel2.channelId)
-    ).toStrictEqual(ERROR);
-  });
-  test("authUserId already in channel test 1", () => {
-    expect(channelJoinV1(user1.authUserId, channel1.channelId)).toStrictEqual(
-      ERROR
-    );
-  });
-  test("authUserId already in channel test 2", () => {
-    expect(channelJoinV1(user2.authUserId, channel2.channelId)).toStrictEqual(
-      ERROR
-    );
-  });
-  test("Join channel test 1", () => {
-    expect(channelJoinV1(user1.authUserId, channel2.channelId)).toStrictEqual(
-      {}
-    );
-  });
-  test("Join channel test 2", () => {
-    expect(channelJoinV1(user2.authUserId, channel3.channelId)).toStrictEqual(
-      {}
-    );
-  });
-  test("Join channel test 3", () => {
-    expect(channelJoinV1(user3.authUserId, channel1.channelId)).toStrictEqual(
-      {}
-    );
-  });
-});
+import {
+  channelsCreateV1,
+  channelsListV1,
+  channelsListAllV1,
+} from "./channels";
 
-describe("testing channelMessagesV1 (ALL INVALID CASES)", () => {
+import {
+  channelJoinV1,
+  channelInviteV1,
+  channelMessagesV1,
+  channelDetailsV1
+} from "./channel"
+
+import {clearV1} from "./other"
+
+const ERROR = { error: expect.any(String) };
+
+describe('channelDetailsV1 Iteration 1 tests', () => {
+  let user, user2;
+  let channel;
   beforeEach(() => {
     clearV1();
-    user1 = authRegisterV1(
-      "kevins050324@gmail.com",
-      "kevin1001",
-      "Kevin",
-      "Sutandi"
-    );
-    user2 = authRegisterV1(
-      "someotheremail@gmail.com",
-      "someone2031",
-      "Jonah",
-      "Meggs"
-    );
-    user3 = authRegisterV1(
-      "z5352065@ad.unsw.edu.au",
-      "big!password3",
-      "Zombie",
-      "Ibrahim"
-    );
-    channel1 = channelsCreateV1(user1.authUserId, true);
-    channel2 = channelsCreateV1(user2.authUserId, true);
-    channel3 = channelsCreateV1(user3.authUserId, false);
+    user = authRegisterV1('kevins050324@gmail.com', 'kevin1001', 'Kevin', 'Sutandi');
+    user2 = authRegisterV1('someotheremail@gmail.com', 'someone2031', 'Jonah', 'Meggs');
+    channel = channelsCreateV1(user.authUserId, 'general', true);
   });
-  test("channelId does not exist test", () => {
-    expect(
-      channelMessagesV1(user1.authUserId, channel1.channelId + 100000, 0)
-    ).toStrictEqual(ERROR);
+
+  test('invalid channelId', () => {
+    expect(channelDetailsV1(user.authUserId, channel.channelId + 1)).toStrictEqual(ERROR);
   });
-  test("authUserId does not exist test", () => {
-    expect(
-      channelMessagesV1(user3.authUserId + 999, channel3.channelId, 0)
-    ).toStrictEqual(ERROR);
+
+  test('valid channelId, user is not a member', () => {
+    expect(channelDetailsV1(user2.authUserId, channel.channelId)).toStrictEqual(ERROR);
   });
-  test("User is not in channel (cannot read messages)", () => {
-    expect(
-      channelMessagesV1(user3.authUserId, channel2.channelId, 0)
-    ).toStrictEqual(ERROR);
+
+  test('invalid authUserId', () => {
+    expect(channelDetailsV1(user.authUserId + 1, channel.channelId)).toStrictEqual(ERROR);
   });
-  test("start index is greater than the number of messages", () => {
-    expect(
-      channelMessagesV1(user2.authUserId, channel2.channelId, 999999)
-    ).toStrictEqual(ERROR);
-  });
-  test("No Messages in channel (expect empty array)", () => {
-    expect(
-      channelMessagesV1(user2.authUserId, channel2.channelId, 0)
-    ).toStrictEqual({
-      messages: [],
-      start: 0,
-      end: -1,
+
+  test('valid input', () => {
+    expect(channelDetailsV1(user.authUserId, channel.channelId)).toStrictEqual({
+      name: 'general',
+      isPublic: true,
+      ownerMembers: [
+        {
+          authUserId: user.authUserId,
+          authemail: 'kevins050324@gmail.com',
+          authfirstname: 'Kevin',
+          authlastname: 'Sutandi',
+          handlestring: 'kevinsutandi',
+        }
+      ],
+      allMembers: [
+        {
+          authUserId: user.authUserId,
+          authemail: 'kevins050324@gmail.com',
+          authfirstname: 'Kevin',
+          authlastname: 'Sutandi',
+          handlestring: 'kevinsutandi',
+        }
+      ],
     });
   });
 });
 
-// ChannelMessagesV1 for channels containg messages
-// would be tested when there is a way to add messages

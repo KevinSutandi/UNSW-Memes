@@ -35,10 +35,12 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
   // only extract a-z0-9 characters, remove all characters to lowercases
   // limit the authId in 20 characters
   // if the handle is used, append the number at 21th
-  let handlestring = "{$nameFirst} + {$nameLast}";
+  // const nameFirst_lowercase = nameFirst.toLowerCase();
+  // const nameLast_lowercase = nameLast.toLowerCase();
+  let handlestring = nameFirst + nameLast;
 
   handlestring = handlestring.toLowerCase();
-  const regpattern = /[a-z0-9]/g;
+  const regpattern = /[^a-z0-9]/g;
   handlestring = handlestring.replace(regpattern, "");
   // handlestring = handlestring.replace(/\W/g, "");
 
