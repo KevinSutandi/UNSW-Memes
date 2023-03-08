@@ -54,6 +54,10 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
       handlestring = handlestring + num.toString(i);
     }
   }
+  let isGlobalOwner = 2;
+  if (dataStore.users.length === 0) {
+    isGlobalOwner = 1;
+  }
 
   dataStore.users.push({
     authUserId: authId,
@@ -62,6 +66,7 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
     authpw: password,
     authfirstname: nameFirst,
     authlastname: nameLast,
+    isGlobalOwner: isGlobalOwner,
   });
   setData(dataStore);
 
