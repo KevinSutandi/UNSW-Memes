@@ -61,21 +61,28 @@ export function channelsCreateV1(authUserId, name, isPublic) {
   }
 }
 
-function channelsListV1(authUserId) {
+export function channelsListV1(authUserId) {
   if (!isUser(authUserId)) {
     return {error: 'Invalid authUserId'};
   }
 
   // need to access our data and pull out all of the channels linked to user
-  const user = findUser(authUserId);
-  const data = getData() 
+  const authUserIdToFind = authUserId;
+  const userChannels = [];
 
-  return {
-      channels: data.channels.map(a => ({
-        channelId: a.channelId,
-        name: a.name,
-        })),
-  };
+data.channels.forEach((channel) => {
+  const isUserInChannel = channel.allMembers.some(
+    (member) => member.authUserId === authUserIdToFind
+    if (isUserInChannel === true) {
+      userChannels.push({
+        channelId: data.channels.channelId,
+        name: data.channels.name,
+
+      })
+    }
+  );
+})
+return userChannels;
 }
 
 function channelsListAllV1(authUserId) {
