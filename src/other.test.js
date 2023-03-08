@@ -1,6 +1,7 @@
 import { authRegisterV1 } from "./auth";
 import { channelsCreateV1, channelsListAllV1 } from "./channels";
 import { clearV1 } from "./other";
+
 /* Will be uncommnted when channelDetailsV1 is implemented */
 /*
 describe("testing channelJoinV1", () => {

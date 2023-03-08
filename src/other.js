@@ -5,6 +5,5 @@ export function clearV1() {
   data.users = [];
   data.channels = [];
   setData(data);
-
   return {};
 }
