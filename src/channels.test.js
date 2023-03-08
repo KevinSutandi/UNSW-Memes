@@ -31,6 +31,7 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
       'Jonah',
       'Meggs'
     );
+    channel = channelsCreateV1(user.authUserId, 'general', true);
   });
 
   test('invalid authUserID', () => {
