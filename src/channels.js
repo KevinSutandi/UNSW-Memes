@@ -54,14 +54,20 @@ export function channelsCreateV1(authUserId, name, isPublic) {
 }
 
 function channelsListV1(authUserId) {
-  return {
-    channels: [
-      {
-        channelId: 1,
-        name: 'My Channel',
-      }
-    ],
+  if (!isUser(authUserId)) {
+    return {error: 'Invalid authUserId'};
   }
+
+  // need to access our data and pull out all of the channels linked to user
+  const user = findUser(authUserId);
+  const data = getData() 
+
+  return {
+      channels: data.channels.map(a => ({
+        channelId: a.channelId,
+        name: a.name,
+        })),
+  };
 }
 
 function channelsListAllV1(authUserId) {
