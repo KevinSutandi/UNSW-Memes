@@ -66,6 +66,7 @@ export function channelsCreateV1(authUserId, name, isPublic) {
 }
 
 function channelsListV1(authUserId) {
+
   return {
     channels: [
       {
@@ -78,7 +79,7 @@ function channelsListV1(authUserId) {
 
 export function channelsListAllV1(authUserId) {
   // If the given userId is invalid
-  if (!isUser) {
+  if (!isUser(authUserId)) {
     return {error: 'Invalid authUserId'};
   }
   return {

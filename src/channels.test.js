@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {
   authLoginV1,
   authRegisterV1,
@@ -17,6 +16,8 @@ import {
   channelDetailsV1
 } from "./channel"
 
+import {getData, setData} from "./dataStore";
+
 const ERROR = { error: expect.any(String) };
 
 describe('channelsListAllV1 Iteration 1 tests', () => {
@@ -25,7 +26,7 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
   beforeEach(() => {
     user = authRegisterV1('kevins050324@gmail.com', 'kevin1001', 'Kevin', 'Sutandi');
     user2 = authRegisterV1('someotheremail@gmail.com', 'someone2031', 'Jonah', 'Meggs');
-
+    channel = channelsCreateV1(user.authUserId, 'general', true);
   });
 
   test('invalid authUserID', () => {
@@ -61,28 +62,6 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
     });
   })
 })
-=======
-import {
-  authLoginV1,
-  authRegisterV1,
-} from "./auth";
-
-import {
-  channelsCreateV1,
-  channelsListV1,
-  channelsListAllV1,
-} from "./channels";
-
-import {
-  channelJoinV1,
-  channelInviteV1,
-  channelMessagesV1,
-  channelDetailsV1
-} from "./channel"
-
-import {getData, setData} from "./dataStore";
-
-const ERROR = { error: expect.any(String) };
 
 describe('channelsCreateV1 Iteration 1 tests', () => {
   let user, user2, user3;
@@ -140,4 +119,3 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
       });
   });*/
 })
->>>>>>> 893df37909f1e344b8868bb56ea04e4478298340
