@@ -84,10 +84,10 @@ export function channelJoinV1(authUserId, channelId) {
   // Add the user to the channel
   data.channels[channelNum].allMembers.push({
     authUserId: authUserId,
-    email: user.authemail,
-    nameFirst: user.authfirstname,
-    nameLast: user.authlastname,
-    handleStr: user.handlestring,
+    authemail: user.authemail,
+    authfirstname: user.authfirstname,
+    authlastname: user.authlastname,
+    handlestring: user.handlestring,
   });
   setData(data);
 
