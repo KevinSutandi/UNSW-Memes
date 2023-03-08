@@ -1,13 +1,10 @@
-import {
-  authLoginV1,
-  authRegisterV1,
-} from "./auth";
+import { authLoginV1, authRegisterV1 } from './auth';
 
 import {
   channelsCreateV1,
   channelsListV1,
   channelsListAllV1,
-} from "./channels";
+} from './channels';
 
 import {
   channelJoinV1,
@@ -37,8 +34,8 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
 
   test('valid authUserId, no channels were created', () => {
     expect(channelsListAllV1(user2.authUserId)).toStrictEqual({
-      channels: []
-    })
+      channels: [],
+    });
   });
 
 
@@ -50,32 +47,32 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
       channels: [
         {
           channelId: channel.channelId,
-          name: 'general'
+          name: 'general',
         },
         {
           channelId: channel2.channelId,
-          name: 'memes'
+          name: 'memes',
         },
         {
           channelId: channel3.channelId,
-          name: "Jonah's personal"
-        }
-      ]
+          name: "Jonah's personal",
+        },
+      ],
     });
-  })
-})
+  });
+});
 
 describe('channelsCreateV1 Iteration 1 tests', () => {
   let user, user2, user3;
   let channel, channel2;
   beforeEach(() => {
-    user = authRegisterV1('onlyfortestttt06@gmail.com', 'testpw0005', 'Jonah','Meggs');
+    user = authRegisterV1('onlyfortestttt06@gmail.com', 'testpw0005', 'Jonah', 'Meggs');
     user2 = authRegisterV1('someotheremail@gmail.com', 'someone2031', 'Kevin', 'Sutandi');
-  })
+  });
 
   test('valid input', () => {
     expect(channelsCreateV1(user.authUserId, 'general', false)).toStrictEqual({
-      channelId: expect.any(Number)
+      channelId: expect.any(Number),
     });
   });
 
@@ -84,7 +81,8 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
   });
 
   test('name more than 20 chars', () => {
-    expect(channelsCreateV1(user.authUserId, '123456789012345678901', true)).toStrictEqual(ERROR);
+    expect(
+      channelsCreateV1(user.authUserId, '123456789012345678901', true)).toStrictEqual(ERROR);
   });
 
   test('invalid authUserId', () => {
@@ -120,4 +118,4 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
         end: 0
       });
   });*/
-})
+});
