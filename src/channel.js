@@ -181,8 +181,6 @@ function channelMessagesV1(authUserId, channelId, start) {
     handleStr: user.handleStr,
   });
   setData(data);
-
-=======
         message: "Hello world",
         timeSent: 1582426789,
       },
@@ -219,6 +217,9 @@ export function channelDetailsV1(authUserId, channelId) {
     return {error: authUserId + ' is not a member of the channel'};
   }
   return {
-    channelObj
+    name: channelObj.name,
+    isPublic: channelObj.isPublic,
+    ownerMembers: channelObj.ownerMembers,
+    allMembers: channelObj.allMembers
   }
 }

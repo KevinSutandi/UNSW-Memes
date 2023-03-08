@@ -40,7 +40,7 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
   let handlestring = nameFirst + nameLast;
 
   handlestring = handlestring.toLowerCase();
-  const regpattern = /[a-z0-9]/g;
+  const regpattern = /[^a-z0-9]/g;
   handlestring = handlestring.replace(regpattern, "");
   // handlestring = handlestring.replace(/\W/g, "");
 

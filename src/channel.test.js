@@ -43,8 +43,7 @@ describe('channelDetailsV1 Iteration 1 tests', () => {
   });
 
   test('valid input', () => {
-    expect(channelDetailsV1(user.authUserId, channel.channelId)).toBe({
-      channelId: channel.channelId,
+    expect(channelDetailsV1(user.authUserId, channel.channelId)).toStrictEqual({
       name: 'general',
       isPublic: true,
       ownerMembers: [
@@ -65,9 +64,6 @@ describe('channelDetailsV1 Iteration 1 tests', () => {
           handlestring: 'kevinsutandi',
         }
       ],
-      messages: [],
-      start: 0,
-      end: 0
     });
   });
 });
