@@ -36,18 +36,22 @@ export function channelsCreateV1(authUserId, name, isPublic) {
         {
           authUserId: user.authUserId,
           handlestring: user.handlestring,
-          authemail: user.authemail,
-          authfirstname: user.authfirstname,
-          authlastname: user.authlastname,
+          authemail: user.email,
+          authpw: user.password,
+          authfirstname: user.nameFirst,
+          authlastname: user.nameLast,
+          isGlobalOwner: user.isGlobalOwner,
         }
       ],
       allMembers: [
         {
           authUserId: user.authUserId,
           handlestring: user.handlestring,
-          authemail: user.authemail,
-          authfirstname: user.authfirstname,
-          authlastname: user.authlastname,
+          authemail: user.email,
+          authpw: user.password,
+          authfirstname: user.nameFirst,
+          authlastname: user.nameLast,
+          isGlobalOwner: user.isGlobalOwner,
         }
       ],
       messages: [],
