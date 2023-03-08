@@ -23,6 +23,9 @@ export function isUser(authUserId) {
 }
 
 /*function channelMessagesV1(authUserId, channelId, start) {
+=======
+function channelMessagesV1(authUserId, channelId, start) {
+>>>>>>> 5a78569931129b3da155d27611a1f26022c9c58a
   return {
     messages: [
       {
@@ -179,6 +182,18 @@ export function isUser(authUserId) {
   });
   setData(data);
 
+=======
+        message: "Hello world",
+        timeSent: 1582426789,
+      },
+    ],
+    start: 0,
+    end: 50,
+  };
+}
+
+function channelJoinV1(authUserId, channelId) {
+>>>>>>> 5a78569931129b3da155d27611a1f26022c9c58a
   return {};
 }
 
