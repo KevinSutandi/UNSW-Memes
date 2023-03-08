@@ -26,8 +26,13 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
   beforeEach(() => {
     user = authRegisterV1('onlyfortestttt06@gmail.com', 'testpw0005', 'Jonah','Meggs');
     user2 = authRegisterV1('someotheremail@gmail.com', 'someone2031', 'Kevin', 'Sutandi');
-    //channel = channelsCreateV1(user.authUserId, 'general', true);
   })
+
+  test('valid input', () => {
+    expect(channelsCreateV1(user.authUserId, 'general', false)).toStrictEqual({
+      channelId: expect.any(Number)
+    });
+  });
 
   test('name less than 1 char', () => {
     expect(channelsCreateV1(user.authUserId, '', true)).toStrictEqual(ERROR);
@@ -40,20 +45,6 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
   test('invalid authUserId', () => {
     expect(channelsCreateV1(user.authUserId + 1, 'general', false)).toStrictEqual(ERROR);
   });
-
-  user3 = authRegisterV1('onlyfortestttt06@gmail.com', 'testpw0005', 'Jonah','Meggs');
-  const data = getData();
-  console.log(data);
-
-  test('valid input', () => {
-    expect(channelsCreateV1(user3.authUserId, 'general', false)).toStrictEqual({
-      channelId: expect.any(Number)
-    });
-  });
-
-  channel2 = channelsCreateV1(user3.authUserId, 'general', false);
-  const data2 = getData();
-  console.log(data2);
 
   /*test('valid input, with channelsDetailsV1', () => {
     expect(channelDetailsV1(user.authUserId, channel.channelId)).toStrictEqual(
