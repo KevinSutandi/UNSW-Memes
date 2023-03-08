@@ -69,3 +69,14 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
       });
   });*/
 })
+
+describe ('channelsListV1 Iteration 1 test', () => {
+
+  test('authUserId is invalid', () => {
+    expect(channelsListV1(user.authUserId + 1)).toStrictEqual(ERROR);
+  })
+
+
+  test('uId is incorrect')
+
+})
