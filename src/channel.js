@@ -4,49 +4,43 @@ function channelMessagesV1(authUserId, channelId, start) {
       {
         messageId: 1,
         uId: 1,
-        message: 'Hello world',
+        message: "Hello world",
         timeSent: 1582426789,
-      }
+      },
     ],
     start: 0,
     end: 50,
-  }
+  };
 }
 
 function channelJoinV1(authUserId, channelId) {
-  return {
-
-  }
+  return {};
 }
 
 function channelInviteV1(authUserId, channelId, uId) {
-  return {
-
-  }
+  return {};
 }
-
 
 function channelDetailsV1(authUserId, channelId) {
   return {
-    name: 'Hayden',
+    name: "Hayden",
     ownerMembers: [
       {
         uId: 1,
-        email: 'example@gmail.com',
-        nameFirst: 'Hayden',
-        nameLast: 'Jacobs',
-        handleStr: 'haydenjacobs',
-      }
+        email: "example@gmail.com",
+        nameFirst: "Hayden",
+        nameLast: "Jacobs",
+        handleStr: "haydenjacobs",
+      },
     ],
     allMembers: [
       {
         uId: 1,
-        email: 'example@gmail.com',
-        nameFirst: 'Hayden',
-        nameLast: 'Jacobs',
-        handleStr: 'haydenjacobs',
-      }
+        email: "example@gmail.com",
+        nameFirst: "Hayden",
+        nameLast: "Jacobs",
+        handleStr: "haydenjacobs",
+      },
     ],
-  }
+  };
 }
-
