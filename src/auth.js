@@ -51,7 +51,6 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
   const handlefound = dataStore.users.find(
     (item) => item.handlestring === handlestring
   );
-  console.log(handlestring);
   if (handlefound !== undefined) {
     for (let i = 0; handlefound === undefined; i++) {
       handlestring = handlestring + num.toString(i);
@@ -71,7 +70,6 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
     authlastname: nameLast,
     isGlobalOwner: isGlobalOwner,
   });
-  console.log(handlestring);
   setData(dataStore);
 
   return { authUserId: authId };
