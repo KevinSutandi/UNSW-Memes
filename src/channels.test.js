@@ -1,21 +1,17 @@
-<<<<<<< HEAD
-import {
-  authLoginV1,
-  authRegisterV1,
-} from "./auth";
+import { authLoginV1, authRegisterV1 } from './auth';
 
 import {
   channelsCreateV1,
   channelsListV1,
   channelsListAllV1,
-} from "./channels";
+} from './channels';
 
 import {
   channelJoinV1,
   channelInviteV1,
   channelMessagesV1,
-  channelDetailsV1
-} from "./channel"
+  channelDetailsV1,
+} from './channel';
 
 const ERROR = { error: expect.any(String) };
 
@@ -23,9 +19,18 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
   let user;
   let channel;
   beforeEach(() => {
-    user = authRegisterV1('kevins050324@gmail.com', 'kevin1001', 'Kevin', 'Sutandi');
-    user2 = authRegisterV1('someotheremail@gmail.com', 'someone2031', 'Jonah', 'Meggs');
-
+    user = authRegisterV1(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegisterV1(
+      'someotheremail@gmail.com',
+      'someone2031',
+      'Jonah',
+      'Meggs'
+    );
   });
 
   test('invalid authUserID', () => {
@@ -34,8 +39,8 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
 
   test('valid authUserId, no channels were created', () => {
     expect(channelsListAllV1(user2.authUserId)).toStrictEqual({
-      channels: []
-    })
+      channels: [],
+    });
   });
 
   // Creates channels to be outputted
@@ -47,54 +52,42 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
       channels: [
         {
           channelId: channel.channelId,
-          name: 'general'
+          name: 'general',
         },
         {
           channelId: channel2.channelId,
-          name: 'memes'
+          name: 'memes',
         },
         {
           channelId: channel3.channelId,
-          name: "Jonah's personal"
-        }
-      ]
+          name: "Jonah's personal",
+        },
+      ],
     });
-  })
-})
-=======
-import {
-  authLoginV1,
-  authRegisterV1,
-} from "./auth";
-
-import {
-  channelsCreateV1,
-  channelsListV1,
-  channelsListAllV1,
-} from "./channels";
-
-import {
-  channelJoinV1,
-  channelInviteV1,
-  channelMessagesV1,
-  channelDetailsV1
-} from "./channel"
-
-import {getData, setData} from "./dataStore";
-
-const ERROR = { error: expect.any(String) };
+  });
+});
 
 describe('channelsCreateV1 Iteration 1 tests', () => {
   let user, user2, user3;
   let channel, channel2;
   beforeEach(() => {
-    user = authRegisterV1('onlyfortestttt06@gmail.com', 'testpw0005', 'Jonah','Meggs');
-    user2 = authRegisterV1('someotheremail@gmail.com', 'someone2031', 'Kevin', 'Sutandi');
-  })
+    user = authRegisterV1(
+      'onlyfortestttt06@gmail.com',
+      'testpw0005',
+      'Jonah',
+      'Meggs'
+    );
+    user2 = authRegisterV1(
+      'someotheremail@gmail.com',
+      'someone2031',
+      'Kevin',
+      'Sutandi'
+    );
+  });
 
   test('valid input', () => {
     expect(channelsCreateV1(user.authUserId, 'general', false)).toStrictEqual({
-      channelId: expect.any(Number)
+      channelId: expect.any(Number),
     });
   });
 
@@ -103,11 +96,15 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
   });
 
   test('name more than 20 chars', () => {
-    expect(channelsCreateV1(user.authUserId, '123456789012345678901', true)).toStrictEqual(ERROR);
+    expect(
+      channelsCreateV1(user.authUserId, '123456789012345678901', true)
+    ).toStrictEqual(ERROR);
   });
 
   test('invalid authUserId', () => {
-    expect(channelsCreateV1(user.authUserId + 1, 'general', false)).toStrictEqual(ERROR);
+    expect(
+      channelsCreateV1(user.authUserId + 1, 'general', false)
+    ).toStrictEqual(ERROR);
   });
 
   /*test('valid input, with channelsDetailsV1', () => {
@@ -139,5 +136,4 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
         end: 0
       });
   });*/
-})
->>>>>>> 893df37909f1e344b8868bb56ea04e4478298340
+});
