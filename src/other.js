@@ -1,4 +1,4 @@
-import { getData, setData } from "./data";
+import { getData, setData } from "./dataStore";
 
 export function clearV1() {
   const data = getData();
