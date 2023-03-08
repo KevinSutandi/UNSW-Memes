@@ -4,10 +4,6 @@ import {getData, setData} from "./dataStore";
 // Finds out whether the given userId is valid or not
 // returns bool
 export function isUser(userId) {
-  return data.users.some(a => a.authUserId === userId);
-}
-
-function channelsCreateV1(authUserId, name, isPublic) {
   const data = getData();
   return data.users.some(a => a.authUserId === userId);
 }
@@ -78,6 +74,7 @@ function channelsListV1(authUserId) {
 }
 
 export function channelsListAllV1(authUserId) {
+  const data = getData();
   // If the given userId is invalid
   if (!isUser(authUserId)) {
     return {error: 'Invalid authUserId'};

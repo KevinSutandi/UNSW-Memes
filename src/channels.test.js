@@ -16,17 +16,19 @@ import {
   channelDetailsV1
 } from "./channel"
 
+import {clearV1} from "./other"
+
 import {getData, setData} from "./dataStore";
 
 const ERROR = { error: expect.any(String) };
 
 describe('channelsListAllV1 Iteration 1 tests', () => {
-  let user;
-  let channel;
+  let user, user2;
+  let channel, channel2, channel3;
   beforeEach(() => {
+    clearV1();
     user = authRegisterV1('kevins050324@gmail.com', 'kevin1001', 'Kevin', 'Sutandi');
     user2 = authRegisterV1('someotheremail@gmail.com', 'someone2031', 'Jonah', 'Meggs');
-    channel = channelsCreateV1(user.authUserId, 'general', true);
   });
 
   test('invalid authUserID', () => {
@@ -39,11 +41,11 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
     })
   });
 
-  // Creates channels to be outputted
-  channel = channelsCreateV1(user.authUserId, 'general', true);
-  channel2 = channelsCreateV1(user.authUserId, 'memes', true);
-  channel3 = channelsCreateV1(user2.authUserId, "Jonah's personal", false);
+
   test('valid authUserId, channels were created', () => {
+    channel = channelsCreateV1(user.authUserId, 'general', false);
+    channel2 = channelsCreateV1(user.authUserId, 'memes', false);
+    channel3 = channelsCreateV1(user.authUserId, "Jonah's personal", true);
     expect(channelsListAllV1(user.authUserId)).toStrictEqual({
       channels: [
         {
