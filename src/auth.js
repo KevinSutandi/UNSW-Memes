@@ -2,15 +2,25 @@ import { validator } from "validator";
 import { getData, setData } from "./dataStore";
 
 export function authLoginV1(email, password) {
-  const users = getData().users
+  const data = getData()
 
-  users.forEach(user => {
-    if (user.email === email && user.password === password) {
+  //const userfound = data.users.find((item => item.email === email) && (item => item.password === password))
+  //const userfound = users.()
+  data.users.forEach(user => {
+    console.log(user);
+    console.log((email === user.authemail) && (password === user.authpw));
+    //console.log(password === user.authpw);
+    if (((email === user.authemail) === true && (password === user.authpw) === true)) {
       return { authUserId: user.authUserId }
     }
+    else {
+      return { error: 'error' };
+    }
   })
-
-  return { error: 'error' }
+  /*if (userfound !== undefined) {
+    return {authUserId: data.users.authId};
+  } else {*/
+  //}
 }
 
 
