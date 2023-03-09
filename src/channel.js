@@ -42,8 +42,23 @@ function channelJoinV1(authUserId, channelId) {
 }
 
 function channelInviteV1(authUserId, channelId, uId) {
-  return {};
+  if (!checkAuthUserIdExists(authUserId) || !checkChannelExistsByChannelId(channelId) || !checkUserExistsByUId(uId)) {
+    return { error: 'error' }
+  }
+
+  const channels = getData().channels
+  channels.forEach(channel => {
+    if (channel.channelId === channelId) {
+      if (channel.allMembers.includes(authUserId)) {
+        channel.allMembers.push(uId)
+        return {}
+      }
+    }
+  })
+
+  return { error: 'error' }
 }
+
 
 export function channelDetailsV1(authUserId, channelId) {
   // Gets the data

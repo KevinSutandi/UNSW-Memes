@@ -14,7 +14,6 @@ import {
   channelInviteV1,
   channelMessagesV1,
   channelDetailsV1,
-  channelInviteV1
 } from "./channel"
 
 import {clearV1} from "./other"
@@ -68,6 +67,8 @@ describe('channelDetailsV1 Iteration 1 tests', () => {
     });
   });
 });
+
+const { channelInviteV1 } = require('./channel')
 
 describe('channelInviteV1', () => {
   const validAuthUserId = 'authUserId123'
