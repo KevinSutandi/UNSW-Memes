@@ -3,15 +3,15 @@ import { getData, setData } from './dataStore';
 // HELPER FUNCTIONS
 
 /**
- * @typedef {Object} user
- * @property {number} authUserId
- * @property {number} age
- * @property {string} handlestring
- * @property {string} authemail 
- * @property {string} authpw
- * @property {string} authfirstname
- * @property {string} authlastname
- * @property {string} isGlobalOwner
+ * @typedef {Object} user - object containing user information
+ * @property {number} authUserId - the authenticated user Id
+ * @property {number} age - age of the user
+ * @property {string} handlestring - user's handlestring
+ * @property {string} authemail - user's email
+ * @property {string} authpw - user's password
+ * @property {string} authfirstname - user's first name
+ * @property {string} authlastname - user's last name
+ * @property {number} isGlobalOwner - determines whether a user is a global owner
 */
 
 /**
@@ -19,9 +19,9 @@ import { getData, setData } from './dataStore';
   * by checking through users array in the 
   * dataStore.js
   * 
-  * @param {number} userId
-  * @returns {boolean}
-  * 
+  * @param {number} userId - the authenticated user Id
+  * @returns {boolean} - true if the user is in the dataStore
+  *                    = false if the user isnt in the dataStore
 */
 export function isUser(userId) {
   const data = getData();
@@ -31,8 +31,9 @@ export function isUser(userId) {
 /**
   * Finds the user object based on the given userId
   * 
-  * @param {number} userId
-  * @returns {user}
+  * @param {number} userId - the authenticated user Id
+  * @returns {undefined} - returns undefined if the user isnt in the dataStore
+  * @returns {user} - returns user object if the user is in the dataStore
   * 
 */
 export function findUser(userId) {
@@ -46,10 +47,12 @@ export function findUser(userId) {
   * Then, pushes the created channel into 
   * data.channels
   * 
-  * @param {number} authUserId 
-  * @param {string} name 
-  * @param {boolean} isPublic
-  * @returns {{channelId: number}}
+  * @param {number} authUserId - the authenticated user Id
+  * @param {string} name - the channel's name
+  * @param {boolean} isPublic - determines whether the channel is public or private
+  * @returns {error: 'error message'} - if the channel's name' length is less than or more than 20
+  *                                   = if the given userId is invalid
+  * @returns {{channelId: number}} - returns the channelId object
   * 
 */
 export function channelsCreateV1(authUserId, name, isPublic) {
@@ -59,6 +62,7 @@ export function channelsCreateV1(authUserId, name, isPublic) {
   if (name.length < 1 || name.length > 20) {
     return { error: 'Invalid name length' };
   }
+  // Returns error if the given userId is invalid
   if (!isUser(authUserId)) {
     return { error: 'Invalid authUserId' };
   }
