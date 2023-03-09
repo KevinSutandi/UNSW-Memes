@@ -1,19 +1,19 @@
-import { authLoginV1, authRegisterV1 } from "./auth";
+import { authLoginV1, authRegisterV1 } from "./auth.js";
 
 import {
   channelsCreateV1,
   channelsListV1,
   channelsListAllV1,
-} from "./channels";
+} from "./channels.js";
 
 import {
   channelJoinV1,
   channelInviteV1,
   channelMessagesV1,
   channelDetailsV1,
-} from "./channel";
+} from "./channel.js";
 
-import { clearV1 } from "./other";
+import { clearV1 } from "./other.js";
 
 const ERROR = { error: expect.any(String) };
 

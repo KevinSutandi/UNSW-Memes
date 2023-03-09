@@ -5,7 +5,7 @@
 // password not correct
 
 import { authRegisterV1 } from "./auth.js";
-import { clearV1 } from "./other";
+import { clearV1 } from "./other.js";
 const ERROR = { error: expect.any(String) };
 const IDPASS = { authUserId: expect.any(Number) };
 

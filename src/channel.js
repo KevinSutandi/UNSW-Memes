@@ -1,4 +1,4 @@
-import { getData, setData } from './dataStore';
+import { getData, setData } from "./dataStore.js";
 
 /**
  * @typedef {Object} channel - object containing channel's information
@@ -10,49 +10,47 @@ import { getData, setData } from './dataStore';
  * @property {string[]} messages - messages in the channel
  * @property {number} start - the start of the message
  * @property {number} end - the end of the message
-*/
-
-
+ */
 
 // Helper functions
 /**
-  * Determines whether a channel is a valid channel
-  * by checking through channels array in the 
-  * dataStore.js
-  * 
-  * @param {number} channelId - The authenticated channel Id
-  * @returns {boolean} - true if the channel is in the dataStore,
-  *                    = false if the channel isnt in the dataStore
-  * 
-*/
+ * Determines whether a channel is a valid channel
+ * by checking through channels array in the
+ * dataStore.js
+ *
+ * @param {number} channelId - The authenticated channel Id
+ * @returns {boolean} - true if the channel is in the dataStore,
+ *                    = false if the channel isnt in the dataStore
+ *
+ */
 export function isChannel(channelId) {
   const data = getData();
   return data.channels.some((a) => a.channelId === channelId);
 }
 
 /**
-  * Finds the channel object based on the given channelId
-  * 
-  * @param {number} channelId - The authenticated channel Id
-  * @returns {undefined} - if the function cannot find the channel
-  * @returns {channel}  - returns channel object if the channel is found
-  * 
-*/
+ * Finds the channel object based on the given channelId
+ *
+ * @param {number} channelId - The authenticated channel Id
+ * @returns {undefined} - if the function cannot find the channel
+ * @returns {channel}  - returns channel object if the channel is found
+ *
+ */
 export function findChannel(channelId) {
   const data = getData();
   return data.channels.find((a) => a.channelId === channelId);
 }
 
 /**
-  * Determines whether a user is a valid user
-  * by checking through users array in the 
-  * dataStore.js
-  * 
-  * @param {number} userId - the authenticated userId
-  * @returns {boolean} - true if the channel is in dataStore
-  *                    = false if it is not
-  * 
-*/
+ * Determines whether a user is a valid user
+ * by checking through users array in the
+ * dataStore.js
+ *
+ * @param {number} userId - the authenticated userId
+ * @returns {boolean} - true if the channel is in dataStore
+ *                    = false if it is not
+ *
+ */
 export function isUser(authUserId) {
   const data = getData();
   return data.users.some((a) => a.authUserId === authUserId);
@@ -129,7 +127,6 @@ export function channelMessagesV1(authUserId, channelId, start) {
   }
 }
 
-
 /**
  * Given a channelId of a channel that the authorised user
  * can join, adds them to the channel.
@@ -169,18 +166,18 @@ export function channelJoinV1(authUserId, channelId) {
     : null;
   // Error if the user is not registered
   if (data.users.find(findAuthUser) === undefined) {
-    return { error: 'User Not Found' };
+    return { error: "User Not Found" };
   }
   // Error if the channel is not found
   if (data.channels.find(findChannel) === undefined) {
-    return { error: 'Channel Not Found' };
+    return { error: "Channel Not Found" };
   }
 
   const uId = user.authUserId;
 
   // Error if the user is already in the channel
   if (allMemberIds.includes(uId) === true) {
-    return { error: 'User is already in channel' };
+    return { error: "User is already in channel" };
   }
 
   const isPublic = channel.isPublic;
@@ -188,9 +185,9 @@ export function channelJoinV1(authUserId, channelId) {
   // Error if the channels is private and not global owner
   if (isPublic === false && globalPerm === 2) {
     if (isPublic === false) {
-      return { error: 'Channel is not public' };
+      return { error: "Channel is not public" };
     } else {
-      return { error: 'User is not global owner' };
+      return { error: "User is not global owner" };
     }
   }
   const channelNum = data.channels.findIndex(
@@ -232,16 +229,16 @@ export function channelDetailsV1(authUserId, channelId) {
   // If channelId doesn't refer to a valid channel,
   // returns error
   if (!isChannel(channelId)) {
-    return { error: 'channelId does not refer to a valid channel' };
+    return { error: "channelId does not refer to a valid channel" };
   }
   // If authUserId is invalid, returns error
   else if (!isUser(authUserId)) {
-    return { error: 'Invalid authUserId' };
+    return { error: "Invalid authUserId" };
   }
   const channelObj = findChannel(channelId);
   // If the user is not a member of the channel
   if (!channelObj.allMembers.some((a) => a.authUserId === authUserId)) {
-    return { error: authUserId + ' is not a member of the channel' };
+    return { error: authUserId + " is not a member of the channel" };
   }
   return {
     name: channelObj.name,
