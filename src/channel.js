@@ -22,20 +22,77 @@ export function isUser(authUserId) {
   return data.users.some((a) => a.authUserId === authUserId);
 }
 
-function channelMessagesV1(authUserId, channelId, start) {
-  return {
-    messages: [
-      {
-        messageId: 1,
-        uId: 1,
-        message: 'Hello world',
-        timeSent: 1582426789,
-      },
-    ],
-    start: 0,
-    end: 50,
-  };
+/**
+ *
+ *
+ * @param {number} authUserId - The authenticated user Id
+ * @param {number} channelId - The channel Id to join
+ * ...
+ *
+ * @returns {} - returns {} when successful
+ * @returns {error : 'error message'} - returns an error when
+ *                                    = channelId is invalid
+ *                                    = Member is already in channel
+ *                                    = Channel is private and not a global owner
+ *                                    = User is invalid
+ */
+export function channelMessagesV1(authUserId, channelId, start) {
+  const data = getData();
+
+  // Function for finding the particular authUserId
+  function findAuthUser(users) {
+    return users.authUserId === authUserId;
+  }
+  // Function for finding particular channelId
+  function findChannel(channels) {
+    return channels.channelId === channelId;
+  }
+  // Get the particular user index in data store
+  const user = data.users.find(findAuthUser);
+
+  // Get the particular channel index from data store
+  const channel = data.channels.find(findChannel);
+  // Get the amount of messages in the particular channel
+
+  // Get all uIds in the channel
+  const allMemberIds = channel
+    ? channel.allMembers.map((member) => member.authUserId)
+    : null;
+  // Error if the user is not registered
+  if (data.users.find(findAuthUser) === undefined) {
+    return { error: "User Not Found" };
+  }
+  // Error if the channel is not found
+  if (data.channels.find(findChannel) === undefined) {
+    return { error: "Channel Not Found" };
+  }
+  const channelMessage = channel.messages.length;
+  const uId = user.authUserId;
+  // Error if the user is not a member of the channel
+  if (allMemberIds.includes(uId) === false) {
+    return { error: "User is not registered in channel" };
+  }
+  // Error if 'start' is greater than the amount of messages
+  if (start > channelMessage) {
+    return { error: "'start' is greater than the amount of messages" };
+  }
+
+  if (start + 50 > channelMessage) {
+    const messagesLeft = channelMessage - start;
+    return {
+      messages: channel.messages.slice(start, messagesLeft),
+      start: start,
+      end: -1,
+    };
+  } else {
+    return {
+      messages: channel.messages.slice(start, start + 50),
+      start: start,
+      end: start + 50,
+    };
+  }
 }
+
 
 /**
  * Given a channelId of a channel that the authorised user
