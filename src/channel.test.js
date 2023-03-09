@@ -104,9 +104,9 @@ describe("testing channelJoinV1", () => {
       "Zombie",
       "Ibrahim"
     );
-    channel1 = channelsCreateV1(user1.authUserId, true);
-    channel2 = channelsCreateV1(user2.authUserId, true);
-    channel3 = channelsCreateV1(user3.authUserId, false);
+    channel1 = channelsCreateV1(user1.authUserId, "Ketoprak", true);
+    channel2 = channelsCreateV1(user2.authUserId, "Bakso", true);
+    channel3 = channelsCreateV1(user3.authUserId, "Batagor", false);
   });
   test("channelId does not exist test 1", () => {
     expect(
@@ -138,19 +138,112 @@ describe("testing channelJoinV1", () => {
       ERROR
     );
   });
-  test("Join channel test 1", () => {
-    expect(channelJoinV1(user1.authUserId, channel2.channelId)).toStrictEqual(
-      {}
+  test("channel is private while non gloabalOwner is joining", () => {
+    expect(channelJoinV1(user2.authUserId, channel3.channelId)).toStrictEqual(
+      ERROR
     );
+  });
+  test("channel is private while globalOwner is joining", () => {
+    channelJoinV1(user1.authUserId, channel3.channelId);
+    expect(
+      channelDetailsV1(user1.authUserId, channel3.channelId)
+    ).toStrictEqual({
+      name: "Batagor",
+      isPublic: false,
+      ownerMembers: [
+        {
+          authUserId: user3.authUserId,
+          authemail: "z5352065@ad.unsw.edu.au",
+          authfirstname: "Zombie",
+          authlastname: "Ibrahim",
+          handlestring: "zombieibrahim",
+        },
+      ],
+      allMembers: [
+        {
+          authUserId: user3.authUserId,
+          authemail: "z5352065@ad.unsw.edu.au",
+          authfirstname: "Zombie",
+          authlastname: "Ibrahim",
+          handlestring: "zombieibrahim",
+        },
+        {
+          authUserId: user1.authUserId,
+          authemail: "kevins050324@gmail.com",
+          authfirstname: "Kevin",
+          authlastname: "Sutandi",
+          handlestring: "kevinsutandi",
+        },
+      ],
+    });
+  });
+
+  test("Join channel test 1", () => {
+    channelJoinV1(user3.authUserId, channel1.channelId);
+    expect(
+      channelDetailsV1(user3.authUserId, channel1.channelId)
+    ).toStrictEqual({
+      name: "Ketoprak",
+      isPublic: true,
+      ownerMembers: [
+        {
+          authUserId: user1.authUserId,
+          authemail: "kevins050324@gmail.com",
+          authfirstname: "Kevin",
+          authlastname: "Sutandi",
+          handlestring: "kevinsutandi",
+        },
+      ],
+      allMembers: [
+        {
+          authUserId: user1.authUserId,
+          authemail: "kevins050324@gmail.com",
+          authfirstname: "Kevin",
+          authlastname: "Sutandi",
+          handlestring: "kevinsutandi",
+        },
+        {
+          authUserId: user3.authUserId,
+          authemail: "z5352065@ad.unsw.edu.au",
+          authfirstname: "Zombie",
+          authlastname: "Ibrahim",
+          handlestring: "zombieibrahim",
+        },
+      ],
+    });
   });
   test("Join channel test 2", () => {
-    expect(channelJoinV1(user2.authUserId, channel3.channelId)).toStrictEqual(
-      {}
-    );
-  });
-  test("Join channel test 3", () => {
-    expect(channelJoinV1(user3.authUserId, channel1.channelId)).toStrictEqual(
-      {}
-    );
+    channelJoinV1(user1.authUserId, channel2.channelId);
+    expect(
+      channelDetailsV1(user1.authUserId, channel2.channelId)
+    ).toStrictEqual({
+      name: "Bakso",
+      isPublic: true,
+      ownerMembers: [
+        {
+          authUserId: user2.authUserId,
+          authemail: "someotheremail@gmail.com",
+          authfirstname: "Jonah",
+          authlastname: "Meggs",
+          handlestring: "jonahmeggs",
+        },
+      ],
+      allMembers: [
+        {
+          authUserId: user2.authUserId,
+          authemail: "someotheremail@gmail.com",
+          authfirstname: "Jonah",
+          authlastname: "Meggs",
+          handlestring: "jonahmeggs",
+        },
+        {
+          authUserId: user1.authUserId,
+          authemail: "kevins050324@gmail.com",
+          authfirstname: "Kevin",
+          authlastname: "Sutandi",
+          handlestring: "kevinsutandi",
+        },
+      ],
+    });
   });
 });
