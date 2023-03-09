@@ -69,6 +69,7 @@ export function findUser(userId) {
   return data.users.find((a) => a.authUserId === userId);
 }
 
+
 /**
  *
  *
@@ -271,20 +272,33 @@ function checkAuthUserIdExists(authUserId) {
 
 export function channelInviteV1(authUserId, channelId, uId) {
   const data = getData();
+  
+  // Function for finding channelId in data store
+  function findChannel(channels) {
+    return channels.channelId === channelId;
+  }
   // Error cases
   if (!isChannel(channelId)) {
     return {error: 'channelId does not refer to a valid channel'};
   }
-  else if (!isUser(uId)) {
+  if (!isUser(uId)) {
     return {error: 'uId does not refer to a valid user'};
   }
-  else if (data.channels.allMembers.some((a) => a.authUserId === uId)) {
+  const channel = data.channels.find(findChannel);
+
+  // Get all uIds in the channel
+  const allMemberIds = channel
+    ? channel.allMembers.map((member) => member.authUserId)
+    : null;
+
+  if (allMemberIds.includes(uId) === true) {
     return {error: 'User already in the channel'};
   }
-  else if (isChannel(channelId) && !data.channels.allMembers.some((a) => a.authUserId === authUserId)) {
+
+  if (isChannel(channelId) && allMemberIds.includes(authUserId) === false) {
     return {error: 'You are not a channel member'};
   }
-  else if (!isUser(authUserId)) {
+  if (!isUser(authUserId)) {
     return {error: 'Invalid authUserId'}
   }
   // Finds the user based on uId

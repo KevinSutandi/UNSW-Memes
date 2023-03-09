@@ -373,9 +373,8 @@ describe("testing channelInviteV1", () => {
   });
 
   test("Invite person to channel test 1", () => {
-    expect(
-      channelInviteV1(user1.authUserId, channel1.channelId, user3.authUserId)
-    ).toStrictEqual({
+    channelInviteV1(user1.authUserId, channel1.channelId, user3.authUserId)
+    expect(channelDetailsV1(user1.authUserId, channel1.channelId)).toStrictEqual({
       name: "Ketoprak",
       isPublic: true,
       ownerMembers: [
@@ -406,9 +405,8 @@ describe("testing channelInviteV1", () => {
     });
   });
   test("Join channel test 2", () => {
-    expect(
-      channelInviteV1(user2.authUserId, channel2.channelId, user1.authUserId)
-    ).toStrictEqual({
+    channelInviteV1(user2.authUserId, channel2.channelId, user1.authUserId)
+    expect(channelDetailsV1(user2.authUserId, channel2.channelId)).toStrictEqual({
       name: "Bakso",
       isPublic: true,
       ownerMembers: [
