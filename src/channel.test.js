@@ -1,13 +1,13 @@
 import {
   authLoginV1,
   authRegisterV1,
-} from "./auth";
+} from "./auth"
 
 import {
   channelsCreateV1,
   channelsListV1,
   channelsListAllV1,
-} from "./channels";
+} from "./channels"
 
 import {
   channelJoinV1,
@@ -16,31 +16,35 @@ import {
   channelDetailsV1,
 } from "./channel"
 
-import {clearV1} from "./other"
+import {
+  getData, setData
+} from "./dataStore"
 
-const ERROR = { error: expect.any(String) };
+import { clearV1 } from "./other"
+
+const ERROR = { error: expect.any(String) }
 
 describe('channelDetailsV1 Iteration 1 tests', () => {
-  let user, user2;
-  let channel;
+  let user, user2
+  let channel
   beforeEach(() => {
-    clearV1();
-    user = authRegisterV1('kevins050324@gmail.com', 'kevin1001', 'Kevin', 'Sutandi');
-    user2 = authRegisterV1('someotheremail@gmail.com', 'someone2031', 'Jonah', 'Meggs');
-    channel = channelsCreateV1(user.authUserId, 'general', true);
-  });
+    clearV1()
+    user = authRegisterV1('kevins050324@gmail.com', 'kevin1001', 'Kevin', 'Sutandi')
+    user2 = authRegisterV1('someotheremail@gmail.com', 'someone2031', 'Jonah', 'Meggs')
+    channel = channelsCreateV1(user.authUserId, 'general', true)
+  })
 
   test('invalid channelId', () => {
-    expect(channelDetailsV1(user.authUserId, channel.channelId + 1)).toStrictEqual(ERROR);
-  });
+    expect(channelDetailsV1(user.authUserId, channel.channelId + 1)).toStrictEqual(ERROR)
+  })
 
   test('valid channelId, user is not a member', () => {
-    expect(channelDetailsV1(user2.authUserId, channel.channelId)).toStrictEqual(ERROR);
-  });
+    expect(channelDetailsV1(user2.authUserId, channel.channelId)).toStrictEqual(ERROR)
+  })
 
   test('invalid authUserId', () => {
-    expect(channelDetailsV1(user.authUserId + 1, channel.channelId)).toStrictEqual(ERROR);
-  });
+    expect(channelDetailsV1(user.authUserId + 1, channel.channelId)).toStrictEqual(ERROR)
+  })
 
   test('valid input', () => {
     expect(channelDetailsV1(user.authUserId, channel.channelId)).toStrictEqual({
@@ -64,11 +68,9 @@ describe('channelDetailsV1 Iteration 1 tests', () => {
           handlestring: 'kevinsutandi',
         }
       ],
-    });
-  });
-});
-
-const { channelInviteV1 } = require('./channel')
+    })
+  })
+})
 
 describe('channelInviteV1', () => {
   const validAuthUserId = 'authUserId123'
@@ -77,26 +79,29 @@ describe('channelInviteV1', () => {
 
   test('returns an empty object if authUserId, channelId, and uId all exist', () => {
     // Set up mock functions for checkAuthUserIdExists, checkChannelExistsByChannelId, and checkUserExistsByUId
-    const checkAuthUserIdExists = jest.fn(() => true)
-    const checkChannelExistsByChannelId = jest.fn(() => true)
-    const checkUserExistsByUId = jest.fn(() => true)
+    // const checkAuthUserIdExists = jest.fn(() => true)
+    // const checkChannelExistsByChannelId = jest.fn(() => true)
+    // const checkUserExistsByUId = jest.fn(() => true)
+    // const getData = jest.fn(() => ({ channels }))
 
     // Set up mock data for getData().channels
     const channels = [
       { channelId: validChannelId, allMembers: [validAuthUserId] }
     ]
-    const getData = jest.fn(() => ({ channels }))
 
     // Invoke function with mock parameters and dependencies
-    const result = channelInviteV1(validAuthUserId, validChannelId, validUId, {
-      checkAuthUserIdExists,
-      checkChannelExistsByChannelId,
-      checkUserExistsByUId,
-      getData
+    setData({
+      channels, users: [
+        {
+          uId: 'uId789'
+        }
+      ]
     })
+    const result = channelInviteV1(validAuthUserId, validChannelId, validUId)
 
     // Assert that the function returns an empty object
     expect(result).toEqual({})
+    setData({})
   })
 
   test('returns an object with "error" key if authUserId does not exist', () => {
@@ -110,11 +115,11 @@ describe('channelInviteV1', () => {
       checkAuthUserIdExists,
       checkChannelExistsByChannelId,
       checkUserExistsByUId
-    });
+    })
 
     // Assert that the function returns an object with "error" key
     expect(result).toHaveProperty('error')
-  });
+  })
 
   // Similar tests for other error cases, e.g. when channelId or uId do not exist
 });
