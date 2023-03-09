@@ -1,18 +1,57 @@
 import { getData, setData } from './dataStore';
 
-// Helper functions
-// Finds out whether the given userId is valid or not
-// returns bool
+// HELPER FUNCTIONS
+
+/**
+ * @typedef {Object} user
+ * @property {number} authUserId
+ * @property {number} age
+ * @property {string} handlestring
+ * @property {string} authemail 
+ * @property {string} authpw
+ * @property {string} authfirstname
+ * @property {string} authlastname
+ * @property {string} isGlobalOwner
+*/
+
+/**
+  * Determines whether a user is a valid user
+  * by checking through users array in the 
+  * dataStore.js
+  * 
+  * @param {number} userId
+  * @returns {boolean}
+  * 
+*/
 export function isUser(userId) {
   const data = getData();
   return data.users.some((a) => a.authUserId === userId);
 }
 
+/**
+  * Finds the user object based on the given userId
+  * 
+  * @param {number} userId
+  * @returns {user}
+  * 
+*/
 export function findUser(userId) {
   const data = getData();
   return data.users.find((a) => a.authUserId === userId);
 }
 
+/**
+  * Creates a new channel with the given name, 
+  * that is either a public or private channel. 
+  * Then, pushes the created channel into 
+  * data.channels
+  * 
+  * @param {number} authUserId 
+  * @param {string} name 
+  * @param {boolean} isPublic
+  * @returns {{channelId: number}}
+  * 
+*/
 export function channelsCreateV1(authUserId, name, isPublic) {
   // Gets the data from database
   const data = getData();
@@ -85,6 +124,13 @@ export function channelsListV1(authUserId) {
   return userChannels;
 }
 
+/**
+  * Provides an array of all channels, including 
+  * private channels (and their associated details)
+  * 
+  * @param {number} authUserId 
+  * @returns {{channels: {channelId: number, name: string}}}
+*/
 export function channelsListAllV1(authUserId) {
   const data = getData();
   // If the given userId is invalid
