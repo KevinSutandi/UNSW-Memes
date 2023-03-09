@@ -1,9 +1,85 @@
-import { authRegisterV1 } from "./auth";
-import { channelsCreateV1 } from "./channels";
-import { channelJoinV1 } from "./channel";
+import { authLoginV1, authRegisterV1 } from "./auth";
+
+import {
+  channelsCreateV1,
+  channelsListV1,
+  channelsListAllV1,
+} from "./channels";
+
+import {
+  channelJoinV1,
+  channelInviteV1,
+  channelMessagesV1,
+  channelDetailsV1,
+} from "./channel";
+
 import { clearV1 } from "./other";
 
 const ERROR = { error: expect.any(String) };
+
+describe("channelDetailsV1 Iteration 1 tests", () => {
+  let user, user2;
+  let channel;
+  beforeEach(() => {
+    clearV1();
+    user = authRegisterV1(
+      "kevins050324@gmail.com",
+      "kevin1001",
+      "Kevin",
+      "Sutandi"
+    );
+    user2 = authRegisterV1(
+      "someotheremail@gmail.com",
+      "someone2031",
+      "Jonah",
+      "Meggs"
+    );
+    channel = channelsCreateV1(user.authUserId, "general", true);
+  });
+
+  test("invalid channelId", () => {
+    expect(
+      channelDetailsV1(user.authUserId, channel.channelId + 1)
+    ).toStrictEqual(ERROR);
+  });
+
+  test("valid channelId, user is not a member", () => {
+    expect(channelDetailsV1(user2.authUserId, channel.channelId)).toStrictEqual(
+      ERROR
+    );
+  });
+
+  test("invalid authUserId", () => {
+    expect(
+      channelDetailsV1(user.authUserId + 1, channel.channelId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test("valid input", () => {
+    expect(channelDetailsV1(user.authUserId, channel.channelId)).toStrictEqual({
+      name: "general",
+      isPublic: true,
+      ownerMembers: [
+        {
+          authUserId: user.authUserId,
+          authemail: "kevins050324@gmail.com",
+          authfirstname: "Kevin",
+          authlastname: "Sutandi",
+          handlestring: "kevinsutandi",
+        },
+      ],
+      allMembers: [
+        {
+          authUserId: user.authUserId,
+          authemail: "kevins050324@gmail.com",
+          authfirstname: "Kevin",
+          authlastname: "Sutandi",
+          handlestring: "kevinsutandi",
+        },
+      ],
+    });
+  });
+});
 
 describe("testing channelJoinV1", () => {
   let user1, user2, user3;

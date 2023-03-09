@@ -36,22 +36,18 @@ export function channelsCreateV1(authUserId, name, isPublic) {
         {
           authUserId: user.authUserId,
           handlestring: user.handlestring,
-          authemail: user.email,
-          authpw: user.password,
-          authfirstname: user.nameFirst,
-          authlastname: user.nameLast,
-          isGlobalOwner: user.isGlobalOwner,
+          authemail: user.authemail,
+          authfirstname: user.authfirstname,
+          authlastname: user.authlastname,
         }
       ],
       allMembers: [
         {
           authUserId: user.authUserId,
           handlestring: user.handlestring,
-          authemail: user.email,
-          authpw: user.password,
-          authfirstname: user.nameFirst,
-          authlastname: user.nameLast,
-          isGlobalOwner: user.isGlobalOwner,
+          authemail: user.authemail,
+          authfirstname: user.authfirstname,
+          authlastname: user.authlastname,
         }
       ],
       messages: [],
@@ -66,6 +62,7 @@ export function channelsCreateV1(authUserId, name, isPublic) {
 }
 
 function channelsListV1(authUserId) {
+
   return {
     channels: [
       {
@@ -76,14 +73,18 @@ function channelsListV1(authUserId) {
   }
 }
 
-function channelsListAllV1(authUserId) {
-  return {
-    channels: [
-      {
-        channelId: 1,
-        name: 'My Channel',
-      }
-    ],
+export function channelsListAllV1(authUserId) {
+  const data = getData();
+  // If the given userId is invalid
+  if (!isUser(authUserId)) {
+    return {error: 'Invalid authUserId'};
   }
+  return {
+    channels: data.channels.map(a => ({
+    channelId: a.channelId,
+    name: a.name,
+    })),
+  };
 }
+
 
