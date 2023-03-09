@@ -4,12 +4,19 @@ import { getData, setData } from "./dataStore";
 export function authLoginV1(email, password) {
   const data = getData()
 
-  for (let user of data.users){
-     if (email === user.authemail && password === user.authpw){
-       return { authUserId: user.authUserId}
-     }
+  let correctUser;
+  for (let user of data.users) {
+    if (email === user.authemail && password === user.authpw) {
+      correctUser = user;
+    }
+    else if (email === user.authemail && password != user.authpw) {
+      return {error: 'Password is not correct'}
+    }
   }
-  return { error: 'error' };
+  if (correctUser != undefined) {
+    return { authUserId: correctUser.authUserId };
+  }
+  return { error: 'Email entered does not belong to a user' };
 }
 
 export function authRegisterV1(email, password, nameFirst, nameLast) {
