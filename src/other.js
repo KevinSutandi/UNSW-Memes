@@ -8,4 +8,3 @@ export function clearV1() {
 
   return {};
 }
-

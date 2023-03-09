@@ -72,7 +72,7 @@ describe('channelDetailsV1 Iteration 1 tests', () => {
   })
 })
 
-describe('channelInviteV1', () => {
+describe('channelInviteV1 test', () => {
   const validAuthUserId = 'authUserId123'
   const validChannelId = 'channelId456'
   const validUId = 'uId789'
@@ -124,5 +124,63 @@ describe('channelInviteV1', () => {
   // Similar tests for other error cases, e.g. when channelId or uId do not exist
 });
 
+describe("testing channelMessagesV1 (ALL INVALID CASES)", () => {
+  let user1, user2, user3;
+  let channel1, channel2, channel3;
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegisterV1(
+      "kevins050324@gmail.com",
+      "kevin1001",
+      "Kevin",
+      "Sutandi"
+    );
+    user2 = authRegisterV1(
+      "someotheremail@gmail.com",
+      "someone2031",
+      "Jonah",
+      "Meggs"
+    );
+    user3 = authRegisterV1(
+      "z5352065@ad.unsw.edu.au",
+      "big!password3",
+      "Zombie",
+      "Ibrahim"
+    );
+    channel1 = channelsCreateV1(user1.authUserId, true);
+    channel2 = channelsCreateV1(user2.authUserId, true);
+    channel3 = channelsCreateV1(user3.authUserId, false);
+  });
+  test("channelId does not exist test", () => {
+    expect(
+      channelMessagesV1(user1.authUserId, channel1.channelId + 100000, 0)
+    ).toStrictEqual(ERROR);
+  });
+  test("authUserId does not exist test", () => {
+    expect(
+      channelMessagesV1(user3.authUserId + 999, channel3.channelId, 0)
+    ).toStrictEqual(ERROR);
+  });
+  test("User is not in channel (cannot read messages)", () => {
+    expect(
+      channelMessagesV1(user3.authUserId, channel2.channelId, 0)
+    ).toStrictEqual(ERROR);
+  });
+  test("start index is greater than the number of messages", () => {
+    expect(
+      channelMessagesV1(user2.authUserId, channel2.channelId, 999999)
+    ).toStrictEqual(ERROR);
+  });
+  test("No Messages in channel (expect empty array)", () => {
+    expect(
+      channelMessagesV1(user2.authUserId, channel2.channelId, 0)
+    ).toStrictEqual({
+      messages: [],
+      start: 0,
+      end: -1,
+    });
+  });
+});
 
-
+// ChannelMessagesV1 for channels containg messages
+// would be tested when there is a way to add messages
