@@ -124,13 +124,6 @@ export function channelsListV1(authUserId) {
   return userChannels;
 }
 
-/**
-  * Provides an array of all channels, including 
-  * private channels (and their associated details)
-  * 
-  * @param {number} authUserId 
-  * @returns {{channels: {channelId: number, name: string}}}
-*/
 export function channelsListAllV1(authUserId) {
   const data = getData();
   // If the given userId is invalid
