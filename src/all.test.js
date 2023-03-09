@@ -15,6 +15,12 @@ import {
 
 import { clearV1 } from "./other.js";
 
+describe("testing return for clear", () => {  
+  authRegisterV1("email@email.com", "password", "first", "last");
+  clearV1();
+  authRegisterV1("email@email.com", "password", "first", "last");
+  clearV1(); 
+}) 
 
 describe("testing type returned for authRegisterV1", () => {
   beforeEach(() => {
@@ -53,12 +59,13 @@ describe("testing type returned for channelsCreate", () => {
   });
 });
 
-describe("testing type returned for chanelsList", () => {
+describe("testing type returned for channelsList", () => {
   beforeEach(() => {
     clearV1();
   });
 
   test("Test output type definition", () => {
+    const name = "dongo";
     let data = authRegisterV1(
       "onlyfortest00@gmail.com",
       "testpw0000",
@@ -75,7 +82,8 @@ describe("testing type returned for chanelsList", () => {
     expect("name" in list.channels[0]).toBe(true);
     expect(typeof list.channels[0].channelId === "number").toBe(true);
     expect(list.channels[0].channelId === channel)
-
+    expect(typeof list.channels[0].name === "string").toBe(true);
+    expect(list.channels[0].name === name).toBe(true);
   });
 });
 
