@@ -76,18 +76,18 @@ export function channelJoinV1(authUserId, channelId) {
     : null;
   // Error if the user is not registered
   if (data.users.find(findAuthUser) === undefined) {
-    return { error: "User Not Found" };
+    return { error: 'User Not Found' };
   }
   // Error if the channel is not found
   if (data.channels.find(findChannel) === undefined) {
-    return { error: "Channel Not Found" };
+    return { error: 'Channel Not Found' };
   }
 
   const uId = user.authUserId;
 
   // Error if the user is already in the channel
   if (allMemberIds.includes(uId) === true) {
-    return { error: "User is already in channel" };
+    return { error: 'User is already in channel' };
   }
 
   const isPublic = channel.isPublic;
@@ -95,9 +95,9 @@ export function channelJoinV1(authUserId, channelId) {
   // Error if the channels is private and not global owner
   if (isPublic === false && globalPerm === 2) {
     if (isPublic === false) {
-      return { error: "Channel is not public" };
+      return { error: 'Channel is not public' };
     } else {
-      return { error: "User is not global owner" };
+      return { error: 'User is not global owner' };
     }
   }
   const channelNum = data.channels.findIndex(
