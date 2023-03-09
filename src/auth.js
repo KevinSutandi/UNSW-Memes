@@ -1,4 +1,4 @@
-import { validator } from "validator";
+import validator from "validator";
 import { getData, setData } from "./dataStore.js";
 
 export function authLoginV1(email, password) {
