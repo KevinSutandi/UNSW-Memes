@@ -239,57 +239,207 @@ describe("testing channelJoinV1", () => {
   });
 });
 
-describe('channelInviteV1 test', () => {
-  const validAuthUserId = 'authUserId123'
-  const validChannelId = 'channelId456'
-  const validUId = 'uId789'
+// describe('channelInviteV1 test', () => {
+//   const validAuthUserId = 'authUserId123'
+//   const validChannelId = 'channelId456'
+//   const validUId = 'uId789'
 
-  test('returns an empty object if authUserId, channelId, and uId all exist', () => {
-    // Set up mock functions for checkAuthUserIdExists, checkChannelExistsByChannelId, and checkUserExistsByUId
-    // const checkAuthUserIdExists = jest.fn(() => true)
-    // const checkChannelExistsByChannelId = jest.fn(() => true)
-    // const checkUserExistsByUId = jest.fn(() => true)
-    // const getData = jest.fn(() => ({ channels }))
+//   test('returns an empty object if authUserId, channelId, and uId all exist', () => {
+//     // Set up mock functions for checkAuthUserIdExists, checkChannelExistsByChannelId, and checkUserExistsByUId
+//     // const checkAuthUserIdExists = jest.fn(() => true)
+//     // const checkChannelExistsByChannelId = jest.fn(() => true)
+//     // const checkUserExistsByUId = jest.fn(() => true)
+//     // const getData = jest.fn(() => ({ channels }))
 
-    // Set up mock data for getData().channels
-    const channels = [
-      { channelId: validChannelId, allMembers: [validAuthUserId] }
-    ]
+//     // Set up mock data for getData().channels
+//     const channels = [
+//       { channelId: validChannelId, allMembers: [validAuthUserId] }
+//     ]
 
-    // Invoke function with mock parameters and dependencies
-    setData({
-      channels, users: [
+//     // Invoke function with mock parameters and dependencies
+//     setData({
+//       channels, users: [
+//         {
+//           uId: 'uId789'
+//         }
+//       ]
+//     })
+//     const result = channelInviteV1(validAuthUserId, validChannelId, validUId)
+
+//     // Assert that the function returns an empty object
+//     expect(result).toEqual({})
+//     setData({})
+//   })
+
+//   test('returns an object with "error" key if authUserId does not exist', () => {
+//     // Set up mock functions for checkAuthUserIdExists, checkChannelExistsByChannelId, and checkUserExistsByUId
+//     const checkAuthUserIdExists = jest.fn(() => false)
+//     const checkChannelExistsByChannelId = jest.fn(() => true)
+//     const checkUserExistsByUId = jest.fn(() => true)
+
+//     // Invoke function with mock parameters and dependencies
+//     const result = channelInviteV1(validAuthUserId, validChannelId, validUId, {
+//       checkAuthUserIdExists,
+//       checkChannelExistsByChannelId,
+//       checkUserExistsByUId
+//     })
+
+//     // Assert that the function returns an object with "error" key
+//     expect(result).toHaveProperty('error')
+//   })
+
+//   // Similar tests for other error cases, e.g. when channelId or uId do not exist
+// });
+
+describe("testing channelInviteV1", () => {
+  let user1, user2, user3;
+  let channel1, channel2, channel3;
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegisterV1(
+      "kevins050324@gmail.com",
+      "kevin1001",
+      "Kevin",
+      "Sutandi"
+    );
+    user2 = authRegisterV1(
+      "someotheremail@gmail.com",
+      "someone2031",
+      "Jonah",
+      "Meggs"
+    );
+    user3 = authRegisterV1(
+      "z5352065@ad.unsw.edu.au",
+      "big!password3",
+      "Zombie",
+      "Ibrahim"
+    );
+    channel1 = channelsCreateV1(user1.authUserId, "Ketoprak", true);
+    channel2 = channelsCreateV1(user2.authUserId, "Bakso", true);
+    channel3 = channelsCreateV1(user3.authUserId, "Batagor", false);
+  });
+  test("channelId does not exist test 1", () => {
+    expect(
+      channelInviteV1(user1.authUserId, channel1.channelId + 5, user2.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+  test("channelId does not exist test 2", () => {
+    expect(
+      channelInviteV1(user3.authUserId, channel3.channelId + 3, user3.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+  test("invalid authUserId test 1", () => {
+    expect(
+      channelInviteV1(user1.authUserId + 4, channel3.channelId, user2.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+  test("invalid authUserId test 2", () => {
+    expect(
+      channelInviteV1(user3.authUserId + 10, channel2.channelId, user1.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+  test("person invited does not exist test 1", () => {
+    expect(
+      channelInviteV1(user1.authUserId, channel1.channelId, user2.authUserId + 99)
+    ).toStrictEqual(ERROR);
+  });
+  test("person invited does not exist test 2", () => {
+    expect(
+      channelInviteV1(user3.authUserId, channel3.channelId, user1.authUserId + 99)
+    ).toStrictEqual(ERROR);
+  });
+  test("person invited already in channel test 1", () => {
+    channelJoinV1(user2.authUserId, channel1.channelId);
+    expect(channelJoinV1(user1.authUserId, channel1.channelId, user2.authUserId)).toStrictEqual(
+      ERROR
+    );
+  });
+  test("person invited already in channel test 1", () => {
+    channelJoinV1(user1.authUserId, channel2.channelId);
+    channelJoinV1(user3.authUserId, channel2.channelId);
+    expect(channelInviteV1(user2.authUserId, channel2.channelId, user3.authUserId)).toStrictEqual(
+      ERROR
+    );
+  });
+  test("person inviting is not in channel test 1", () => {
+    expect(
+      channelInviteV1(user1.authUserId, channel2.channelId, user3.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+  test("person inviting is not in channel test 2", () => {
+    expect(
+      channelInviteV1(user3.authUserId, channel2.channelId, user1.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test("Invite person to channel test 1", () => {
+    expect(
+      channelInviteV1(user1.authUserId, channel1.channelId, user3.authUserId)
+    ).toStrictEqual({
+      name: "Ketoprak",
+      isPublic: true,
+      ownerMembers: [
         {
-          uId: 'uId789'
-        }
-      ]
-    })
-    const result = channelInviteV1(validAuthUserId, validChannelId, validUId)
-
-    // Assert that the function returns an empty object
-    expect(result).toEqual({})
-    setData({})
-  })
-
-  test('returns an object with "error" key if authUserId does not exist', () => {
-    // Set up mock functions for checkAuthUserIdExists, checkChannelExistsByChannelId, and checkUserExistsByUId
-    const checkAuthUserIdExists = jest.fn(() => false)
-    const checkChannelExistsByChannelId = jest.fn(() => true)
-    const checkUserExistsByUId = jest.fn(() => true)
-
-    // Invoke function with mock parameters and dependencies
-    const result = channelInviteV1(validAuthUserId, validChannelId, validUId, {
-      checkAuthUserIdExists,
-      checkChannelExistsByChannelId,
-      checkUserExistsByUId
-    })
-
-    // Assert that the function returns an object with "error" key
-    expect(result).toHaveProperty('error')
-  })
-
-  // Similar tests for other error cases, e.g. when channelId or uId do not exist
+          authUserId: user1.authUserId,
+          authemail: "kevins050324@gmail.com",
+          authfirstname: "Kevin",
+          authlastname: "Sutandi",
+          handlestring: "kevinsutandi",
+        },
+      ],
+      allMembers: [
+        {
+          authUserId: user1.authUserId,
+          authemail: "kevins050324@gmail.com",
+          authfirstname: "Kevin",
+          authlastname: "Sutandi",
+          handlestring: "kevinsutandi",
+        },
+        {
+          authUserId: user3.authUserId,
+          authemail: "z5352065@ad.unsw.edu.au",
+          authfirstname: "Zombie",
+          authlastname: "Ibrahim",
+          handlestring: "zombieibrahim",
+        },
+      ],
+    });
+  });
+  test("Join channel test 2", () => {
+    expect(
+      channelInviteV1(user2.authUserId, channel2.channelId, user1.authUserId)
+    ).toStrictEqual({
+      name: "Bakso",
+      isPublic: true,
+      ownerMembers: [
+        {
+          authUserId: user2.authUserId,
+          authemail: "someotheremail@gmail.com",
+          authfirstname: "Jonah",
+          authlastname: "Meggs",
+          handlestring: "jonahmeggs",
+        },
+      ],
+      allMembers: [
+        {
+          authUserId: user2.authUserId,
+          authemail: "someotheremail@gmail.com",
+          authfirstname: "Jonah",
+          authlastname: "Meggs",
+          handlestring: "jonahmeggs",
+        },
+        {
+          authUserId: user1.authUserId,
+          authemail: "kevins050324@gmail.com",
+          authfirstname: "Kevin",
+          authlastname: "Sutandi",
+          handlestring: "kevinsutandi",
+        },
+      ],
+    });
+  });
 });
+
 
 describe("testing channelMessagesV1 (ALL INVALID CASES)", () => {
   let user1, user2, user3;
