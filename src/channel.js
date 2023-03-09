@@ -57,6 +57,20 @@ export function isUser(authUserId) {
 }
 
 /**
+  * Finds the user object based on the given userId
+  * 
+  * @param {number} userId - the authenticated user Id
+  * @returns {undefined} - returns undefined if the user isnt in the dataStore
+  * @returns {user} - returns user object if the user is in the dataStore
+  * 
+*/
+export function findUser(userId) {
+  const data = getData();
+  return data.users.find((a) => a.authUserId === userId);
+}
+
+
+/**
  *
  *
  * @param {number} authUserId - The authenticated user Id
@@ -206,9 +220,102 @@ export function channelJoinV1(authUserId, channelId) {
   return {};
 }
 
-function channelInviteV1(authUserId, channelId, uId) {
-  return {};
+
+function checkChannelExistsByChannelId(channelId) {
+  const channels = getData().channels
+
+  let channel_exists = false
+
+  if (channels) {
+    channels.forEach(channel => {
+      if (channel.channelId === channelId) {
+        channel_exists = true
+      }
+    })
+  }
+
+  return channel_exists
 }
+
+function checkUserExistsByUId(uId) {
+  const users = getData().users
+
+  let user_exists = false
+
+  if (users) {
+    users.forEach(user => {
+      if (user.uId === uId) {
+        user_exists = true
+      }
+    })
+  }
+
+  return user_exists
+}
+
+function checkAuthUserIdExists(authUserId) {
+  const channels = getData().channels
+
+  let user_exists = false
+
+  if (channels) {
+    channels.forEach(channel => {
+      if (channel.allMembers.includes(authUserId)) {
+        user_exists = true
+      }
+    })
+  }
+
+  return user_exists
+}
+
+export function channelInviteV1(authUserId, channelId, uId) {
+  const data = getData();
+  
+  // Function for finding channelId in data store
+  function findChannel(channels) {
+    return channels.channelId === channelId;
+  }
+  // Error cases
+  if (!isChannel(channelId)) {
+    return {error: 'channelId does not refer to a valid channel'};
+  }
+  if (!isUser(uId)) {
+    return {error: 'uId does not refer to a valid user'};
+  }
+  const channel = data.channels.find(findChannel);
+
+  // Get all uIds in the channel
+  const allMemberIds = channel
+    ? channel.allMembers.map((member) => member.authUserId)
+    : null;
+
+  if (allMemberIds.includes(uId) === true) {
+    return {error: 'User already in the channel'};
+  }
+
+  if (isChannel(channelId) && allMemberIds.includes(authUserId) === false) {
+    return {error: 'You are not a channel member'};
+  }
+  if (!isUser(authUserId)) {
+    return {error: 'Invalid authUserId'}
+  }
+  // Finds the user based on uId
+  const user = findUser(uId);
+  const channelNum = data.channels.findIndex(
+    (channel) => channel.channelId === channelId
+  );
+  // Adds the user to the channel
+  data.channels[channelNum].allMembers.push({
+    authUserId: user.authUserId,
+    authemail: user.authemail,
+    authfirstname: user.authfirstname,
+    authlastname: user.authlastname,
+    handlestring: user.handlestring,
+  });
+  setData(data);
+}
+
 
 /**
  *
@@ -225,7 +332,7 @@ function channelInviteV1(authUserId, channelId, uId) {
  */
 export function channelDetailsV1(authUserId, channelId) {
   // Gets the data
-  const data = getData();
+  const data = getData()
   // If channelId doesn't refer to a valid channel,
   // returns error
   if (!isChannel(channelId)) {
@@ -235,7 +342,7 @@ export function channelDetailsV1(authUserId, channelId) {
   else if (!isUser(authUserId)) {
     return { error: "Invalid authUserId" };
   }
-  const channelObj = findChannel(channelId);
+  const channelObj = findChannel(channelId)
   // If the user is not a member of the channel
   if (!channelObj.allMembers.some((a) => a.authUserId === authUserId)) {
     return { error: authUserId + " is not a member of the channel" };

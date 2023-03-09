@@ -2,7 +2,21 @@ import validator from "validator";
 import { getData, setData } from "./dataStore.js";
 
 export function authLoginV1(email, password) {
-  return { authUserId: 1 };
+  const data = getData()
+
+  let correctUser;
+  for (let user of data.users) {
+    if (email === user.authemail && password === user.authpw) {
+      correctUser = user;
+    }
+    else if (email === user.authemail && password !== user.authpw) {
+      return {error: 'Password is not correct'}
+    }
+  }
+  if (correctUser !== undefined) {
+    return { authUserId: correctUser.authUserId };
+  }
+  return { error: 'Email entered does not belong to a user' };
 }
 
 export function authRegisterV1(email, password, nameFirst, nameLast) {
