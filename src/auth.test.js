@@ -4,7 +4,7 @@
 // email not matched;
 // password not correct
 
-import { authRegisterV1 } from "./auth.js";
+import { authRegisterV1, authLoginV1 } from "./auth.js";
 import { clearV1 } from "./other";
 const ERROR = { error: expect.any(String) };
 const IDPASS = { authUserId: expect.any(Number) };
@@ -113,3 +113,19 @@ describe("testing authRegisterV1", () => {
     ).toStrictEqual(ERROR);
   });
 });
+
+describe('authLoginV1', () => {
+  const validEmail = 'test@example.com'
+  const validPassword = 'password123'
+
+  test('returns an object with "authUserId" key if email and password match', () => {
+    const result = authLoginV1(validEmail, validPassword)
+    expect(result).toHaveProperty('authUserId')
+  })
+
+  test('returns an object with "error" key if email or password does not match', () => {
+    const result = authLoginV1(validEmail, 'invalidpassword')
+    expect(result).toHaveProperty('error')
+  })
+});
+
