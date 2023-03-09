@@ -1,26 +1,30 @@
-import { authLoginV1, authRegisterV1 } from "./auth";
+import { authRegisterV1 } from "./auth";
 
 import { userProfileV1 } from "./users";
 
-import { getData, setData } from "./dataStore";
+import { clearV1 } from "./other"
+
 
 const ERROR = { error: expect.any(String) };
 
 describe("userProfileV1 iteration 1 testing", () => {
   let user, user2;
+  beforeEach(() => {
+    clearV1();
+    user = authRegisterV1(
+      "onlyfortestttt06@gmail.com",
+      "testpw0005",
+      "Jonah",
+      "Meggs"
+    );
+    user2 = authRegisterV1(
+      "testing12347@gmail.com",
+      "hello2883",
+      "Almina",
+      "Kova"
+    );
+  });
 
-  user = authRegisterV1(
-    "onlyfortestttt06@gmail.com",
-    "testpw0005",
-    "Jonah",
-    "Meggs"
-  );
-  user2 = authRegisterV1(
-    "testing12347@gmail.com",
-    "hello2883",
-    "Almina",
-    "Kova"
-  );
 
   test("invalid authUserId", () => {
     expect(userProfileV1(user.authUserId + 1)).toStrictEqual(ERROR);

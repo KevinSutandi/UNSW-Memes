@@ -10,12 +10,10 @@ export function userProfileV1(authUserId, uId) {
   const data = getData();
   // function to check user is valid and correct
   if (!isUser(authUserId)) {
-    console.log(authUserId);
     return { error: "Invalid authUserId" };
   }
   // need to get a thing to check zid and make sure it is valid
   if (!isUser(uId)) {
-    console.log(uId);
     return { error: "Invalid uId" };
   }
 
