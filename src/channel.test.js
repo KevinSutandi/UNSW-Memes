@@ -13,7 +13,8 @@ import {
   channelJoinV1,
   channelInviteV1,
   channelMessagesV1,
-  channelDetailsV1
+  channelDetailsV1,
+  channelInviteV1
 } from "./channel"
 
 import {clearV1} from "./other"
@@ -67,4 +68,55 @@ describe('channelDetailsV1 Iteration 1 tests', () => {
     });
   });
 });
+
+describe('channelInviteV1', () => {
+  const validAuthUserId = 'authUserId123'
+  const validChannelId = 'channelId456'
+  const validUId = 'uId789'
+
+  test('returns an empty object if authUserId, channelId, and uId all exist', () => {
+    // Set up mock functions for checkAuthUserIdExists, checkChannelExistsByChannelId, and checkUserExistsByUId
+    const checkAuthUserIdExists = jest.fn(() => true)
+    const checkChannelExistsByChannelId = jest.fn(() => true)
+    const checkUserExistsByUId = jest.fn(() => true)
+
+    // Set up mock data for getData().channels
+    const channels = [
+      { channelId: validChannelId, allMembers: [validAuthUserId] }
+    ]
+    const getData = jest.fn(() => ({ channels }))
+
+    // Invoke function with mock parameters and dependencies
+    const result = channelInviteV1(validAuthUserId, validChannelId, validUId, {
+      checkAuthUserIdExists,
+      checkChannelExistsByChannelId,
+      checkUserExistsByUId,
+      getData
+    })
+
+    // Assert that the function returns an empty object
+    expect(result).toEqual({})
+  })
+
+  test('returns an object with "error" key if authUserId does not exist', () => {
+    // Set up mock functions for checkAuthUserIdExists, checkChannelExistsByChannelId, and checkUserExistsByUId
+    const checkAuthUserIdExists = jest.fn(() => false)
+    const checkChannelExistsByChannelId = jest.fn(() => true)
+    const checkUserExistsByUId = jest.fn(() => true)
+
+    // Invoke function with mock parameters and dependencies
+    const result = channelInviteV1(validAuthUserId, validChannelId, validUId, {
+      checkAuthUserIdExists,
+      checkChannelExistsByChannelId,
+      checkUserExistsByUId
+    });
+
+    // Assert that the function returns an object with "error" key
+    expect(result).toHaveProperty('error')
+  });
+
+  // Similar tests for other error cases, e.g. when channelId or uId do not exist
+});
+
+
 
