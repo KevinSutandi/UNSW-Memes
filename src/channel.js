@@ -1,22 +1,58 @@
 import { getData, setData } from './dataStore';
 
+/**
+ * @typedef {Object} channel - object containing channel's information
+ * @property {number} channelId - the authenticated channel Id
+ * @property {string} name - the channel's name
+ * @property {boolean} isPublic - whether the channel is private or not
+ * @property {user[]} ownerMembers - the owners of the channel
+ * @property {user[]} allMembers - members of the channel
+ * @property {string[]} messages - messages in the channel
+ * @property {number} start - the start of the message
+ * @property {number} end - the end of the message
+*/
+
+
+
 // Helper functions
-// Determines whether the channel is in the database or not
-// Returns bool
+/**
+  * Determines whether a channel is a valid channel
+  * by checking through channels array in the 
+  * dataStore.js
+  * 
+  * @param {number} channelId - The authenticated channel Id
+  * @returns {boolean} - true if the channel is in the dataStore,
+  *                    = false if the channel isnt in the dataStore
+  * 
+*/
 export function isChannel(channelId) {
   const data = getData();
   return data.channels.some((a) => a.channelId === channelId);
 }
 
-// Finds the channel obj based on channelId
-// Returns obj
+/**
+  * Finds the channel object based on the given channelId
+  * 
+  * @param {number} channelId - The authenticated channel Id
+  * @returns {undefined} - if the function cannot find the channel
+  * @returns {channel}  - returns channel object if the channel is found
+  * 
+*/
 export function findChannel(channelId) {
   const data = getData();
   return data.channels.find((a) => a.channelId === channelId);
 }
 
-// Determines whether the user is in the database or not
-// Returns bool
+/**
+  * Determines whether a user is a valid user
+  * by checking through users array in the 
+  * dataStore.js
+  * 
+  * @param {number} userId - the authenticated userId
+  * @returns {boolean} - true if the channel is in dataStore
+  *                    = false if it is not
+  * 
+*/
 export function isUser(authUserId) {
   const data = getData();
   return data.users.some((a) => a.authUserId === authUserId);
@@ -177,6 +213,19 @@ function channelInviteV1(authUserId, channelId, uId) {
   return {};
 }
 
+/**
+ *
+ *
+ * @param {number} authUserId - The authenticated user Id
+ * @param {number} channelId - The channel Id to join
+ *
+ * @returns {name: string, isPublic: boolean, ownerMembers: string, allMembers: string} - returns the details
+ * of the channel when successful
+ * @returns {error : 'error message'} - returns an error when
+ *                                    = channelId is invalid
+ *                                    = User is not a member of the channel
+ *                                    = User is invalid
+ */
 export function channelDetailsV1(authUserId, channelId) {
   // Gets the data
   const data = getData();
