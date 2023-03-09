@@ -9,11 +9,11 @@ export function authLoginV1(email, password) {
     if (email === user.authemail && password === user.authpw) {
       correctUser = user;
     }
-    else if (email === user.authemail && password != user.authpw) {
+    else if (email === user.authemail && password !== user.authpw) {
       return {error: 'Password is not correct'}
     }
   }
-  if (correctUser != undefined) {
+  if (correctUser !== undefined) {
     return { authUserId: correctUser.authUserId };
   }
   return { error: 'Email entered does not belong to a user' };
