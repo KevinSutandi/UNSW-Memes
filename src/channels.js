@@ -85,13 +85,18 @@ export function channelsListV1(authUserId) {
   return userChannels;
 }
 
-function channelsListAllV1(authUserId) {
+export function channelsListAllV1(authUserId) {
+  const data = getData();
+  // If the given userId is invalid
+  if (!isUser(authUserId)) {
+    return {error: 'Invalid authUserId'};
+  }
   return {
-    channels: [
-      {
-        channelId: 1,
-        name: 'My Channel',
-      },
-    ],
+    channels: data.channels.map(a => ({
+    channelId: a.channelId,
+    name: a.name,
+    })),
   };
 }
+
+
