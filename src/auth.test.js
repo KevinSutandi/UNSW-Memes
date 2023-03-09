@@ -4,8 +4,8 @@
 // email not matched;
 // password not correct
 
-import { authRegisterV1, authLoginV1 } from "./auth.js";
-import { clearV1 } from "./other";
+import { authLoginV1, authRegisterV1 } from "./auth.js";
+import { clearV1 } from "./other.js";
 const ERROR = { error: expect.any(String) };
 const IDPASS = { authUserId: expect.any(Number) };
 

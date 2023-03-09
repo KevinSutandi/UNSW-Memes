@@ -1,4 +1,4 @@
-import { getData, setData } from "./dataStore";
+import { getData, setData } from "./dataStore.js";
 
 // check if authUserId exists
 export function isUser(userId) {

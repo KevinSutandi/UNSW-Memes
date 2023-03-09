@@ -1,9 +1,8 @@
-import { authRegisterV1 } from "./auth";
+import { authRegisterV1 } from "./auth.js";
 
-import { userProfileV1 } from "./users";
+import { userProfileV1 } from "./users.js";
 
-import { clearV1 } from "./other"
-
+import { clearV1 } from "./other.js";
 
 const ERROR = { error: expect.any(String) };
 
@@ -24,7 +23,6 @@ describe("userProfileV1 iteration 1 testing", () => {
       "Kova"
     );
   });
-
 
   test("invalid authUserId", () => {
     expect(userProfileV1(user.authUserId + 1)).toStrictEqual(ERROR);
