@@ -57,6 +57,19 @@ export function isUser(authUserId) {
 }
 
 /**
+  * Finds the user object based on the given userId
+  * 
+  * @param {number} userId - the authenticated user Id
+  * @returns {undefined} - returns undefined if the user isnt in the dataStore
+  * @returns {user} - returns user object if the user is in the dataStore
+  * 
+*/
+export function findUser(userId) {
+  const data = getData();
+  return data.users.find((a) => a.authUserId === userId);
+}
+
+/**
  *
  *
  * @param {number} authUserId - The authenticated user Id
@@ -257,26 +270,37 @@ function checkAuthUserIdExists(authUserId) {
 }
 
 export function channelInviteV1(authUserId, channelId, uId) {
-  if (!checkAuthUserIdExists(authUserId) || !checkChannelExistsByChannelId(channelId) || !checkUserExistsByUId(uId)) {
-    return { error: 'error' }
+  const data = getData();
+  // Error cases
+  if (!isChannel(channelId)) {
+    return {error: 'channelId does not refer to a valid channel'};
   }
-  const channels = getData().channels
-  let ok = false
-  if (channels === undefined) {
-    return { error: 'error' }
+  else if (!isUser(uId)) {
+    return {error: 'uId does not refer to a valid user'};
   }
-  channels.forEach(channel => {
-    if (channel.channelId === channelId) {
-      if (channel.allMembers.includes(authUserId)) {
-        channel.allMembers.push(uId)
-        ok = true
-      }
-    }
-  })
-
-  if (ok)
-    return {}
-  return { error: 'error' }
+  else if (data.channels.allMembers.some((a) => a.authUserId === uId)) {
+    return {error: 'User already in the channel'};
+  }
+  else if (isChannel(channelId) && !data.channels.allMembers.some((a) => a.authUserId === authUserId)) {
+    return {error: 'You are not a channel member'};
+  }
+  else if (!isUser(authUserId)) {
+    return {error: 'Invalid authUserId'}
+  }
+  // Finds the user based on uId
+  const user = findUser(uId);
+  const channelNum = data.channels.findIndex(
+    (channel) => channel.channelId === channelId
+  );
+  // Adds the user to the channel
+  data.channels[channelNum].allMembers.push({
+    authUserId: user.authUserId,
+    authemail: user.authemail,
+    authfirstname: user.authfirstname,
+    authlastname: user.authlastname,
+    handlestring: user.handlestring,
+  });
+  setData(data);
 }
 
 
