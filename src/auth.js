@@ -2,8 +2,17 @@ import { validator } from "validator";
 import { getData, setData } from "./dataStore";
 
 export function authLoginV1(email, password) {
-  return { authUserId: 1 };
+  const users = getData().users
+
+  users.forEach(user => {
+    if (user.email === email && user.password === password) {
+      return { authUserId: user.authUserId }
+    }
+  })
+
+  return { error: 'error' }
 }
+
 
 export function authRegisterV1(email, password, nameFirst, nameLast) {
   const dataStore = getData();
@@ -74,3 +83,5 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
 
   return { authUserId: authId };
 }
+
+

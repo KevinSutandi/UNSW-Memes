@@ -125,7 +125,8 @@ describe('authLoginV1', () => {
 
   test('returns an object with "error" key if email or password does not match', () => {
     const result = authLoginV1(validEmail, 'invalidpassword')
-    expect(result).toHaveProperty('error')
+    expect(result).toStrictEqual(ERROR);
   })
 });
+
 
