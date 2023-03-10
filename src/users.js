@@ -35,9 +35,12 @@ export function isUser(userId) {
   * 
   * @param {number} authUserId - the authenticated user Id
   * @param {number} uId - User's unique Id
+  * 
   * @returns {error: 'error message'} - if the authUserId is not in the dataStore and invalid
   *                                   - if the uId is not in the dataStore and invalid
-  * @returns {{user}} - returns the user object and its associated data if it exists in the dataStore
+  * @returns {{authUserId:number, authemail:string, 
+  * authfirstname:string, authlastname:string, handlestring:string}} - returns 
+  * the user object and its associated data if it exists in the dataStore
   * 
 */
 export function userProfileV1(authUserId, uId) {
