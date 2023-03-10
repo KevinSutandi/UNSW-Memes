@@ -19,6 +19,16 @@ export function authLoginV1(email, password) {
   return { error: 'Email entered does not belong to a user' };
 }
 
+/** 
+ * @param {string} email - the email address
+ * @param {string} password - the password
+ * @param {string} nameFirst - the firstname
+ * @param {string} nameLast - the lastname
+ * @returns {error: error message } - different error strings for different situations 
+ * @returns { authUserId: number } - new authorID who registered
+ * 
+*/
+
 export function authRegisterV1(email, password, nameFirst, nameLast) {
   const dataStore = getData();
 
