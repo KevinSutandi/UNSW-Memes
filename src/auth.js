@@ -1,6 +1,13 @@
 import validator from "validator";
 import { getData, setData } from "./dataStore.js";
 
+/** 
+ * @param {number} userId - the authenticated user Id
+ * @returns {string} - different error strings for different situations
+ *                    
+ * 
+*/
+
 export function authLoginV1(email, password) {
   const data = getData()
 
@@ -18,6 +25,16 @@ export function authLoginV1(email, password) {
   }
   return { error: 'Email entered does not belong to a user' };
 }
+
+/** 
+ * @param {string} email - the email address
+ * @param {string} password - the password
+ * @param {string} nameFirst - the firstname
+ * @param {string} nameLast - the lastname
+ * @returns {string} - different error strings for different situations 
+ * @returns {object} - new authorID who registered
+ * 
+*/
 
 export function authRegisterV1(email, password, nameFirst, nameLast) {
   const dataStore = getData();
