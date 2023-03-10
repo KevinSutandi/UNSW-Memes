@@ -84,11 +84,11 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
 
   dataStore.users.push({
     authUserId: authId,
-    handlestring: handlestring,
-    authemail: email,
-    authpw: password,
-    authfirstname: nameFirst,
-    authlastname: nameLast,
+    handleStr: handlestring,
+    email: email,
+    password: password,
+    nameFirst: nameFirst,
+    nameLast: nameLast,
     isGlobalOwner: isGlobalOwner,
   });
   setData(dataStore);
