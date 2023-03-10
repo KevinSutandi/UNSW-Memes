@@ -1,5 +1,5 @@
-import validator from "validator";
-import { getData, setData } from "./dataStore.js";
+import validator from 'validator';
+import { getData, setData } from './dataStore.js';
 
 export function authLoginV1(email, password) {
   const data = getData();
@@ -9,13 +9,13 @@ export function authLoginV1(email, password) {
     if (email === user.email && password === user.password) {
       correctUser = user;
     } else if (email === user.email && password !== user.password) {
-      return { error: "Password is not correct" };
+      return { error: 'Password is not correct' };
     }
   }
   if (correctUser !== undefined) {
     return { authUserId: correctUser.authUserId };
   }
-  return { error: "Email entered does not belong to a user" };
+  return { error: 'Email entered does not belong to a user' };
 }
 
 /**
@@ -32,24 +32,24 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
   const dataStore = getData();
 
   if (validator.isEmail(email) !== true) {
-    return { error: "Please enter valid email!" };
+    return { error: 'Please enter valid email!' };
   }
 
   const emailfound = dataStore.users.find((item) => item.email === email);
   if (emailfound !== undefined) {
-    return { error: "This email address is already used!" };
+    return { error: 'This email address is already used!' };
   }
 
   if (password.length < 6) {
-    return { error: "Your password is too short!" };
+    return { error: 'Your password is too short!' };
   }
 
   if (nameFirst.length > 50) {
-    return { error: "Your first name is too long" };
+    return { error: 'Your first name is too long' };
   }
 
   if (nameLast.length > 50) {
-    return { error: "Your last name is too long" };
+    return { error: 'Your last name is too long' };
   }
 
   let authId = Math.floor(Math.random() * 10000000);
@@ -63,7 +63,7 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
 
   handlestring = handlestring.toLowerCase();
   const regpattern = /[^a-z0-9]/g;
-  handlestring = handlestring.replace(regpattern, "");
+  handlestring = handlestring.replace(regpattern, '');
   // handlestring = handlescleartring.replace(/\W/g, "");
 
   if (handlestring.length > 20) {
