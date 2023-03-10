@@ -1,17 +1,14 @@
-import { getData, setData } from "./dataStore.js";
+import { getData, setData } from './dataStore.js';
 
 // HELPER FUNCTIONS
 
 /**
- * @typedef {Object} user - object containing user information
- * @property {number} authUserId - the authenticated user Id
- * @property {number} age - age of the user
- * @property {string} handlestring - user's handlestring
- * @property {string} authemail - user's email
- * @property {string} authpw - user's password
- * @property {string} authfirstname - user's first name
- * @property {string} authlastname - user's last name
- * @property {number} isGlobalOwner - determines whether a user is a global owner
+ * @typedef {Object} user - object containing user information to be retuned
+ * @property {number} uId - user's unique id
+ * @property {string} handleStr - user's handlestring
+ * @property {string} email - user's email
+ * @property {string} nameFirst - user's first name
+ * @property {string} nameLast - user's last name
  */
 
 /**
@@ -60,11 +57,11 @@ export function channelsCreateV1(authUserId, name, isPublic) {
   const data = getData();
   // Returns error if name's length is less than 1 or more than 20
   if (name.length < 1 || name.length > 20) {
-    return { error: "Invalid name length" };
+    return { error: 'Invalid name length' };
   }
   // Returns error if the given userId is invalid
   if (!isUser(authUserId)) {
-    return { error: "Invalid authUserId" };
+    return { error: 'Invalid authUserId' };
   }
   let newId = Math.floor(Math.random() * 10000);
   // Finds the user data
@@ -102,26 +99,24 @@ export function channelsCreateV1(authUserId, name, isPublic) {
   };
 }
 
-
-
 /**
-  * Provides an array of all channels that an authorised 
-  * user is a member of by accessing the channel information 
-  * from data.channels. Then it returns the channelId
-  * and name.
-  * 
-  * @param {number} authUserId - the authenticated user Id
-  * 
-  * @returns {error: 'error message'} - if the given authUserId is invalid
-  * @returns {{channelId: number, name: string}} - returns the details of the channel
-  * when successful
-  * 
-*/
+ * Provides an array of all channels that an authorised
+ * user is a member of by accessing the channel information
+ * from data.channels. Then it returns the channelId
+ * and name.
+ *
+ * @param {number} authUserId - the authenticated user Id
+ *
+ * @returns {error: 'error message'} - if the given authUserId is invalid
+ * @returns {{channelId: number, name: string}} - returns the details of the channel
+ * when successful
+ *
+ */
 export function channelsListV1(authUserId) {
   const data = getData();
 
   if (!isUser(authUserId)) {
-    return { error: "Invalid authUserId" };
+    return { error: 'Invalid authUserId' };
   }
 
   // need to access our data and pull out all of the channels linked to user
@@ -146,7 +141,7 @@ export function channelsListAllV1(authUserId) {
   const data = getData();
   // If the given userId is invalid
   if (!isUser(authUserId)) {
-    return { error: "Invalid authUserId" };
+    return { error: 'Invalid authUserId' };
   }
   return {
     channels: data.channels.map((a) => ({
