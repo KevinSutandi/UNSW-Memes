@@ -1,13 +1,6 @@
 import validator from "validator";
 import { getData, setData } from "./dataStore.js";
 
-/** 
- * @param {number} userId - the authenticated user Id
- * @returns {string} - different error strings for different situations
- *                    
- * 
-*/
-
 export function authLoginV1(email, password) {
   const data = getData()
 
@@ -31,8 +24,8 @@ export function authLoginV1(email, password) {
  * @param {string} password - the password
  * @param {string} nameFirst - the firstname
  * @param {string} nameLast - the lastname
- * @returns {string} - different error strings for different situations 
- * @returns {object} - new authorID who registered
+ * @returns {error: error message } - different error strings for different situations 
+ * @returns { authUserId: number } - new authorID who registered
  * 
 */
 
