@@ -2,32 +2,31 @@ import validator from "validator";
 import { getData, setData } from "./dataStore.js";
 
 export function authLoginV1(email, password) {
-  const data = getData()
+  const data = getData();
 
   let correctUser;
   for (let user of data.users) {
     if (email === user.authemail && password === user.authpw) {
       correctUser = user;
-    }
-    else if (email === user.authemail && password !== user.authpw) {
-      return {error: 'Password is not correct'}
+    } else if (email === user.authemail && password !== user.authpw) {
+      return { error: "Password is not correct" };
     }
   }
   if (correctUser !== undefined) {
     return { authUserId: correctUser.authUserId };
   }
-  return { error: 'Email entered does not belong to a user' };
+  return { error: "Email entered does not belong to a user" };
 }
 
-/** 
+/**
  * @param {string} email - the email address
  * @param {string} password - the password
  * @param {string} nameFirst - the firstname
  * @param {string} nameLast - the lastname
- * @returns {error: error message } - different error strings for different situations 
+ * @returns {error: error message } - different error strings for different situations
  * @returns { authUserId: number } - new authorID who registered
- * 
-*/
+ *
+ */
 
 export function authRegisterV1(email, password, nameFirst, nameLast) {
   const dataStore = getData();
@@ -72,14 +71,12 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
     handlestring = handlestring.substring(0, 20); // exclusive
   }
 
-  const handlefound = dataStore.users.find(
-    (item) => item.handlestring === handlestring
-  );
-  if (handlefound !== undefined) {
-    for (let i = 0; handlefound === undefined; i++) {
-      handlestring = handlestring + num.toString(i);
-    }
+  const handleMap = dataStore.users.map((user) => user.handlestring);
+
+  for (let i = 0; handleMap.includes(handlestring); i++) {
+    handlestring = `${handlestring}${i}`;
   }
+
   let isGlobalOwner = 2;
   if (dataStore.users.length === 0) {
     isGlobalOwner = 1;
