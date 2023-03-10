@@ -1,19 +1,41 @@
-import { validator } from "validator";
-import { getData, setData } from "./dataStore";
+import validator from "validator";
+import { getData, setData } from "./dataStore.js";
 
 export function authLoginV1(email, password) {
-  return { authUserId: 1 };
+  const data = getData();
+
+  let correctUser;
+  for (let user of data.users) {
+    if (email === user.email && password === user.password) {
+      correctUser = user;
+    } else if (email === user.email && password !== user.password) {
+      return { error: "Password is not correct" };
+    }
+  }
+  if (correctUser !== undefined) {
+    return { authUserId: correctUser.authUserId };
+  }
+  return { error: "Email entered does not belong to a user" };
 }
+
+/**
+ * @param {string} email - the email address
+ * @param {string} password - the password
+ * @param {string} nameFirst - the firstname
+ * @param {string} nameLast - the lastname
+ * @returns {error: error message } - different error strings for different situations
+ * @returns { authUserId: number } - new authorID who registered
+ *
+ */
 
 export function authRegisterV1(email, password, nameFirst, nameLast) {
   const dataStore = getData();
 
-  const validator = require("validator");
   if (validator.isEmail(email) !== true) {
     return { error: "Please enter valid email!" };
   }
 
-  const emailfound = dataStore.users.find((item) => item.authemail === email);
+  const emailfound = dataStore.users.find((item) => item.email === email);
   if (emailfound !== undefined) {
     return { error: "This email address is already used!" };
   }
@@ -42,20 +64,18 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
   handlestring = handlestring.toLowerCase();
   const regpattern = /[^a-z0-9]/g;
   handlestring = handlestring.replace(regpattern, "");
-  // handlestring = handlestring.replace(/\W/g, "");
+  // handlestring = handlescleartring.replace(/\W/g, "");
 
   if (handlestring.length > 20) {
     handlestring = handlestring.substring(0, 20); // exclusive
   }
 
-  const handlefound = dataStore.users.find(
-    (item) => item.handlestring === handlestring
-  );
-  if (handlefound !== undefined) {
-    for (let i = 0; handlefound === undefined; i++) {
-      handlestring = handlestring + num.toString(i);
-    }
+  const handleMap = dataStore.users.map((user) => user.handleStr);
+
+  for (let i = 0; handleMap.includes(handlestring); i++) {
+    handlestring = `${handlestring}${i}`;
   }
+
   let isGlobalOwner = 2;
   if (dataStore.users.length === 0) {
     isGlobalOwner = 1;
@@ -63,11 +83,11 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
 
   dataStore.users.push({
     authUserId: authId,
-    handlestring: handlestring,
-    authemail: email,
-    authpw: password,
-    authfirstname: nameFirst,
-    authlastname: nameLast,
+    handleStr: handlestring,
+    email: email,
+    password: password,
+    nameFirst: nameFirst,
+    nameLast: nameLast,
     isGlobalOwner: isGlobalOwner,
   });
   setData(dataStore);
