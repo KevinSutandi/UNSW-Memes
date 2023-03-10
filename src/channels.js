@@ -102,6 +102,21 @@ export function channelsCreateV1(authUserId, name, isPublic) {
   };
 }
 
+
+
+/**
+  * Provides an array of all channels that an authorised 
+  * user is a member of by accessing the channel information 
+  * from data.channels. Then it returns the channelId
+  * and name.
+  * 
+  * @param {number} authUserId - the authenticated user Id
+  * 
+  * @returns {error: 'error message'} - if the given authUserId is invalid
+  * @returns {{channelId: number, name: string}} - returns the details of the channel
+  * when successful
+  * 
+*/
 export function channelsListV1(authUserId) {
   const data = getData();
 
