@@ -119,3 +119,45 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
       });
   });*/
 });
+
+describe ('channelsListV1 Iteration 1 test', () => {
+  let user, user2;
+  let channel, channel2, channel3;
+  beforeEach(() => {
+    clearV1();
+    user = authRegisterV1('kevins050324@gmail.com', 'kevin1001', 'Kevin', 'Sutandi');
+    user2 = authRegisterV1('testing123445@gmail.com', 'mina282', 'Mina', 'Kov');
+    channel = channelsCreateV1(user.authUserId, 'general', false);
+    channel2 = channelsCreateV1(user.authUserId, 'memes', false);
+    channel3 = channelsCreateV1(user2.authUserId, "Jonah's personal", true);
+  });
+
+  test('authUserId is invalid', () => {
+    expect(channelsListV1(user.authUserId + 1)).toStrictEqual(ERROR);
+  })
+
+  test('valid authUserId, multiple users created in different channels', () => {
+    expect(channelsListV1(user.authUserId)).toStrictEqual({
+      channels: [
+        {
+          channelId: channel.channelId,
+          name: 'general',
+        },
+        {
+          channelId: channel2.channelId,
+          name: 'memes',
+        },
+      ]}) 
+    })
+
+    
+  test('authUserId is valid, one channel created', () => {
+    expect(channelsListV1(user2.authUserId)).toStrictEqual({
+      channels: [
+        { 
+          channelId: channel3.channelId,
+          name: "Jonah's personal",
+        },
+      ]})
+    })
+  })

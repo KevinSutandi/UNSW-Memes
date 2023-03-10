@@ -45,12 +45,10 @@ export function userProfileV1(authUserId, uId) {
   const data = getData();
   // Check that authUserId is valid
   if (!isUser(authUserId)) {
-    console.log(authUserId);
     return { error: "Invalid authUserId" };
   }
   // Check that uId is valid
   if (!isUser(uId)) {
-    console.log(uId);
     return { error: "Invalid uId" };
   }
   // Storing the user's data in an object to be returned
