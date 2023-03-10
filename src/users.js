@@ -1,16 +1,16 @@
-import { getData, setData } from "./dataStore";
+import { getData, setData } from "./dataStore.js";
 
 // HELPER FUNCTIONS
 
 /**
- * @typedef {Object} user - object containing user data
- * @property {number} age - users age
- * @property {number} authUserId - authenticated user Id
- * @property {string} authemail - user's email address
+ * @typedef {Object} user - object containing user information
+ * @property {number} authUserId - the authenticated user Id
+ * @property {number} age - age of the user
+ * @property {string} handlestring - user's handlestring
+ * @property {string} authemail - user's email
  * @property {string} authpw - user's password
  * @property {string} authfirstname - user's first name
  * @property {string} authlastname - user's last name
- * @property {string} handlestring - user's associated handlestring
  * @property {number} isGlobalOwner - determines whether a user is a global owner
  */
 
@@ -39,9 +39,9 @@ export function isUser(userId) {
   * @returns {error: 'error message'} - if the authUserId is not in the dataStore and invalid
   *                                   - if the uId is not in the dataStore and invalid
   * @returns {{authUserId:number, authemail:string, 
-  * authfirstname:string, authlastname:string, handlestring:string}} - returns 
-  * the user object and its associated data if it exists in the dataStore
-  * 
+* authfirstname:string, authlastname:string, handlestring:string}} - returns 
+* the user object and its associated data if it exists in the dataStore
+* 
 */
 export function userProfileV1(authUserId, uId) {
   // Gets user from the dataStore
@@ -58,10 +58,10 @@ export function userProfileV1(authUserId, uId) {
   const userNum = data.users.findIndex((a) => a.authUserId === uId);
   // If both conditions are met, return the userNum object information
   return {
-    authUserId: data.users[userNum].authId,
-    authemail: data.users[userNum].authemail,
-    authfirstname: data.users[userNum].authfirstname,
-    authlastname: data.users[userNum].authlastname,
-    handlestring: data.users[userNum].handlestring,
+    uId: data.users[userNum].authUserId,
+    email: data.users[userNum].email,
+    nameFirst: data.users[userNum].nameFirst,
+    nameLast: data.users[userNum].nameLast,
+    handleStr: data.users[userNum].handleStr,
   };
 }
