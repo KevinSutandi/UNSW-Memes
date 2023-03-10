@@ -42,21 +42,21 @@ describe("userProfileV1 iteration 1 testing", () => {
 
   test("valid input", () => {
     expect(userProfileV1(user2.authUserId, user.authUserId)).toStrictEqual({
-      authUserId: user.authId,
-      authemail: "onlyfortestttt06@gmail.com",
-      authfirstname: "Jonah",
-      authlastname: "Meggs",
-      handlestring: "jonahmeggs",
+      uId: user.authUserId,
+      email: "onlyfortestttt06@gmail.com",
+      nameFirst: "Jonah",
+      nameLast: "Meggs",
+      handleStr: "jonahmeggs",
     });
   });
 
   test("valid input 2", () => {
     expect(userProfileV1(user.authUserId, user2.authUserId)).toStrictEqual({
-      authUserId: user2.authId,
-      authemail: "testing12347@gmail.com",
-      authfirstname: "Almina",
-      authlastname: "Kova",
-      handlestring: "alminakova",
+      uId: user2.authUserId,
+      email: "testing12347@gmail.com",
+      nameFirst: "Almina",
+      nameLast: "Kova",
+      handleStr: "alminakova",
     });
   });
 });

@@ -73,6 +73,7 @@ describe("channelsCreateV1 Iteration 1 tests", () => {
   let user, user2, user3;
   let channel, channel2;
   beforeEach(() => {
+    clearV1();
     user = authRegisterV1(
       "onlyfortestttt06@gmail.com",
       "testpw0005",
@@ -109,35 +110,34 @@ describe("channelsCreateV1 Iteration 1 tests", () => {
     ).toStrictEqual(ERROR);
   });
 
-  /*test('valid input, with channelsDetailsV1', () => {
-    expect(channelDetailsV1(user.authUserId, channel.channelId)).toStrictEqual(
-      {
-        channelId: channel.channelId,
-        name: 'general',
-        isPublic: true,
-        ownerMembers: [
-          {
-            uId: user.authUserId,
-            email: 'kevins050324@gmail.com',
-            nameFirst: 'Kevin',
-            nameLast: 'Sutandi',
-            handlestr: 'kevinsutandi'
-          }
-        ],
-        allMembers: [
-          {
-            uId: user.authUserId,
-            email: 'kevins050324@gmail.com',
-            nameFirst: 'Kevin',
-            nameLast: 'Sutandi',
-            handlestr: 'kevinsutandi'
-          }
-        ],
-        messages: [],
-        start: 0,
-        end: 0
-      });
-  });*/
+  test("valid input, with channelsDetailsV1", () => {
+    channel = channelsCreateV1(user.authUserId, "general", false);
+    expect(channel).toStrictEqual({
+      channelId: expect.any(Number),
+    });
+    expect(channelDetailsV1(user.authUserId, channel.channelId)).toStrictEqual({
+      name: "general",
+      isPublic: false,
+      ownerMembers: [
+        {
+          uId: user.authUserId,
+          email: "onlyfortestttt06@gmail.com",
+          nameFirst: "Jonah",
+          nameLast: "Meggs",
+          handleStr: "jonahmeggs",
+        },
+      ],
+      allMembers: [
+        {
+          uId: user.authUserId,
+          email: "onlyfortestttt06@gmail.com",
+          nameFirst: "Jonah",
+          nameLast: "Meggs",
+          handleStr: "jonahmeggs",
+        },
+      ],
+    });
+  });
 });
 
 describe("channelsListV1 Iteration 1 test", () => {

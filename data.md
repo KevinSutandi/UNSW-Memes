@@ -2,25 +2,22 @@
 const data = {
   users: [
     {
-      uId: 34,
       authUserId: 3,
       email: "something@hmail.com",
       password: "Ilovedogs",
       nameFirst: "Bongo",
       nameLast: "Dongo",
-      handleStr: "bongodongo302",
-      isGlobalOwner: true,
+      handleStr: "bongodongo",
+      isGlobalOwner: 1,
     },
     {
-      uId: 69,
       authUserId: 8,
       email: "radu@gmail.com",
       password: "ILoveCats",
       nameFirst: "Trungo",
       nameLast: "Bonogo",
-      handleStr: "bongodongo302",
-      globalPermission: 2,
-      isGlobalOwner: false,
+      handleStr: "trungobonogo",
+      isGlobalOwner: 2,
     },
   ],
 
@@ -31,26 +28,26 @@ const data = {
       isPublic: true,
       ownerMembers: [
         {
-          uId: 34,
+          uId: 3,
           email: "something@hmail.com",
           nameFirst: "Bongo",
           nameLast: "Dongo",
-          handleStr: "bongodongo302",
+          handleStr: "bongodongo",
         },
       ],
       allMembers: [
         {
-          uId: 34,
+          uId: 3,
           email: "something@hmail.com",
           nameFirst: "Bongo",
           nameLast: "Dongo",
-          handleStr: "bongodongo302",
+          handleStr: "bongodongo",
         },
       ],
       messages: [
         {
           messageId: 2048,
-          uId: 34,
+          uId: 3,
           message: "Bongo Dog",
           timeSent: 1582426789,
         },
@@ -64,34 +61,27 @@ const data = {
       isPublic: false,
       ownerMembers: [
         {
-          uId: 34,
+          uId: 3,
           email: "something@hmail.com",
           nameFirst: "Bongo",
           nameLast: "Dongo",
-          handleStr: "bongodongo302",
+          handleStr: "bongodongo",
         },
       ],
       allMembers: [
         {
-          uId: 34,
+          uId: 3,
           email: "something@hmail.com",
           nameFirst: "Bongo",
           nameLast: "Dongo",
-          handleStr: "bongodongo302",
+          handleStr: "bongodongo",
         },
         {
-          uId: 12,
-          email: "kevin@hmail.com",
-          nameFirst: "kevin",
-          nameLast: "sut",
-          handleStr: "lmao233",
-        },
-        {
-          uId: 24,
-          email: "24@hmail.com",
-          nameFirst: "24",
-          nameLast: "24",
-          handleStr: "24",
+          uId: 8,
+          email: "radu@gmail.com",
+          nameFirst: "Trungo",
+          nameLast: "Bonogo",
+          handleStr: "trungobonogo",
         },
       ],
       messages: [
@@ -111,4 +101,4 @@ const data = {
 
 [Optional] short description:
 
-The information in data.md is used to store data according to user data or channel data (Not complete version just yet)
+The information in data.md is used to store data according to user data or channel data. Updated for iteration 1
