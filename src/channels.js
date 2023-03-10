@@ -112,7 +112,6 @@ export function channelsListV1(authUserId) {
   // need to access our data and pull out all of the channels linked to user
   const authUserIdToFind = authUserId;
   const userChannels = { channels: [] };
-  let channelNum = 0;
 
   data.channels.forEach((channel) => {
     const isUserInChannel = channel.allMembers.some(
