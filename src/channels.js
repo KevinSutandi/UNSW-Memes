@@ -76,20 +76,20 @@ export function channelsCreateV1(authUserId, name, isPublic) {
     isPublic: isPublic,
     ownerMembers: [
       {
-        authUserId: user.authUserId,
-        handlestring: user.handlestring,
-        authemail: user.authemail,
-        authfirstname: user.authfirstname,
-        authlastname: user.authlastname,
+        uId: user.authUserId,
+        handleStr: user.handleStr,
+        email: user.email,
+        nameFirst: user.nameFirst,
+        nameLast: user.nameLast,
       },
     ],
     allMembers: [
       {
-        authUserId: user.authUserId,
-        handlestring: user.handlestring,
-        authemail: user.authemail,
-        authfirstname: user.authfirstname,
-        authlastname: user.authlastname,
+        uId: user.authUserId,
+        handleStr: user.handleStr,
+        email: user.email,
+        nameFirst: user.nameFirst,
+        nameLast: user.nameLast,
       },
     ],
     messages: [],
@@ -116,7 +116,7 @@ export function channelsListV1(authUserId) {
 
   data.channels.forEach((channel) => {
     const isUserInChannel = channel.allMembers.some(
-      (member) => member.authUserId === authUserIdToFind
+      (member) => member.uId === authUserIdToFind
     );
     if (isUserInChannel === true) {
       userChannels.channels.push({
