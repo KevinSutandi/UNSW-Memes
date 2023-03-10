@@ -1,13 +1,41 @@
 import { getData, setData } from './dataStore';
 
-// Helper functions
-// Finds out whether the given userId is valid or not
-// returns bool
+// HELPER FUNCTIONS
+
+/**
+ * @typedef {Object} user - object containing user information
+ * @property {number} authUserId - the authenticated user Id
+ * @property {number} age - age of the user
+ * @property {string} handlestring - user's handlestring
+ * @property {string} authemail - user's email
+ * @property {string} authpw - user's password
+ * @property {string} authfirstname - user's first name
+ * @property {string} authlastname - user's last name
+ * @property {number} isGlobalOwner - determines whether a user is a global owner
+*/
+
+/**
+  * Determines whether a user is a valid user
+  * by checking through users array in the 
+  * dataStore.js
+  * 
+  * @param {number} userId - the authenticated user Id
+  * @returns {boolean} - true if the user is in the dataStore
+  *                    = false if the user isnt in the dataStore
+*/
 export function isUser(userId) {
   const data = getData();
   return data.users.some((a) => a.authUserId === userId);
 }
 
+/**
+  * Finds the user object based on the given userId
+  * 
+  * @param {number} userId - the authenticated user Id
+  * @returns {undefined} - returns undefined if the user isnt in the dataStore
+  * @returns {user} - returns user object if the user is in the dataStore
+  * 
+*/
 export function findUser(userId) {
   const data = getData();
   return data.users.find((a) => a.authUserId === userId);
@@ -59,6 +87,21 @@ export function channelsCreateV1(authUserId, name, isPublic) {
   };
 }
 
+
+
+/**
+  * Provides an array of all channels that an authorised 
+  * user is a member of by accessing the channel information 
+  * from data.channels. Then it returns the channelId
+  * and name.
+  * 
+  * @param {number} authUserId - the authenticated user Id
+  * 
+  * @returns {error: 'error message'} - if the given authUserId is invalid
+  * @returns {{channelId: number, name: string}} - returns the details of the channel
+  * when successful
+  * 
+*/
 export function channelsListV1(authUserId) {
   const data = getData();
 
