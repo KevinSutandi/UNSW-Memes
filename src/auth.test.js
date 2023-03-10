@@ -24,11 +24,11 @@ describe("testing authRegisterV1", () => {
     );
     expect(result).toStrictEqual(IDPASS);
     expect(userProfileV1(result.authUserId, result.authUserId)).toStrictEqual({
-      authUserId: result.authId,
-      authemail: "onlyfortest00@gmail.com",
-      authfirstname: "EL_001",
-      authlastname: "YIU",
-      handlestring: "el001yiu",
+      uId: result.authUserId,
+      email: "onlyfortest00@gmail.com",
+      nameFirst: "EL_001",
+      nameLast: "YIU",
+      handleStr: "el001yiu",
     });
   });
 
@@ -42,11 +42,11 @@ describe("testing authRegisterV1", () => {
     );
     expect(result).toStrictEqual(IDPASS);
     expect(userProfileV1(result.authUserId, result.authUserId)).toStrictEqual({
-      authUserId: result.authId,
-      authemail: "onlyfortest01@gmail.com",
-      authfirstname: "abcdefghijklm",
-      authlastname: "YIUopqrst",
-      handlestring: "abcdefghijklmyiuopqr",
+      uId: result.authUserId,
+      email: "onlyfortest01@gmail.com",
+      nameFirst: "abcdefghijklm",
+      nameLast: "YIUopqrst",
+      handleStr: "abcdefghijklmyiuopqr",
     });
   });
 
@@ -67,19 +67,19 @@ describe("testing authRegisterV1", () => {
     expect(result).toStrictEqual(IDPASS);
     expect(result2).toStrictEqual(IDPASS);
     expect(userProfileV1(result.authUserId, result.authUserId)).toStrictEqual({
-      authUserId: result.authId,
-      authemail: "onlyfortest02@gmail.com",
-      authfirstname: "kevin",
-      authlastname: "sutandi",
-      handlestring: "kevinsutandi",
+      uId: result.authUserId,
+      email: "onlyfortest02@gmail.com",
+      nameFirst: "kevin",
+      nameLast: "sutandi",
+      handleStr: "kevinsutandi",
     });
     expect(userProfileV1(result2.authUserId, result2.authUserId)).toStrictEqual(
       {
-        authUserId: result2.authId,
-        authemail: "onlyfortest01@gmail.com",
-        authfirstname: "kevin",
-        authlastname: "sutandi",
-        handlestring: "kevinsutandi0",
+        uId: result2.authUserId,
+        email: "onlyfortest01@gmail.com",
+        nameFirst: "kevin",
+        nameLast: "sutandi",
+        handleStr: "kevinsutandi0",
       }
     );
   });
@@ -101,19 +101,19 @@ describe("testing authRegisterV1", () => {
     expect(result).toStrictEqual(IDPASS);
     expect(result2).toStrictEqual(IDPASS);
     expect(userProfileV1(result.authUserId, result.authUserId)).toStrictEqual({
-      authUserId: result.authId,
-      authemail: "onlyfortest03@gmail.com",
-      authfirstname: "abcdefghijklm",
-      authlastname: "YIUopqrst",
-      handlestring: "abcdefghijklmyiuopqr",
+      uId: result.authUserId,
+      email: "onlyfortest03@gmail.com",
+      nameFirst: "abcdefghijklm",
+      nameLast: "YIUopqrst",
+      handleStr: "abcdefghijklmyiuopqr",
     });
     expect(userProfileV1(result2.authUserId, result2.authUserId)).toStrictEqual(
       {
-        authUserId: result2.authId,
-        authemail: "onlyfortest02@gmail.com",
-        authfirstname: "abcdefghijklm",
-        authlastname: "YIUopqrst",
-        handlestring: "abcdefghijklmyiuopqr0",
+        uId: result2.authUserId,
+        email: "onlyfortest02@gmail.com",
+        nameFirst: "abcdefghijklm",
+        nameLast: "YIUopqrst",
+        handleStr: "abcdefghijklmyiuopqr0",
       }
     );
   });

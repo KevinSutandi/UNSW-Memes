@@ -6,9 +6,9 @@ export function authLoginV1(email, password) {
 
   let correctUser;
   for (let user of data.users) {
-    if (email === user.authemail && password === user.authpw) {
+    if (email === user.email && password === user.password) {
       correctUser = user;
-    } else if (email === user.authemail && password !== user.authpw) {
+    } else if (email === user.email && password !== user.password) {
       return { error: "Password is not correct" };
     }
   }
@@ -36,7 +36,7 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
     return { error: "Please enter valid email!" };
   }
 
-  const emailfound = dataStore.users.find((item) => item.authemail === email);
+  const emailfound = dataStore.users.find((item) => item.email === email);
   if (emailfound !== undefined) {
     return { error: "This email address is already used!" };
   }
@@ -65,13 +65,13 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
   handlestring = handlestring.toLowerCase();
   const regpattern = /[^a-z0-9]/g;
   handlestring = handlestring.replace(regpattern, "");
-  // handlestring = handlestring.replace(/\W/g, "");
+  // handlestring = handlescleartring.replace(/\W/g, "");
 
   if (handlestring.length > 20) {
     handlestring = handlestring.substring(0, 20); // exclusive
   }
 
-  const handleMap = dataStore.users.map((user) => user.handlestring);
+  const handleMap = dataStore.users.map((user) => user.handleStr);
 
   for (let i = 0; handleMap.includes(handlestring); i++) {
     handlestring = `${handlestring}${i}`;

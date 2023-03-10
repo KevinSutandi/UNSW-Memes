@@ -20,10 +20,10 @@ export function userProfileV1(authUserId, uId) {
   const userNum = data.users.findIndex((a) => a.authUserId === uId);
   // if both are valid, we return information about the user accessing from our data
   return {
-    authUserId: data.users[userNum].authId,
-    authemail: data.users[userNum].authemail,
-    authfirstname: data.users[userNum].authfirstname,
-    authlastname: data.users[userNum].authlastname,
-    handlestring: data.users[userNum].handlestring,
+    uId: data.users[userNum].authUserId,
+    email: data.users[userNum].email,
+    nameFirst: data.users[userNum].nameFirst,
+    nameLast: data.users[userNum].nameLast,
+    handleStr: data.users[userNum].handleStr,
   };
 }
