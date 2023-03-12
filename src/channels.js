@@ -63,7 +63,7 @@ export function channelsCreateV1(authUserId, name, isPublic) {
   if (!isUser(authUserId)) {
     return { error: 'Invalid authUserId' };
   }
-  let newId = Math.floor(Math.random() * 10000);
+  const newId = Math.floor(Math.random() * 10000);
   // Finds the user data
   const user = findUser(authUserId);
   // Pushes the new channel's data into data

@@ -17,7 +17,7 @@ describe('testing type returned for authRegisterV1', () => {
   });
 
   test('Test output type definition', () => {
-    let data = authRegisterV1(
+    const data = authRegisterV1(
       'onlyfortest00@gmail.com',
       'testpw0000',
       'EL_001',
@@ -35,13 +35,13 @@ describe('testing type returned for channelsCreate', () => {
   });
 
   test('Test output type definition', () => {
-    let data = authRegisterV1(
+    const data = authRegisterV1(
       'onlyfortest00@gmail.com',
       'testpw0000',
       'EL_001',
       'YIU'
     );
-    let channel = channelsCreateV1(data.authUserId, 'dongo', true);
+    const channel = channelsCreateV1(data.authUserId, 'dongo', true);
     expect(typeof channel === 'object').toBe(true);
     expect('channelId' in channel).toBe(true);
     expect(typeof channel.channelId === 'number').toBe(true);
@@ -55,14 +55,14 @@ describe('testing type returned for channelsList', () => {
 
   test('Test output type definition', () => {
     const name = 'dongo';
-    let data = authRegisterV1(
+    const data = authRegisterV1(
       'onlyfortest00@gmail.com',
       'testpw0000',
       'EL_001',
       'YIU'
     );
-    let channel = channelsCreateV1(data.authUserId, 'dongo', true);
-    let list = channelsListV1(data.authUserId);
+    const channel = channelsCreateV1(data.authUserId, 'dongo', true);
+    const list = channelsListV1(data.authUserId);
     expect(typeof channel === 'object').toBe(true);
     expect('channelId' in channel).toBe(true);
     expect(typeof channel.channelId === 'number').toBe(true);

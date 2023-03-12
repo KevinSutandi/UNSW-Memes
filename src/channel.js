@@ -297,15 +297,11 @@ export function channelInviteV1(authUserId, channelId, uId) {
  *                                    | User is invalid
  */
 export function channelDetailsV1(authUserId, channelId) {
-  // Gets the data
-  const data = getData();
   // If channelId doesn't refer to a valid channel,
   // returns error
   if (!isChannel(channelId)) {
     return { error: 'channelId does not refer to a valid channel' };
-  }
-  // If authUserId is invalid, returns error
-  else if (!isUser(authUserId)) {
+  } else if (!isUser(authUserId)) { // If authUserId is invalid, returns error
     return { error: 'Invalid authUserId' };
   }
   const channelObj = findChannel(channelId);

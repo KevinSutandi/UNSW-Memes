@@ -65,7 +65,7 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
 });
 
 describe('channelsCreateV1 Iteration 1 tests', () => {
-  let user, user2;
+  let user;
   let channel;
   beforeEach(() => {
     clearV1();
@@ -74,12 +74,6 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
       'testpw0005',
       'Jonah',
       'Meggs'
-    );
-    user2 = authRegisterV1(
-      'someotheremail@gmail.com',
-      'someone2031',
-      'Kevin',
-      'Sutandi'
     );
   });
 
