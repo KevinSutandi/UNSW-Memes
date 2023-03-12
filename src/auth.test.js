@@ -10,7 +10,7 @@ describe('testing authRegisterV1', () => {
   });
 
   test('Test successful authRegister, without non-alphanumeric', () => {
-    let result = authRegisterV1(
+    const result = authRegisterV1(
       'onlyfortest00@gmail.com',
       'testpw0000',
       'EL_001',
@@ -28,7 +28,7 @@ describe('testing authRegisterV1', () => {
 
   // for too long user handle- cut at 20th character; convert to lower cases as well
   test('Test successful authRegister with cut-off name', () => {
-    let result = authRegisterV1(
+    const result = authRegisterV1(
       'onlyfortest01@gmail.com',
       'testpw0001',
       'abcdefghijklm',
@@ -46,13 +46,13 @@ describe('testing authRegisterV1', () => {
 
   // one userid has already been taken, append the smallest number after
   test('Test successful authRegister with ID already be used', () => {
-    let result = authRegisterV1(
+    const result = authRegisterV1(
       'onlyfortest02@gmail.com',
       'testpw0002',
       'kevin',
       'sutandi'
     );
-    let result2 = authRegisterV1(
+    const result2 = authRegisterV1(
       'onlyfortest01@gmail.com',
       'testpw0001',
       'kevin',
@@ -80,13 +80,13 @@ describe('testing authRegisterV1', () => {
 
   // one userid has already been taken, append the smallest number after again
   test('Test successful authRegister with ID already be used.2', () => {
-    let result = authRegisterV1(
+    const result = authRegisterV1(
       'onlyfortest03@gmail.com',
       'testpw0003',
       'abcdefghijklm',
       'YIUopqrst'
     );
-    let result2 = authRegisterV1(
+    const result2 = authRegisterV1(
       'onlyfortest02@gmail.com',
       'testpw0002',
       'abcdefghijklm',

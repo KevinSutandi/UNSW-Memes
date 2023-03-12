@@ -1,4 +1,4 @@
-import { getData, setData } from './dataStore.js';
+import { getData } from './dataStore.js';
 
 // HELPER FUNCTIONS
 

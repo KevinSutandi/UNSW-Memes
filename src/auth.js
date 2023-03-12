@@ -5,7 +5,7 @@ export function authLoginV1(email, password) {
   const data = getData();
 
   let correctUser;
-  for (let user of data.users) {
+  for (const user of data.users) {
     if (email === user.email && password === user.password) {
       correctUser = user;
     } else if (email === user.email && password !== user.password) {
@@ -52,7 +52,7 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
     return { error: 'Your last name is too long' };
   }
 
-  let authId = Math.floor(Math.random() * 10000000);
+  const authId = Math.floor(Math.random() * 10000000);
   // the handlestring == firstname+lastname
   // only extract a-z0-9 characters, remove all characters to lowercases
   // limit the authId in 20 characters

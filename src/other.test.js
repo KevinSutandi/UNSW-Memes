@@ -4,7 +4,6 @@ import { clearV1 } from './other.js';
 
 describe('testing channelJoinV1', () => {
   let user1;
-  let channel1, channel2;
   clearV1();
   user1 = authRegisterV1(
     'kevins050324@gmail.com',
@@ -12,8 +11,9 @@ describe('testing channelJoinV1', () => {
     'Kevin',
     'Sutandi'
   );
-  channel1 = channelsCreateV1(user1.authUserId, 'Bongo', true);
-  channel2 = channelsCreateV1(user1.authUserId, 'dongo', false);
+
+  channelsCreateV1(user1.authUserId, 'Bongo', true);
+  channelsCreateV1(user1.authUserId, 'dongo', false);
 
   clearV1();
   user1 = authRegisterV1(
