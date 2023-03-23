@@ -11,6 +11,31 @@ import { getData, setData } from './dataStore.js';
  * @property {string} nameLast - user's last name
  */
 
+interface User {
+  authUserId: number;
+  handleStr: string;
+  email: string;
+  password: string;
+  nameFirst: string;
+  nameLast: string;
+  isGlobalOwner: number;
+}
+
+interface Channels {
+  channelId: number;
+  name: string;
+}
+
+interface channelsCreateReturn {
+  error?: { error: string };
+  channelId: { channelId: number };
+}
+
+interface channelsListReturn {
+  error?: { error: string };
+  channels: Channels[];
+}
+
 /**
  * Determines whether a user is a valid user
  * by checking through users array in the
@@ -20,7 +45,7 @@ import { getData, setData } from './dataStore.js';
  * @returns {boolean} - true if the user is in the dataStore
  *                    = false if the user isnt in the dataStore
  */
-export function isUser(userId) {
+export function isUser(userId: number): boolean {
   const data = getData();
   return data.users.some((a) => a.authUserId === userId);
 }
@@ -33,7 +58,7 @@ export function isUser(userId) {
  * @returns {user} - returns user object if the user is in the dataStore
  *
  */
-export function findUser(userId) {
+export function findUser(userId: number): User {
   const data = getData();
   return data.users.find((a) => a.authUserId === userId);
 }
@@ -52,7 +77,7 @@ export function findUser(userId) {
  * @returns {{channelId: number}} - returns the channelId object
  *
  */
-export function channelsCreateV1(authUserId, name, isPublic) {
+export function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): channelsCreateReturn {
   // Gets the data from database
   const data = getData();
   // Returns error if name's length is less than 1 or more than 20
@@ -112,7 +137,7 @@ export function channelsCreateV1(authUserId, name, isPublic) {
  * when successful
  *
  */
-export function channelsListV1(authUserId) {
+export function channelsListV1(authUserId: number): channelsListReturn {
   const data = getData();
 
   if (!isUser(authUserId)) {
@@ -137,7 +162,7 @@ export function channelsListV1(authUserId) {
   return userChannels;
 }
 
-export function channelsListAllV1(authUserId) {
+export function channelsListAllV1(authUserId: number): channelsListAllReturn {
   const data = getData();
   // If the given userId is invalid
   if (!isUser(authUserId)) {

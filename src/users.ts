@@ -11,6 +11,19 @@ import { getData } from './dataStore.js';
  * @property {string} nameLast - user's last name
  */
 
+interface User {
+  uId: number;
+  email: string;
+  nameFirst: string;
+  nameLast: string;
+  handleStr: string;
+}
+
+interface userProfileReturn {
+  error?: { error: string };
+  user: User;
+}
+
 /**
  * Determines whether a user is a valid user
  * by checking through users array in the
@@ -20,7 +33,7 @@ import { getData } from './dataStore.js';
  * @returns {boolean} - true if the user is in the dataStore
  *                    | false if the user isnt in the dataStore
  */
-export function isUser(userId) {
+export function isUser(userId: number): boolean {
   const data = getData();
   return data.users.some((a) => a.authUserId === userId);
 }
@@ -40,7 +53,7 @@ export function isUser(userId) {
  * the user object and its associated data if it exists in the dataStore
  *
  */
-export function userProfileV1(authUserId, uId) {
+export function userProfileV1(authUserId: number, uId: number): userProfileReturn {
   // Gets user from the dataStore
   const data = getData();
   // Check that authUserId is valid
