@@ -11,6 +11,16 @@ interface User {
   isGlobalOwner: number;
 }
 
+interface AuthLoginReturn {
+  error?: { error: string };
+  authUserId: { authUserId: number };
+}
+
+interface AuthRegisterReturn {
+  error?: { error: string };
+  authUserId: { authUserId: number };
+}
+
 export function authLoginV1(email, password) {
   const data = getData();
 
