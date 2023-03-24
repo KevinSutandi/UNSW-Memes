@@ -1,7 +1,7 @@
 import request, { HttpVerb } from 'sync-request';
 import { port, url } from './config.json';
 import { getData } from './dataStore';
-import { channelObject } from './interfaces';
+import { channelData } from './interfaces';
 
 const SERVER_URL = `${url}:${port}`;
 // const ERROR = { error: expect.any(String) };
@@ -50,7 +50,7 @@ export function isChannel(channelId: number): boolean {
  * @returns {channel}  - returns channel object if the channel is found
  *
  */
-export function findChannel(channelId: number): channelObject | undefined {
+export function findChannel(channelId: number): channelData | undefined {
   const data = getData();
   return data.channels.find((a) => a.channelId === channelId);
 }
@@ -89,10 +89,27 @@ export function findUser(userId: number) {
  * @param {object} channel - The channel object to retrieve member IDs from.
  * @returns {(Array.<uId>|null)} - An array of member IDs, or null if the channel does not contain any.
  */
-export function getAllMemberIds(channel: channelObject) {
+export function getAllMemberIds(channel: channelData) {
   if (channel) {
     return channel.allMembers.map((member) => member.uId);
   } else {
     return null;
   }
+}
+
+/**
+ * Returns the index of the channel with the specified ID.
+ *
+ * @param {number} channelId - The ID of the channel to retrieve the index of.
+ * @returns {number} - The index of the channel with the specified ID, or -1 if no matching channel is found.
+ */
+export function getChannelIndex(channelId: number) {
+  const data = getData();
+  return data.channels.findIndex((channel) => channel.channelId === channelId);
+}
+
+export function isChannelMember(channelId: number, userId: number): boolean {
+  const channel = findChannel(channelId);
+  const allMemberIds = getAllMemberIds(channel);
+  return allMemberIds.includes(userId);
 }

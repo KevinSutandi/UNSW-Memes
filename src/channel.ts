@@ -5,6 +5,8 @@ import {
   findChannel,
   findUser,
   getAllMemberIds,
+  getChannelIndex,
+  isChannelMember,
 } from './helper';
 import { messages, errorMessage } from './interfaces';
 
@@ -26,19 +28,16 @@ export function channelMessagesV1(
   channelId: number,
   start: number
 ): messages | errorMessage {
-  // Get the particular user index in data store
   const user = findUser(authUserId);
 
-  // Get the particular channel index from data store
   const channel = findChannel(channelId);
 
-  // Get all uIds in the channel
   const allMemberIds = getAllMemberIds(channel);
-  // Error if the user is not registered
+
   if (user === undefined) {
     return { error: 'User Not Found' };
   }
-  // Error if the channel is not found
+
   if (channel === undefined) {
     return { error: 'Channel Not Found' };
   }
@@ -86,46 +85,37 @@ export function channelMessagesV1(
  */
 
 export function channelJoinV1(authUserId: number, channelId: number) {
+  const data = getData();
   // Get the particular user index in data store
   const user = findUser(authUserId);
 
   // Get the particular channel index from data store
   const channel = findChannel(channelId);
 
-  // Get all uIds in the channel
-  const allMemberIds = channel
-    ? channel.allMembers.map((member) => member.uId)
-    : null;
+  const allMemberIds = getAllMemberIds(channel);
 
-  if (data.users.find(findAuthUser) === undefined) {
+  if (user === undefined) {
     return { error: 'User Not Found' };
   }
 
-  if (data.channels.find(findChannel) === undefined) {
+  if (channel === undefined) {
     return { error: 'Channel Not Found' };
   }
 
   const uId = user.authUserId;
 
-  // Error if the user is already in the channel
   if (allMemberIds.includes(uId) === true) {
     return { error: 'User is already in channel' };
   }
-
-  const isPublic = channel.isPublic;
-  const globalPerm = user.isGlobalOwner;
-  // Error if the channels is private and not global owner
-  if (isPublic === false && globalPerm === 2) {
-    if (isPublic === false) {
+  if (channel.isPublic === false && user.isGlobalOwner === 2) {
+    if (channel.isPublic === false) {
       return { error: 'Channel is not public' };
     } else {
       return { error: 'User is not global owner' };
     }
   }
-  const channelNum = data.channels.findIndex(
-    (channel) => channel.channelId === channelId
-  );
-  // Add the user to the channel
+  const channelNum = getChannelIndex(channelId);
+
   data.channels[channelNum].allMembers.push({
     uId: authUserId,
     email: user.email,
@@ -138,13 +128,13 @@ export function channelJoinV1(authUserId: number, channelId: number) {
   return {};
 }
 
-export function channelInviteV1(authUserId, channelId, uId) {
+export function channelInviteV1(
+  authUserId: number,
+  channelId: number,
+  uId: number
+) {
   const data = getData();
 
-  // Function for finding channelId in data store
-  function findChannel(channels) {
-    return channels.channelId === channelId;
-  }
   // Error cases
   if (!isUser(authUserId)) {
     return { error: 'Invalid authUserId' };
@@ -155,12 +145,10 @@ export function channelInviteV1(authUserId, channelId, uId) {
   if (!isUser(uId)) {
     return { error: 'uId does not refer to a valid user' };
   }
-  const channel = data.channels.find(findChannel);
+  const channel = findChannel(channelId);
 
   // Get all uIds in the channel
-  const allMemberIds = channel
-    ? channel.allMembers.map((member) => member.uId)
-    : null;
+  const allMemberIds = getAllMemberIds(channel);
 
   if (allMemberIds.includes(uId) === true) {
     return { error: 'User already in the channel' };
@@ -171,9 +159,8 @@ export function channelInviteV1(authUserId, channelId, uId) {
   }
   // Finds the user based on uId
   const user = findUser(uId);
-  const channelNum = data.channels.findIndex(
-    (channel) => channel.channelId === channelId
-  );
+  const channelNum = getChannelIndex(channelId);
+
   // Adds the user to the channel
   data.channels[channelNum].allMembers.push({
     uId: user.authUserId,
@@ -182,6 +169,7 @@ export function channelInviteV1(authUserId, channelId, uId) {
     nameLast: user.nameLast,
     handleStr: user.handleStr,
   });
+
   setData(data);
 }
 
@@ -213,7 +201,7 @@ export function channelDetailsV1(authUserId: number, channelId: number) {
   }
   const channelObj = findChannel(channelId);
   // If the user is not a member of the channel
-  if (!channelObj.allMembers.some((a) => a.uId === authUserId)) {
+  if (!isChannelMember(authUserId, channelId)) {
     return { error: authUserId + ' is not a member of the channel' };
   }
   return {
