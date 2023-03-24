@@ -1,40 +1,10 @@
 import { getData, setData } from './dataStore.js';
-
-// HELPER FUNCTIONS
-
-/**
- * @typedef {Object} user - object containing user information to be retuned
- * @property {number} uId - user's unique id
- * @property {string} handleStr - user's handlestring
- * @property {string} email - user's email
- * @property {string} nameFirst - user's first name
- * @property {string} nameLast - user's last name
- */
-
-interface User {
-  authUserId: number;
-  handleStr: string;
-  email: string;
-  password: string;
-  nameFirst: string;
-  nameLast: string;
-  isGlobalOwner: number;
-}
-
-interface Channels {
-  channelId?: number;
-  name?: string;
-}
-
-interface channelsCreateReturn {
-  error?: string;
-  channelId?: number;
-}
-
-interface channelsListReturn {
-  error?: string;
-  channels?: Channels[];
-}
+import {
+  userData,
+  channels,
+  channelsCreateReturn,
+  channelsListReturn,
+} from './interfaces.js';
 
 /**
  * Determines whether a user is a valid user
@@ -58,7 +28,7 @@ export function isUser(userId: number): boolean {
  * @returns {user} - returns user object if the user is in the dataStore
  *
  */
-export function findUser(userId: number): User {
+export function findUser(userId: number): userData {
   const data = getData();
   return data.users.find((a) => a.authUserId === userId);
 }
