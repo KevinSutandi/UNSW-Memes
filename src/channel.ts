@@ -4,7 +4,6 @@ import { messages, errorMessage } from './interfaces';
 
 /**
  *
- *
  * @param {number} authUserId - The authenticated user Id
  * @param {number} channelId - The channel Id to join
  * ...
@@ -21,21 +20,11 @@ export function channelMessagesV1(
   channelId: number,
   start: number
 ): messages | errorMessage {
-  const data = getData();
-
-  // Function for finding the particular authUserId
-  function findAuthUser(users) {
-    return users.authUserId === authUserId;
-  }
-  // Function for finding particular channelId
-  function findChannel(channels) {
-    return channels.channelId === channelId;
-  }
   // Get the particular user index in data store
-  const user = data.users.find(findAuthUser);
+  const user = findUser(authUserId);
 
   // Get the particular channel index from data store
-  const channel = data.channels.find(findChannel);
+  const channel = findChannel(channelId);
   // Get the amount of messages in the particular channel
 
   // Get all uIds in the channel
@@ -43,11 +32,11 @@ export function channelMessagesV1(
     ? channel.allMembers.map((member) => member.uId)
     : null;
   // Error if the user is not registered
-  if (data.users.find(findAuthUser) === undefined) {
+  if (user === undefined) {
     return { error: 'User Not Found' };
   }
   // Error if the channel is not found
-  if (data.channels.find(findChannel) === undefined) {
+  if (channel === undefined) {
     return { error: 'Channel Not Found' };
   }
   const channelMessage = channel.messages.length;

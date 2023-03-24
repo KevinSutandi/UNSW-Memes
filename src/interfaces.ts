@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} user - object containing user information to be retuned
+ * @typedef {Object} users - object containing user information to be retuned
  * @property {number} uId - user's unique id
  * @property {string} handleStr - user's handlestring
  * @property {string} email - user's email
@@ -16,7 +16,7 @@ export interface userObject {
 }
 
 /**
- * @typedef {Object} channel - object for returning channel information
+ * @typedef {Object} channelObject - object for returning channel information
  * @property {string} name - the channel's name
  * @property {boolean} isPublic - whether the channel is private or not
  * @property {user[]} ownerMembers - the owners of the channel
