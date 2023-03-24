@@ -22,18 +22,18 @@ interface User {
 }
 
 interface Channels {
-  channelId: number;
-  name: string;
+  channelId?: number;
+  name?: string;
 }
 
 interface channelsCreateReturn {
-  error?: { error: string };
-  channelId: { channelId: number };
+  error?: string;
+  channelId?: number;
 }
 
 interface channelsListReturn {
-  error?: { error: string };
-  channels: Channels[];
+  error?: string;
+  channels?: Channels[];
 }
 
 /**
@@ -41,9 +41,9 @@ interface channelsListReturn {
  * by checking through users array in the
  * dataStore.js
  *
- * @param {number} userId - the authenticated user Id
- * @returns {boolean} - true if the user is in the dataStore
- *                    = false if the user isnt in the dataStore
+ * @param { number } userId - the authenticated user Id
+ * @returns {boolean} boolean - true if the user is in the dataStore
+ *                            | false if the user isnt in the dataStore
  */
 export function isUser(userId: number): boolean {
   const data = getData();
@@ -77,7 +77,11 @@ export function findUser(userId: number): User {
  * @returns {{channelId: number}} - returns the channelId object
  *
  */
-export function channelsCreateV1(authUserId: number, name: string, isPublic: boolean): channelsCreateReturn {
+export function channelsCreateV1(
+  authUserId: number,
+  name: string,
+  isPublic: boolean
+): channelsCreateReturn {
   // Gets the data from database
   const data = getData();
   // Returns error if name's length is less than 1 or more than 20

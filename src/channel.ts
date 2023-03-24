@@ -1,86 +1,6 @@
 import { getData, setData } from './dataStore.js';
-
-/**
- * @typedef {Object} user - object containing user information to be retuned
- * @property {number} uId - user's unique id
- * @property {string} handleStr - user's handlestring
- * @property {string} email - user's email
- * @property {string} nameFirst - user's first name
- * @property {string} nameLast - user's last name
- */
-
-/**
- * @typedef {Object} channel - object for returning channel information
- * @property {string} name - the channel's name
- * @property {boolean} isPublic - whether the channel is private or not
- * @property {user[]} ownerMembers - the owners of the channel
- * @property {user[]} allMembers - members of the channel
- */
-
-/**
- * @typedef {Object} messages - object for returning channel information
- * @property {number} messageId - the message Id
- * @property {number} uId - the user who sent the message's ID
- * @property {string} message - the message
- * @property {number} timeSent - the time sent in UNIX time
- */
-
-// Helper functions
-/**
- * Determines whether a channel is a valid channel
- * by checking through channels array in the
- * dataStore.js
- *
- * @param {number} channelId - The authenticated channel Id
- * @returns {boolean} - true if the channel is in the dataStore,
- *                    | false if the channel isnt in the dataStore
- *
- */
-export function isChannel(channelId) {
-  const data = getData();
-  return data.channels.some((a) => a.channelId === channelId);
-}
-
-/**
- * Finds the channel object based on the given channelId
- *
- * @param {number} channelId - The authenticated channel Id
- * @returns {undefined} - if the function cannot find the channel
- * @returns {channel}  - returns channel object if the channel is found
- *
- */
-export function findChannel(channelId) {
-  const data = getData();
-  return data.channels.find((a) => a.channelId === channelId);
-}
-
-/**
- * Determines whether a user is a valid user
- * by checking through users array in the
- * dataStore.js
- *
- * @param {number} userId - the authenticated userId
- * @returns {boolean} - true if the channel is in dataStore
- *                    = false if it is not
- *
- */
-export function isUser(authUserId) {
-  const data = getData();
-  return data.users.some((a) => a.authUserId === authUserId);
-}
-
-/**
- * Finds the user object based on the given userId
- *
- * @param {number} userId - the authenticated user Id
- * @returns {undefined} - returns undefined if the user isnt in the dataStore
- * @returns {user} - returns user object if the user is in the dataStore
- *
- */
-export function findUser(userId) {
-  const data = getData();
-  return data.users.find((a) => a.authUserId === userId);
-}
+import { isChannel, isUser, findChannel, findUser } from './channelHelper';
+import { messages, errorMessage } from './interfaces';
 
 /**
  *
@@ -96,7 +16,11 @@ export function findUser(userId) {
  *                                    | Channel is private and not a global owner
  *                                    | User is invalid
  */
-export function channelMessagesV1(authUserId, channelId, start) {
+export function channelMessagesV1(
+  authUserId: number,
+  channelId: number,
+  start: number
+): messages | errorMessage {
   const data = getData();
 
   // Function for finding the particular authUserId
@@ -296,12 +220,13 @@ export function channelInviteV1(authUserId, channelId, uId) {
  *                                    | User is not a member of the channel
  *                                    | User is invalid
  */
-export function channelDetailsV1(authUserId, channelId) {
+export function channelDetailsV1(authUserId: number, channelId: number) {
   // If channelId doesn't refer to a valid channel,
   // returns error
   if (!isChannel(channelId)) {
     return { error: 'channelId does not refer to a valid channel' };
-  } else if (!isUser(authUserId)) { // If authUserId is invalid, returns error
+  } else if (!isUser(authUserId)) {
+    // If authUserId is invalid, returns error
     return { error: 'Invalid authUserId' };
   }
   const channelObj = findChannel(channelId);

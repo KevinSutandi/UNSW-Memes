@@ -3,7 +3,7 @@ import request, { HttpVerb } from 'sync-request';
 import { port, url } from './config.json';
 
 const SERVER_URL = `${url}:${port}`;
-const ERROR = { error: expect.any(String) };
+// const ERROR = { error: expect.any(String) };
 
 function requestHelper(method: HttpVerb, path: string, payload: object) {
   let qs = {};

@@ -1,16 +1,6 @@
 import validator from 'validator';
 import { getData, setData } from './dataStore.js';
 
-// interface User {
-//   authUserId: number;
-//   handleStr: string;
-//   email: string;
-//   password: string;
-//   nameFirst: string;
-//   nameLast: string;
-//   isGlobalOwner: number;
-// }
-
 interface AuthReturn {
   error?: string;
   authUserId?: number;
@@ -38,8 +28,8 @@ export function authLoginV1(email: string, password: string): AuthReturn {
  * @param {string} password - the password
  * @param {string} nameFirst - the firstname
  * @param {string} nameLast - the lastname
- * @returns { error: error message } - different error strings for different situations
- * @returns { authUserId: number } - new authorID who registered
+ * @returns { error : string } error - different error strings for different situations
+ * @returns { authUserId : number } authUserId - new authorID who registered
  *
  */
 

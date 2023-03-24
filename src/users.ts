@@ -53,7 +53,10 @@ export function isUser(userId: number): boolean {
  * the user object and its associated data if it exists in the dataStore
  *
  */
-export function userProfileV1(authUserId: number, uId: number): userProfileReturn {
+export function userProfileV1(
+  authUserId: number,
+  uId: number
+): userProfileReturn {
   // Gets user from the dataStore
   const data = getData();
   // Check that authUserId is valid
