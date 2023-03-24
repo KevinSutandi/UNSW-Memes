@@ -129,3 +129,8 @@ export interface channelsListReturn {
   error?: string;
   channels?: channels[];
 }
+
+export interface AuthReturn {
+  error?: string;
+  authUserId?: number;
+}

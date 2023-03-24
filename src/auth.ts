@@ -1,10 +1,6 @@
 import validator from 'validator';
 import { getData, setData } from './dataStore.js';
-
-interface AuthReturn {
-  error?: string;
-  authUserId?: number;
-}
+import { AuthReturn } from './interfaces.js';
 
 export function authLoginV1(email: string, password: string): AuthReturn {
   const data = getData();
