@@ -1,28 +1,29 @@
 import { port, url } from './config.json';
-import { authRegisterV1 } from './auth.ts';
-import {
-  channelsCreateV1,
-  channelsListV1,
-  channelsListAllV1,
-} from './channels.ts';
-import { channelDetailsV1 } from './channel.ts';
-import { clearV1 } from './other.ts';
-import { requestHelper } from './helper.ts'
+import { requestHelper } from './helper';
+import { AuthReturn, channelsCreateReturn } from './interfaces';
 
 const SERVER_URL = `${url}:${port}`;
 const ERROR = { error: expect.any(String) };
 
 // Wrapper functions
 function requestChannelsList(token: number) {
-  return requestHelper('GET', '/channels/list/v2', {token});
+  return requestHelper('GET', '/channels/list/v2', { token });
+}
+
+function requestChannelsListAll(token: number) {
+  return requestHelper('GET', '/channels/listall/v2', { token });
 }
 
 function requestChannelsCreate(token: number, name: string, isPublic: boolean) {
-  return requestHelper('POST', '/channels/create/v2', {token, name, isPublic});
+  return requestHelper('POST', '/channels/create/v2', {
+    token,
+    name,
+    isPublic,
+  });
 }
 
 describe('channelsListAllV1 Iteration 1 tests', () => {
-  let user, user2;
+  let user: AuthReturn, user2: AuthReturn;
   let channel, channel2, channel3;
   beforeEach(() => {
     clearV1();
@@ -41,20 +42,20 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
   });
 
   test('invalid authUserID', () => {
-    expect(channelsListAllV1(user.authUserId + 1)).toStrictEqual(ERROR);
+    expect(requestChannelsListAll(user.authUserId + 1)).toStrictEqual(ERROR);
   });
 
   test('valid authUserId, no channels were created', () => {
-    expect(channelsListAllV1(user2.authUserId)).toStrictEqual({
+    expect(requestChannelsListAll(user2.authUserId)).toStrictEqual({
       channels: [],
     });
   });
 
   test('valid authUserId, channels were created', () => {
-    channel = channelsCreateV1(user.authUserId, 'general', false);
-    channel2 = channelsCreateV1(user.authUserId, 'memes', false);
-    channel3 = channelsCreateV1(user.authUserId, "Jonah's personal", true);
-    expect(channelsListAllV1(user.authUserId)).toStrictEqual({
+    channel = requestChannelsCreate(user.authUserId, 'general', false);
+    channel2 = requestChannelsCreate(user.authUserId, 'memes', false);
+    channel3 = requestChannelsCreate(user.authUserId, "Jonah's personal", true);
+    expect(requestChannelsListAll(user.authUserId)).toStrictEqual({
       channels: [
         {
           channelId: channel.channelId,
@@ -74,7 +75,7 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
 });
 
 describe('/channels/create/v2', () => {
-  let user;
+  let user: AuthReturn;
   let channel;
   beforeEach(() => {
     clearV1();
@@ -87,13 +88,17 @@ describe('/channels/create/v2', () => {
   });
 
   test('valid input', () => {
-    expect(requestChannelsCreateV1(user.authUserId, 'general', false)).toStrictEqual({
+    expect(
+      requestChannelsCreate(user.authUserId, 'general', false)
+    ).toStrictEqual({
       channelId: expect.any(Number),
     });
   });
 
   test('name less than 1 char', () => {
-    expect(requestChannelsCreate(user.authUserId, '', true)).toStrictEqual(ERROR);
+    expect(requestChannelsCreate(user.authUserId, '', true)).toStrictEqual(
+      ERROR
+    );
   });
 
   test('name more than 20 chars', () => {
@@ -139,8 +144,10 @@ describe('/channels/create/v2', () => {
 });
 
 describe('/channels/list/v2', () => {
-  let user, user2;
-  let channel, channel2, channel3;
+  let user: AuthReturn, user2: AuthReturn;
+  let channel: channelsCreateReturn,
+    channel2: channelsCreateReturn,
+    channel3: channelsCreateReturn;
   beforeEach(() => {
     clearV1();
     user = authRegisterV1(
@@ -152,7 +159,11 @@ describe('/channels/list/v2', () => {
     user2 = authRegisterV1('testing123445@gmail.com', 'mina282', 'Mina', 'Kov');
     channel = requestChannelsCreate(user.authUserId, 'general', false);
     channel2 = requestChannelsCreate(user.authUserId, 'memes', false);
-    channel3 = requestChannelsCreate(user2.authUserId, "Jonah's personal", true);
+    channel3 = requestChannelsCreate(
+      user2.authUserId,
+      "Jonah's personal",
+      true
+    );
   });
 
   test('authUserId is invalid', () => {
