@@ -13,11 +13,11 @@ const SERVER_URL = `${url}:${port}`;
 const ERROR = { error: expect.any(String) };
 
 // Wrapper functions
-function requestChannelsListV1(token: number) {
+function requestChannelsList(token: number) {
   return requestHelper('GET', '/channels/list/v2', {token});
 }
 
-function requestChannelsCreateV1(token: number, name: string, isPublic: boolean) {
+function requestChannelsCreate(token: number, name: string, isPublic: boolean) {
   return requestHelper('POST', '/channels/create/v2', {token, name, isPublic});
 }
 
@@ -87,24 +87,24 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
   });
 
   test('valid input', () => {
-    expect(channelsCreateV1(user.authUserId, 'general', false)).toStrictEqual({
+    expect(requestChannelsCreateV1(user.authUserId, 'general', false)).toStrictEqual({
       channelId: expect.any(Number),
     });
   });
 
   test('name less than 1 char', () => {
-    expect(channelsCreateV1(user.authUserId, '', true)).toStrictEqual(ERROR);
+    expect(requestChannelsCreate(user.authUserId, '', true)).toStrictEqual(ERROR);
   });
 
   test('name more than 20 chars', () => {
     expect(
-      channelsCreateV1(user.authUserId, '123456789012345678901', true)
+      requestChannelsCreate(user.authUserId, '123456789012345678901', true)
     ).toStrictEqual(ERROR);
   });
 
   test('invalid authUserId', () => {
     expect(
-      channelsCreateV1(user.authUserId + 1, 'general', false)
+      requestChannelsCreate(user.authUserId + 1, 'general', false)
     ).toStrictEqual(ERROR);
   });
 
