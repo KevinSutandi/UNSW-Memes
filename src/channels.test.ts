@@ -1,8 +1,9 @@
-import { port, url } from './config.json';
 import { requestHelper } from './helper';
 import { AuthReturn, channelsCreateReturn } from './interfaces';
+import { clearV1 } from './other';
+import { authRegisterV1 } from './auth';
+import { channelDetailsV1 } from './channel';
 
-const SERVER_URL = `${url}:${port}`;
 const ERROR = { error: expect.any(String) };
 
 // Wrapper functions
