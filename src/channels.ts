@@ -150,7 +150,7 @@ export function channelsListV1(authUserId: number): channelsListReturn {
 
   // need to access our data and pull out all of the channels linked to user
   const authUserIdToFind = authUserId;
-  const userChannels: channelsListReturn  = { channels: [] };
+  const userChannels: channelsListReturn = { channels: [] };
 
   data.channels.forEach((channel) => {
     const isUserInChannel = channel.allMembers.some(
