@@ -1,37 +1,11 @@
 import { getData, setData } from './dataStore.js';
+import { isUser, findUser } from './helper.js';
 import {
   userData,
   channels,
   channelsCreateReturn,
   channelsListReturn,
 } from './interfaces.js';
-
-/**
- * Determines whether a user is a valid user
- * by checking through users array in the
- * dataStore.js
- *
- * @param { number } userId - the authenticated user Id
- * @returns {boolean} boolean - true if the user is in the dataStore
- *                            | false if the user isnt in the dataStore
- */
-export function isUser(userId: number): boolean {
-  const data = getData();
-  return data.users.some((a) => a.authUserId === userId);
-}
-
-/**
- * Finds the user object based on the given userId
- *
- * @param {number} userId - the authenticated user Id
- * @returns {undefined} - returns undefined if the user isnt in the dataStore
- * @returns {user} - returns user object if the user is in the dataStore
- *
- */
-export function findUser(userId: number): userData {
-  const data = getData();
-  return data.users.find((a) => a.authUserId === userId);
-}
 
 /**
  * Creates a new channel with the given name,
