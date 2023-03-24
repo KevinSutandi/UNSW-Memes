@@ -1,27 +1,22 @@
 import validator from 'validator';
 import { getData, setData } from './dataStore.js';
 
-interface User {
-  authUserId: number;
-  handleStr: string;
-  email: string;
-  password: string;
-  nameFirst: string;
-  nameLast: string;
-  isGlobalOwner: number;
+// interface User {
+//   authUserId: number;
+//   handleStr: string;
+//   email: string;
+//   password: string;
+//   nameFirst: string;
+//   nameLast: string;
+//   isGlobalOwner: number;
+// }
+
+interface AuthReturn {
+  error?: string;
+  authUserId?: number;
 }
 
-interface AuthLoginReturn {
-  error?: { error: string };
-  authUserId: { authUserId: number };
-}
-
-interface AuthRegisterReturn {
-  error?: { error: string };
-  authUserId: { authUserId: number };
-}
-
-export function authLoginV1(email, password) {
+export function authLoginV1(email: string, password: string): AuthReturn {
   const data = getData();
 
   let correctUser;
@@ -43,15 +38,20 @@ export function authLoginV1(email, password) {
  * @param {string} password - the password
  * @param {string} nameFirst - the firstname
  * @param {string} nameLast - the lastname
- * @returns {error: error message } - different error strings for different situations
+ * @returns { error: error message } - different error strings for different situations
  * @returns { authUserId: number } - new authorID who registered
  *
  */
 
-export function authRegisterV1(email, password, nameFirst, nameLast) {
+export function authRegisterV1(
+  email: string,
+  password: string,
+  nameFirst: string,
+  nameLast: string
+): AuthReturn {
   const dataStore = getData();
 
-  if (validator.isEmail(email) !== true) {
+  if (!validator.isEmail(email)) {
     return { error: 'Please enter valid email!' };
   }
 
@@ -66,25 +66,23 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
 
   if (nameFirst.length > 50) {
     return { error: 'Your first name is too long' };
+  } else if (nameFirst.length < 1) {
+    return { error: 'Your first name is too short' };
   }
 
   if (nameLast.length > 50) {
     return { error: 'Your last name is too long' };
+  } else if (nameLast.length < 1) {
+    return { error: 'Your last name is too short' };
   }
 
   const authId = Math.floor(Math.random() * 10000000);
-  // the handlestring == firstname+lastname
-  // only extract a-z0-9 characters, remove all characters to lowercases
-  // limit the authId in 20 characters
-  // if the handle is used, append the number at 21th
-  // const nameFirst_lowercase = nameFirst.toLowerCase();
-  // const nameLast_lowercase = nameLast.toLowerCase();
+
   let handlestring = nameFirst + nameLast;
 
   handlestring = handlestring.toLowerCase();
   const regpattern = /[^a-z0-9]/g;
   handlestring = handlestring.replace(regpattern, '');
-  // handlestring = handlescleartring.replace(/\W/g, "");
 
   if (handlestring.length > 20) {
     handlestring = handlestring.substring(0, 20); // exclusive
