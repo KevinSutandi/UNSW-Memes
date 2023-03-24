@@ -73,7 +73,7 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
   });
 });
 
-describe('channelsCreateV1 Iteration 1 tests', () => {
+describe('/channels/create/v2', () => {
   let user;
   let channel;
   beforeEach(() => {
@@ -109,7 +109,7 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
   });
 
   test('valid input, with channelsDetailsV1', () => {
-    channel = channelsCreateV1(user.authUserId, 'general', false);
+    channel = requestChannelsCreate(user.authUserId, 'general', false);
     expect(channel).toStrictEqual({
       channelId: expect.any(Number),
     });
@@ -138,7 +138,7 @@ describe('channelsCreateV1 Iteration 1 tests', () => {
   });
 });
 
-describe('channelsListV1 Iteration 1 test', () => {
+describe('/channels/list/v2', () => {
   let user, user2;
   let channel, channel2, channel3;
   beforeEach(() => {
@@ -150,17 +150,17 @@ describe('channelsListV1 Iteration 1 test', () => {
       'Sutandi'
     );
     user2 = authRegisterV1('testing123445@gmail.com', 'mina282', 'Mina', 'Kov');
-    channel = channelsCreateV1(user.authUserId, 'general', false);
-    channel2 = channelsCreateV1(user.authUserId, 'memes', false);
-    channel3 = channelsCreateV1(user2.authUserId, "Jonah's personal", true);
+    channel = requestChannelsCreate(user.authUserId, 'general', false);
+    channel2 = requestChannelsCreate(user.authUserId, 'memes', false);
+    channel3 = requestChannelsCreate(user2.authUserId, "Jonah's personal", true);
   });
 
   test('authUserId is invalid', () => {
-    expect(channelsListV1(user.authUserId + 1)).toStrictEqual(ERROR);
+    expect(requestChannelsList(user.authUserId + 1)).toStrictEqual(ERROR);
   });
 
   test('valid authUserId, multiple users created in different channels', () => {
-    expect(channelsListV1(user.authUserId)).toStrictEqual({
+    expect(requestChannelsList(user.authUserId)).toStrictEqual({
       channels: [
         {
           channelId: channel.channelId,
@@ -175,7 +175,7 @@ describe('channelsListV1 Iteration 1 test', () => {
   });
 
   test('authUserId is valid, one channel created', () => {
-    expect(channelsListV1(user2.authUserId)).toStrictEqual({
+    expect(requestChannelsList(user2.authUserId)).toStrictEqual({
       channels: [
         {
           channelId: channel3.channelId,
