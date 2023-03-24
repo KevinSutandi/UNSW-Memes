@@ -1,5 +1,11 @@
 import { getData, setData } from './dataStore.js';
-import { isChannel, isUser, findChannel, findUser } from './channelHelper';
+import {
+  isChannel,
+  isUser,
+  findChannel,
+  findUser,
+  getAllMemberIds,
+} from './helper';
 import { messages, errorMessage } from './interfaces';
 
 /**
@@ -25,12 +31,9 @@ export function channelMessagesV1(
 
   // Get the particular channel index from data store
   const channel = findChannel(channelId);
-  // Get the amount of messages in the particular channel
 
   // Get all uIds in the channel
-  const allMemberIds = channel
-    ? channel.allMembers.map((member) => member.uId)
-    : null;
+  const allMemberIds = getAllMemberIds(channel);
   // Error if the user is not registered
   if (user === undefined) {
     return { error: 'User Not Found' };
@@ -82,32 +85,22 @@ export function channelMessagesV1(
  *                                    | User is invalid
  */
 
-export function channelJoinV1(authUserId, channelId) {
-  // Function for finding authUserId in data store
-  function findAuthUser(users) {
-    return users.authUserId === authUserId;
-  }
-  // Function for finding channelId in data store
-  function findChannel(channels) {
-    return channels.channelId === channelId;
-  }
-  const data = getData();
-
+export function channelJoinV1(authUserId: number, channelId: number) {
   // Get the particular user index in data store
-  const user = data.users.find(findAuthUser);
+  const user = findUser(authUserId);
 
   // Get the particular channel index from data store
-  const channel = data.channels.find(findChannel);
+  const channel = findChannel(channelId);
 
   // Get all uIds in the channel
   const allMemberIds = channel
     ? channel.allMembers.map((member) => member.uId)
     : null;
-  // Error if the user is not registered
+
   if (data.users.find(findAuthUser) === undefined) {
     return { error: 'User Not Found' };
   }
-  // Error if the channel is not found
+
   if (data.channels.find(findChannel) === undefined) {
     return { error: 'Channel Not Found' };
   }

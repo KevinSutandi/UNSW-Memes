@@ -1,6 +1,6 @@
 import { getData } from './dataStore.js';
-import {userObject, errorMessage} from './interfaces'
-import {isUser} from './helper'
+import { userObject, errorMessage } from './interfaces';
+import { isUser } from './helper';
 
 /**
  * For a valid user, userProfileV1 returns information about the user
@@ -20,7 +20,7 @@ import {isUser} from './helper'
 export function userProfileV1(
   authUserId: number,
   uId: number
-): userObject | errorMessage  {
+): userObject | errorMessage {
   // Gets user from the dataStore
   const data = getData();
   // Check that authUserId is valid

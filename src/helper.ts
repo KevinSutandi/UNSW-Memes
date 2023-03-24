@@ -82,3 +82,17 @@ export function findUser(userId: number) {
   const data = getData();
   return data.users.find((a) => a.authUserId === userId);
 }
+
+/**
+ * Returns an array of member IDs for the specified channel.
+ *
+ * @param {object} channel - The channel object to retrieve member IDs from.
+ * @returns {(Array.<uId>|null)} - An array of member IDs, or null if the channel does not contain any.
+ */
+export function getAllMemberIds(channel: channelObject) {
+  if (channel) {
+    return channel.allMembers.map((member) => member.uId);
+  } else {
+    return null;
+  }
+}
