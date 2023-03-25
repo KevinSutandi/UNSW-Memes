@@ -25,7 +25,7 @@ export function requestHelper(method: HttpVerb, path: string, payload: object) {
   return JSON.parse(res.getBody('utf-8'));
 }
 
-export function authRegisterV1(
+export function authRegister(
   email: string,
   password: string,
   nameFirst: string,
@@ -39,6 +39,6 @@ export function authRegisterV1(
   });
 }
 
-export function authLoginV1(email: string, password: string) {
-  return requestHelper('POST', '/auth/login/v1', { email, password });
+export function authLogin(email: string, password: string) {
+  return requestHelper('POST', '/auth/login/v2', { email, password });
 }

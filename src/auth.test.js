@@ -1,6 +1,7 @@
 import { authLoginV1, authRegisterV1 } from './auth.js';
 import { userProfileV1 } from './users.js';
 import { clearV1 } from './other.js';
+import { authRegister, authLogin } from './httpHelper';
 const ERROR = { error: expect.any(String) };
 const IDPASS = { authUserId: expect.any(Number) };
 
@@ -188,6 +189,34 @@ describe('authLoginV1', () => {
 
   test('returns an object with "error" key if email isnt valid', () => {
     const result = authLoginV1('kevins050324@gmail.com', 'invalidpassword');
+    expect(result).toStrictEqual(ERROR);
+  });
+
+  test('returns an object with "error" key if email isnt valid', () => {
+    const result = authLoginV1('invalidemail', 'kevin1001');
+    expect(result).toStrictEqual(ERROR);
+  });
+});
+
+describe('/auth/login/v2', () => {
+  let user;
+  beforeEach(() => {
+    clearV1();
+    user = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+  });
+
+  test('returns an object with "authUserId" key if email and password match', () => {
+    const result = authLogin('kevins050324@gmail.com', 'kevin1001');
+    expect(result).toStrictEqual({ authUserId: user.authUserId });
+  });
+
+  test('returns an object with "error" key if email isnt valid', () => {
+    const result = authLogin('kevins050324@gmail.com', 'invalidpassword');
     expect(result).toStrictEqual(ERROR);
   });
 
