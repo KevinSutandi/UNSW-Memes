@@ -45,6 +45,7 @@ app.post('/channels/create/v2', (req: Request, res: Response, next) => {
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const result = channelsListV1(token);
+  return res.json(result);
 });
 // start server
 const server = app.listen(PORT, HOST, () => {
