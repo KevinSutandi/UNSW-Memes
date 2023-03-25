@@ -7,7 +7,7 @@ import {
   getAllMemberIds,
   getChannelIndex,
   isChannelMember,
-} from './helper';
+} from './functionHelper';
 import { messages, errorMessage } from './interfaces';
 
 /**
