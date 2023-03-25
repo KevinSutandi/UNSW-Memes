@@ -1,8 +1,8 @@
 import { authLoginV1, authRegisterV1 } from './auth';
 import { userProfileV1 } from './users.js';
-import { clearV1 } from './other.js';
+import { clearV1 } from './other';
 import { authRegister, authLogin } from './httpHelper';
-import { AuthReturn } from './interfaces.js';
+import { AuthReturn } from './interfaces';
 const ERROR = { error: expect.any(String) };
 const IDPASS = { authUserId: expect.any(Number) };
 
