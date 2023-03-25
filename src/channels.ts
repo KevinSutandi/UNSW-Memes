@@ -1,4 +1,3 @@
-import { token } from 'morgan';
 import { getData, setData } from './dataStore';
 import { isUser, findUser, getUserByToken } from './functionHelper';
 import {
