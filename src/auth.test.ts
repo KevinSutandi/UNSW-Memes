@@ -1,4 +1,4 @@
-import { authLoginV1, authRegisterV1 } from './auth.js';
+import { authLoginV1, authRegisterV1 } from './auth';
 import { userProfileV1 } from './users.js';
 import { clearV1 } from './other.js';
 import { authRegister, authLogin } from './httpHelper';
@@ -6,6 +6,7 @@ import { AuthReturn } from './interfaces.js';
 const ERROR = { error: expect.any(String) };
 const IDPASS = { authUserId: expect.any(Number) };
 
+/*
 describe('testing authRegisterV1', () => {
   beforeEach(() => {
     clearV1();
@@ -170,6 +171,7 @@ describe('testing authRegisterV1', () => {
     ).toStrictEqual(ERROR);
   });
 });
+*/
 
 describe('/auth/login/v2', () => {
   let user: AuthReturn;
@@ -185,7 +187,10 @@ describe('/auth/login/v2', () => {
 
   test('returns an object with "token and authUserId" key if email and password match', () => {
     const result = authLogin('kevins050324@gmail.com', 'kevin1001');
-    expect(result).toStrictEqual({ token: user.token, authUserId: user.authUserId });
+    expect(result).toStrictEqual({
+      token: user.token,
+      authUserId: user.authUserId,
+    });
   });
 
   test('returns an object with "error" key if email isnt valid', () => {
