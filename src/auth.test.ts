@@ -171,34 +171,6 @@ describe('testing authRegisterV1', () => {
   });
 });
 
-describe('authLoginV1', () => {
-  let user;
-  beforeEach(() => {
-    clearV1();
-    user = authRegisterV1(
-      'kevins050324@gmail.com',
-      'kevin1001',
-      'Kevin',
-      'Sutandi'
-    );
-  });
-
-  test('returns an object with "authUserId" key if email and password match', () => {
-    const result = authLoginV1('kevins050324@gmail.com', 'kevin1001');
-    expect(result).toStrictEqual({ authUserId: user.authUserId });
-  });
-
-  test('returns an object with "error" key if email isnt valid', () => {
-    const result = authLoginV1('kevins050324@gmail.com', 'invalidpassword');
-    expect(result).toStrictEqual(ERROR);
-  });
-
-  test('returns an object with "error" key if email isnt valid', () => {
-    const result = authLoginV1('invalidemail', 'kevin1001');
-    expect(result).toStrictEqual(ERROR);
-  });
-});
-
 describe('/auth/login/v2', () => {
   let user: AuthReturn;
   beforeEach(() => {
@@ -213,7 +185,7 @@ describe('/auth/login/v2', () => {
 
   test('returns an object with "authUserId" key if email and password match', () => {
     const result = authLogin('kevins050324@gmail.com', 'kevin1001');
-    expect(result).toStrictEqual({ authUserId: user.authUserId });
+    expect(result).toStrictEqual({ token: user.token, authUserId: user.authUserId });
   });
 
   test('returns an object with "error" key if email isnt valid', () => {
