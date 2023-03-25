@@ -1,5 +1,5 @@
-import { requestHelper } from './helper';
-import { AuthReturn, channelsCreateReturn } from './interfaces';
+import { requestHelper } from './httpHelper';
+import { AuthReturn, channelsCreateReturn, errorMessage } from './interfaces';
 import { clearV1 } from './other';
 import { authRegisterV1 } from './auth';
 import { channelDetailsV1 } from './channel';
@@ -24,7 +24,7 @@ function requestChannelsCreate(token: number, name: string, isPublic: boolean) {
 }
 
 describe('channelsListAllV1 Iteration 1 tests', () => {
-  let user: AuthReturn, user2: AuthReturn;
+  let user: AuthReturn | errorMessage, user2: AuthReturn | errorMessage;
   let channel, channel2, channel3;
   beforeEach(() => {
     clearV1();

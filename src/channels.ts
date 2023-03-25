@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore.js';
-import { isUser, findUser } from './helper.js';
+import { isUser, findUser } from './httpHelper.js';
 import {
   userData,
   channels,

@@ -42,3 +42,11 @@ export function authRegisterV1(
 export function authLoginV1(email: string, password: string) {
   return requestHelper('POST', '/auth/login/v1', { email, password });
 }
+
+export function clearV1() {
+  return requestHelper('DELETE', '/clear/v1', {});
+}
+
+export function userProfileV1(token: string, uId: number) {
+  return requestHelper('GET', '/user/profile/v2', { token, uId });
+}
