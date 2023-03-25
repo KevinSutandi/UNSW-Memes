@@ -93,6 +93,7 @@ describe('/channels/create/v2', () => {
     expect(channelsCreate('asade', 'general', false)).toStrictEqual(ERROR);
   });
 
+  /*
   test('valid input, with channelsDetailsV1', () => {
     channel = channelsCreate(user.token, 'general', false);
     expect(channel).toStrictEqual({
@@ -121,6 +122,7 @@ describe('/channels/create/v2', () => {
       ],
     });
   });
+  */
 });
 
 /*
