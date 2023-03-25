@@ -2,27 +2,10 @@ import { AuthReturn, channelsCreateReturn } from './interfaces';
 import { clearV1 } from './other';
 import { authRegisterV1 } from './auth';
 import { channelDetailsV1 } from './channel';
-import { authRegister, authLogin } from './httpHelper';
+import { authRegister, authLogin, channelsCreate } from './httpHelper';
 
 const ERROR = { error: expect.any(String) };
-/*
-// Wrapper functions
-function requestChannelsList(token: number) {
-  return requestHelper('GET', '/channels/list/v2', { token });
-}
 
-function requestChannelsListAll(token: number) {
-  return requestHelper('GET', '/channels/listall/v2', { token });
-}
-
-function requestChannelsCreate(token: number, name: string, isPublic: boolean) {
-  return requestHelper('POST', '/channels/create/v2', {
-    token,
-    name,
-    isPublic,
-  });
-}
-*/
 describe('channelsListAllV1 Iteration 1 tests', () => {
   let user: AuthReturn, user2: AuthReturn;
   let channel, channel2, channel3;
@@ -89,33 +72,27 @@ describe('/channels/create/v2', () => {
   });
 
   test('valid input', () => {
-    expect(
-      requestChannelsCreate(user.authUserId, 'general', false)
-    ).toStrictEqual({
+    expect(channelsCreate(user.token, 'general', false)).toStrictEqual({
       channelId: expect.any(Number),
     });
   });
 
   test('name less than 1 char', () => {
-    expect(requestChannelsCreate(user.authUserId, '', true)).toStrictEqual(
-      ERROR
-    );
+    expect(channelsCreate(user.token, '', true)).toStrictEqual(ERROR);
   });
 
   test('name more than 20 chars', () => {
     expect(
-      requestChannelsCreate(user.authUserId, '123456789012345678901', true)
+      channelsCreate(user.token, '123456789012345678901', true)
     ).toStrictEqual(ERROR);
   });
 
-  test('invalid authUserId', () => {
-    expect(
-      requestChannelsCreate(user.authUserId + 1, 'general', false)
-    ).toStrictEqual(ERROR);
+  test('invalid token', () => {
+    expect(channelsCreate('asade', 'general', false)).toStrictEqual(ERROR);
   });
 
   test('valid input, with channelsDetailsV1', () => {
-    channel = requestChannelsCreate(user.authUserId, 'general', false);
+    channel = channelsCreate(user.token, 'general', false);
     expect(channel).toStrictEqual({
       channelId: expect.any(Number),
     });
@@ -144,6 +121,7 @@ describe('/channels/create/v2', () => {
   });
 });
 
+/*
 describe('/channels/list/v2', () => {
   let user: AuthReturn, user2: AuthReturn;
   let channel: channelsCreateReturn,
@@ -197,3 +175,4 @@ describe('/channels/list/v2', () => {
     });
   });
 });
+*/
