@@ -1,7 +1,7 @@
 import { authRegisterV1, clearV1, userProfileV1 } from './httpHelper';
 
 const ERROR = { error: expect.any(String) };
-const IDPASS = { authUserId: expect.any(Number) };
+const IDPASS = { authUserId: expect.any(Number), token: expect.any(String) };
 
 describe('testing authRegisterV1', () => {
   beforeEach(() => {

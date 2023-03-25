@@ -4,8 +4,8 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1 } from './auth';
-import { channelsCreateV1 } from './channels';
-import { userProfileV1 } from './users';
+// import { channelsCreateV1 } from './channels';
+// import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
 // Set up web app
@@ -38,11 +38,11 @@ app.post('/auth/register/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.post('/channels/create/v2', (req: Request, res: Response, next) => {
-  const { token, name, isPublic } = req.body;
-  const result = channelsCreateV1(token, name, isPublic);
-  return res.json(result);
-});
+// app.post('/channels/create/v2', (req: Request, res: Response, next) => {
+//   const { token, name, isPublic } = req.body;
+//   const result = channelsCreateV1(token, name, isPublic);
+//   return res.json(result);
+// });
 
 // app.get('/channels/list/v2', (req: Request, res: Response, next) => {
 //   const token = req.query.token as string;
@@ -54,12 +54,13 @@ app.delete('/clear/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.get('/user/profile/v2', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
-  const uId = parseInt(req.query.uId as string);
-  const result = userProfileV1(token, uId);
-  return res.json(result);
-});
+// Will Reenable once user profile is working
+// app.get('/user/profile/v2', (req: Request, res: Response, next) => {
+//   const token = req.query.token as string;
+//   const uId = parseInt(req.query.uId as string);
+//   const result = userProfileV1(token, uId);
+//   return res.json(result);
+// });
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
