@@ -17,7 +17,7 @@ export function authLoginV1(
     }
   }
   if (correctUser !== undefined) {
-    return { authUserId: correctUser.authUserId };
+    return { authUserId: correctUser.authUserId, token: correctUser.token };
   }
   return { error: 'Email entered does not belong to a user' };
 }

@@ -87,3 +87,8 @@ export function isChannelMember(channelId: number, userId: number): boolean {
   const allMemberIds = getAllMemberIds(channel);
   return allMemberIds.includes(userId);
 }
+
+export function makeToken() {
+  const token = Date.now().toString(36) + Math.random().toString(36).substring;
+  return token;
+}
