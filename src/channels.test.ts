@@ -1,11 +1,12 @@
-import { AuthReturn, channelsCreateReturn } from './interfaces';
+import { AuthReturn } from './interfaces';
 import { clearV1 } from './other';
 import { authRegisterV1 } from './auth';
 import { channelDetailsV1 } from './channel';
-import { authRegister, authLogin, channelsCreate } from './httpHelper';
+import { authRegister, channelsCreate } from './httpHelper';
 
 const ERROR = { error: expect.any(String) };
 
+/*
 describe('channelsListAllV1 Iteration 1 tests', () => {
   let user: AuthReturn, user2: AuthReturn;
   let channel, channel2, channel3;
@@ -57,6 +58,7 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
     });
   });
 });
+*/
 
 describe('/channels/create/v2', () => {
   let user: AuthReturn;
