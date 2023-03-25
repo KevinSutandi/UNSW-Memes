@@ -8,6 +8,9 @@ interface users {
   nameFirst: string;
   nameLast: string;
   isGlobalOwner: number;
+  token: Array<{
+    token: string;
+  }>;
 }
 
 interface Channel {

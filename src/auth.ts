@@ -1,8 +1,11 @@
 import validator from 'validator';
 import { getData, setData } from './dataStore.js';
-import { AuthReturn } from './interfaces.js';
+import { AuthReturn, errorMessage } from './interfaces.js';
 
-export function authLoginV1(email: string, password: string): AuthReturn {
+export function authLoginV1(
+  email: string,
+  password: string
+): AuthReturn | errorMessage {
   const data = getData();
 
   let correctUser;
@@ -25,7 +28,7 @@ export function authLoginV1(email: string, password: string): AuthReturn {
  * @param {string} nameFirst - the firstname
  * @param {string} nameLast - the lastname
  * @returns { error : string } error - different error strings for different situations
- * @returns { authUserId : number } authUserId - new authorID who registered
+ * @returns { token: string, authUserId : number } token - the token for the user, authUserId - the authUserId for the user
  *
  */
 
@@ -34,7 +37,7 @@ export function authRegisterV1(
   password: string,
   nameFirst: string,
   nameLast: string
-): AuthReturn {
+): AuthReturn | errorMessage {
   const dataStore = getData();
 
   if (!validator.isEmail(email)) {
@@ -64,6 +67,9 @@ export function authRegisterV1(
 
   const authId = Math.floor(Math.random() * 10000000);
 
+  // Create a random token that is a string and it is unique every time
+  const token = Date.now().toString(36) + Math.random().toString(36).substr(2);
+
   let handlestring = nameFirst + nameLast;
 
   handlestring = handlestring.toLowerCase();
@@ -71,13 +77,13 @@ export function authRegisterV1(
   handlestring = handlestring.replace(regpattern, '');
 
   if (handlestring.length > 20) {
-    handlestring = handlestring.substring(0, 20); // exclusive
+    handlestring = handlestring.substring(0, 20);
   }
 
   const handleMap = dataStore.users.map((user) => user.handleStr);
-
+  const originalHandle = handlestring;
   for (let i = 0; handleMap.includes(handlestring); i++) {
-    handlestring = `${handlestring}${i}`;
+    handlestring = `${originalHandle}${i}`;
   }
 
   let isGlobalOwner = 2;
@@ -93,8 +99,10 @@ export function authRegisterV1(
     nameFirst: nameFirst,
     nameLast: nameLast,
     isGlobalOwner: isGlobalOwner,
+    token: [{ token: token }],
   });
+
   setData(dataStore);
 
-  return { authUserId: authId };
+  return { token: token, authUserId: authId };
 }

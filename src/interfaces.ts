@@ -121,16 +121,14 @@ export interface errorMessage {
 }
 
 export interface channelsCreateReturn {
-  error?: string;
-  channelId?: number;
+  channelId: number;
 }
 
 export interface channelsListReturn {
-  error?: string;
-  channels?: channels[];
+  channels: channels[];
 }
 
 export interface AuthReturn {
-  error?: string;
-  authUserId?: number;
+  authUserId: number;
+  token: string;
 }
