@@ -95,6 +95,8 @@ export function makeToken() {
 
 export function getUserByToken(token: string) {
   const data = getData();
-  const tokenFound = data.users.token.find((a) => a.token === token);
+  const tokenFound = data.users.find((c) =>
+    c.token.find((t) => t.token === token)
+  );
   return tokenFound;
 }
