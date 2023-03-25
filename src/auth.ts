@@ -1,6 +1,6 @@
 import validator from 'validator';
 import { getData, setData } from './dataStore.js';
-import { makeToken } from './functionHelper.js';
+import { makeToken } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces.js';
 
 export function authLoginV1(
