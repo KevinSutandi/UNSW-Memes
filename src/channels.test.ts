@@ -1,11 +1,11 @@
-import { requestHelper } from './helper';
 import { AuthReturn, channelsCreateReturn } from './interfaces';
 import { clearV1 } from './other';
 import { authRegisterV1 } from './auth';
 import { channelDetailsV1 } from './channel';
+import { authRegister, authLogin } from './httpHelper';
 
 const ERROR = { error: expect.any(String) };
-
+/*
 // Wrapper functions
 function requestChannelsList(token: number) {
   return requestHelper('GET', '/channels/list/v2', { token });
@@ -22,7 +22,7 @@ function requestChannelsCreate(token: number, name: string, isPublic: boolean) {
     isPublic,
   });
 }
-
+*/
 describe('channelsListAllV1 Iteration 1 tests', () => {
   let user: AuthReturn, user2: AuthReturn;
   let channel, channel2, channel3;
@@ -80,7 +80,7 @@ describe('/channels/create/v2', () => {
   let channel;
   beforeEach(() => {
     clearV1();
-    user = authRegisterV1(
+    user = authRegister(
       'onlyfortestttt06@gmail.com',
       'testpw0005',
       'Jonah',

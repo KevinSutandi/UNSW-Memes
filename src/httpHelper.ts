@@ -1,5 +1,6 @@
 import request, { HttpVerb } from 'sync-request';
 import { port, url } from './config.json';
+import { channelsCreateReturn } from './interfaces';
 
 const SERVER_URL = `${url}:${port}`;
 // const ERROR = { error: expect.any(String) };
@@ -41,4 +42,16 @@ export function authRegister(
 
 export function authLogin(email: string, password: string) {
   return requestHelper('POST', '/auth/login/v2', { email, password });
+}
+
+export function channelsCreate(
+  token: string,
+  name: string,
+  isPublic: boolean
+): channelsCreateReturn {
+  return requestHelper('POST', '/channels/create/v2', {
+    token,
+    name,
+    isPublic,
+  });
 }
