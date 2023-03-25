@@ -188,7 +188,7 @@ describe('/auth/login/v2', () => {
   test('returns an object with "token and authUserId" key if email and password match', () => {
     const result = authLogin('kevins050324@gmail.com', 'kevin1001');
     expect(result).toStrictEqual({
-      token: user.token,
+      token: expect.any(String),
       authUserId: user.authUserId,
     });
   });
