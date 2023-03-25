@@ -92,3 +92,9 @@ export function makeToken() {
   const token = Date.now().toString(36) + Math.random().toString(36).substring;
   return token;
 }
+
+export function getUserByToken(token: string) {
+  const data = getData();
+  const tokenFound = data.users.token.find((a) => a.token === token);
+  return tokenFound;
+}
