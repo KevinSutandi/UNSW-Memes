@@ -2,6 +2,7 @@ import { authLoginV1, authRegisterV1 } from './auth.js';
 import { userProfileV1 } from './users.js';
 import { clearV1 } from './other.js';
 import { authRegister, authLogin } from './httpHelper';
+import { AuthReturn } from './interfaces.js';
 const ERROR = { error: expect.any(String) };
 const IDPASS = { authUserId: expect.any(Number) };
 
@@ -199,7 +200,7 @@ describe('authLoginV1', () => {
 });
 
 describe('/auth/login/v2', () => {
-  let user;
+  let user: AuthReturn;
   beforeEach(() => {
     clearV1();
     user = authRegister(
