@@ -62,3 +62,7 @@ export function channelsCreate(
     isPublic,
   });
 }
+
+export function channelDetails(token: string, channelId: number) {
+  return requestHelper('GET', '/channel/details/v2', { token, channelId });
+}
