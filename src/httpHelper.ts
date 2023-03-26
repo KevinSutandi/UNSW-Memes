@@ -90,3 +90,7 @@ export function messageSend(token: string, channelId: number, message: string) {
     message,
   });
 }
+
+export function messageRemove(token: string, messageId: number) {
+  return requestHelper('DELETE', '/message/remove/v1', { token, messageId });
+}

@@ -103,3 +103,19 @@ export function getUserByToken(token: string) {
   );
   return tokenFound;
 }
+
+export function findChannelByMessageId(messageId: number) {
+  const data = getData();
+  const channelFound = data.channels.find((channel) =>
+    channel.messages.find((messages) => messages.messageId === messageId)
+  );
+  return channelFound;
+}
+
+export function getAllOwnerIds(channel: channelData) {
+  if (channel) {
+    return channel.ownerMembers.map((owner) => owner.uId);
+  } else {
+    return null;
+  }
+}
