@@ -47,6 +47,7 @@ app.post('/channels/create/v2', (req: Request, res: Response, next) => {
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const result = channelsListV1(token);
+  return res.json(result);
 });
 
 app.delete('/clear/v1', (req: Request, res: Response, next) => {
