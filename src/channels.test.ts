@@ -1,4 +1,4 @@
-import { AuthReturn, channelsCreateReturn, errorMessage } from './interfaces';
+import { AuthReturn } from './interfaces';
 import {
   authRegister,
   channelsCreate,
