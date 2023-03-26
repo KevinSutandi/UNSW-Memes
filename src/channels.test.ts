@@ -3,6 +3,7 @@ import {
   authRegister,
   channelsCreate,
   channelDetails,
+  channelsList,
   clearV1,
 } from './httpHelper';
 
@@ -144,12 +145,12 @@ describe('/channels/list/v2', () => {
     channel3 = channelsCreate(user2.token, "Jonah's personal", true);
   });
 
-  test('authUserId is invalid', () => {
-    expect(requestChannelsList(user.authUserId + 1)).toStrictEqual(ERROR);
+  test('Token is invalid', () => {
+    expect(channelsList('asade')).toStrictEqual(ERROR);
   });
 
-  test('valid authUserId, multiple users created in different channels', () => {
-    expect(requestChannelsList(user.authUserId)).toStrictEqual({
+  test('valid token, multiple users created in different channels', () => {
+    expect(channelsList(user.token)).toStrictEqual({
       channels: [
         {
           channelId: channel.channelId,
@@ -163,8 +164,8 @@ describe('/channels/list/v2', () => {
     });
   });
 
-  test('authUserId is valid, one channel created', () => {
-    expect(requestChannelsList(user2.authUserId)).toStrictEqual({
+  test('token is valid, one channel created', () => {
+    expect(channelsList(user2.token)).toStrictEqual({
       channels: [
         {
           channelId: channel3.channelId,
