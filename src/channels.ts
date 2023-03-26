@@ -34,7 +34,7 @@ export function channelsCreateV1(
   const user = getUserByToken(token);
   // Returns error if the given userId is invalid
   if (user === undefined) {
-    return { error: 'Invalid authUserId' };
+    return { error: 'Invalid token' };
   }
   const newId = Math.floor(Math.random() * 10000);
   // Finds the user data
@@ -84,15 +84,17 @@ export function channelsCreateV1(
  * when successful
  *
  */
-export function channelsListV1(authUserId: number): channelsListReturn | errorMessage {
+export function channelsListV1(
+  token: string
+): channelsListReturn | errorMessage {
   const data = getData();
-
-  if (!isUser(authUserId)) {
-    return { error: 'Invalid authUserId' };
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    return { error: 'Invalid token' };
   }
 
   // need to access our data and pull out all of the channels linked to user
-  const authUserIdToFind = authUserId;
+  const authUserIdToFind = user.authUserId;
   const userChannels: channelsListReturn = { channels: [] };
 
   data.channels.forEach((channel) => {
@@ -109,7 +111,9 @@ export function channelsListV1(authUserId: number): channelsListReturn | errorMe
   return userChannels;
 }
 
-export function channelsListAllV1(authUserId: number): channelsListReturn | errorMessage {
+export function channelsListAllV1(
+  authUserId: number
+): channelsListReturn | errorMessage {
   const data = getData();
   // If the given userId is invalid
   if (!isUser(authUserId)) {
