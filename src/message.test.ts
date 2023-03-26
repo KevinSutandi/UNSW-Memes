@@ -75,7 +75,7 @@ describe('testing sendMessages', () => {
     const uniqueIds = new Set(ids);
     expect(ids.length).toBe(uniqueIds.size);
   });
-  /*
+
   test('30 messages in the channel', () => {
     for (let i = 0; i < 30; i++) {
       messageSend(user1.token, channel1.channelId, `hello world number ${i}`);
@@ -114,5 +114,4 @@ describe('testing sendMessages', () => {
     });
     expect(numMessages2).toBe(10);
   });
-  */
 });
