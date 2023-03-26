@@ -7,6 +7,7 @@ import {
   getAllMemberIds,
   getChannelIndex,
   isChannelMember,
+  getUserByToken,
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
 
@@ -24,11 +25,11 @@ import { messages, errorMessage } from './interfaces';
  *                                    | User is invalid
  */
 export function channelMessagesV1(
-  authUserId: number,
+  token: string,
   channelId: number,
   start: number
 ): messages | errorMessage {
-  const user = findUser(authUserId);
+  const user = getUserByToken(token);
 
   const channel = findChannel(channelId);
 

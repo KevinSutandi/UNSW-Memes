@@ -62,3 +62,15 @@ export function channelsCreate(
     isPublic,
   });
 }
+
+export function channelMessage(
+  token: string,
+  channelId: number,
+  start: number
+) {
+  return requestHelper('GET', '/channel/messages/v2', {
+    token,
+    channelId,
+    start,
+  });
+}
