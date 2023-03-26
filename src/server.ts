@@ -5,6 +5,7 @@ import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1 } from './auth';
 import { channelsCreateV1, channelsListV1 } from './channels';
+import { channelDetailsV1 } from './channel';
 
 // Set up web app
 const app = express();
@@ -47,6 +48,14 @@ app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const result = channelsListV1(token);
   return res.json(result);
 });
+
+app.get('/channel/details/v2', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const channelId = parseInt(req.query.channelId as string);
+  const result = channelDetailsV1(token, channelId);
+  return res.json(result);
+});
+
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
