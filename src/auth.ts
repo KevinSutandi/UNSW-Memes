@@ -71,7 +71,7 @@ export function authRegisterV1(
   const authId = Math.floor(Math.random() * 10000000);
 
   // Create a random token that is a string and it is unique every time
-  const token = Date.now().toString(36) + Math.random().toString(36).substr(2);
+  const token = makeToken();
 
   let handlestring = nameFirst + nameLast;
 
