@@ -1,6 +1,5 @@
 import { authRegister, channelsCreate, channelDetails } from './httpHelper';
-
-import { clearV1 } from './other';
+import { clearV1 } from './httpHelper';
 import { AuthReturn, channelsCreateReturn } from './interfaces.js';
 
 const ERROR = { error: expect.any(String) };
