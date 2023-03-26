@@ -1,14 +1,12 @@
-import { AuthReturn } from './interfaces';
+import { AuthReturn, channelsCreateReturn, errorMessage } from './interfaces';
 import { clearV1 } from './other';
-import { authRegisterV1 } from './auth';
-import { channelDetailsV1 } from './channel';
 import { authRegister, channelsCreate } from './httpHelper';
 
 const ERROR = { error: expect.any(String) };
 
 /*
 describe('channelsListAllV1 Iteration 1 tests', () => {
-  let user: AuthReturn, user2: AuthReturn;
+  let user: AuthReturn | errorMessage, user2: AuthReturn | errorMessage;
   let channel, channel2, channel3;
   beforeEach(() => {
     clearV1();

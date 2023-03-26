@@ -1,5 +1,6 @@
 import { getData } from './dataStore';
 import { channelData } from './interfaces';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Determines whether a channel is a valid channel
@@ -89,7 +90,7 @@ export function isChannelMember(channelId: number, userId: number): boolean {
 }
 
 export function makeToken() {
-  const token = Date.now().toString(36) + Math.random().toString(36).substring;
+  const token = uuidv4();
   return token;
 }
 

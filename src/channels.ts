@@ -1,8 +1,6 @@
 import { getData, setData } from './dataStore';
-import { isUser, findUser, getUserByToken } from './functionHelper';
+import { isUser, getUserByToken } from './functionHelper';
 import {
-  userData,
-  channels,
   channelsCreateReturn,
   channelsListReturn,
   errorMessage,
@@ -86,7 +84,7 @@ export function channelsCreateV1(
  * when successful
  *
  */
-export function channelsListV1(authUserId: number): channelsListReturn {
+export function channelsListV1(authUserId: number): channelsListReturn | errorMessage {
   const data = getData();
 
   if (!isUser(authUserId)) {
@@ -111,7 +109,7 @@ export function channelsListV1(authUserId: number): channelsListReturn {
   return userChannels;
 }
 
-export function channelsListAllV1(authUserId: number): channelsListReturn {
+export function channelsListAllV1(authUserId: number): channelsListReturn | errorMessage {
   const data = getData();
   // If the given userId is invalid
   if (!isUser(authUserId)) {

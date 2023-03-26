@@ -44,6 +44,13 @@ export function authLogin(email: string, password: string) {
   return requestHelper('POST', '/auth/login/v2', { email, password });
 }
 
+export function clearV1() {
+  return requestHelper('DELETE', '/clear/v1', {});
+}
+
+export function userProfileV1(token: string, uId: number) {
+  return requestHelper('GET', '/user/profile/v2', { token, uId });
+}
 export function channelsCreate(
   token: string,
   name: string,

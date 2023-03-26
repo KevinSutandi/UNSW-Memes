@@ -6,6 +6,7 @@ import cors from 'cors';
 import { authRegisterV1, authLoginV1 } from './auth';
 import { channelsCreateV1, channelsListV1 } from './channels';
 import { channelDetailsV1 } from './channel';
+import { clearV1 } from './other';
 
 // Set up web app
 const app = express();
@@ -43,11 +44,23 @@ app.post('/channels/create/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+// app.get('/channels/list/v2', (req: Request, res: Response, next) => {
+//   const token = req.query.token as string;
+//   const result = channelsListV1(token);
+// });
+
+app.delete('/clear/v1', (req: Request, res: Response, next) => {
+  const result = clearV1();
+  return res.json(result);
+});
+
+/*
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const result = channelsListV1(token);
   return res.json(result);
 });
+*/
 
 app.get('/channel/details/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
@@ -55,6 +68,14 @@ app.get('/channel/details/v2', (req: Request, res: Response, next) => {
   const result = channelDetailsV1(token, channelId);
   return res.json(result);
 });
+
+// Will Reenable once user profile is working
+// app.get('/user/profile/v2', (req: Request, res: Response, next) => {
+//   const token = req.query.token as string;
+//   const uId = parseInt(req.query.uId as string);
+//   const result = userProfileV1(token, uId);
+//   return res.json(result);
+// });
 
 // start server
 const server = app.listen(PORT, HOST, () => {

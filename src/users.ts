@@ -1,6 +1,6 @@
 import { getData } from './dataStore.js';
 import { userObject, errorMessage } from './interfaces';
-import { isUser } from './helper';
+import { isUser } from './functionHelper';
 
 /**
  * For a valid user, userProfileV1 returns information about the user
