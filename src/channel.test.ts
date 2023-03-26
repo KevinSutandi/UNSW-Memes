@@ -80,7 +80,7 @@ describe('testing channelMessage (ALL VALID CASES)', () => {
     channel1 = channelsCreate(user1.token, 'wego', true);
   });
 
-  test('30 messages in ', () => {
+  test('30 messages in the channel', () => {
     for (let i = 0; i < 30; i++) {
       sendMessage(user1.token, channel1.channelId, 'hello ${i}');
     }
@@ -93,5 +93,28 @@ describe('testing channelMessage (ALL VALID CASES)', () => {
       end: -1,
     });
     expect(numMessages).toBe(30);
+  });
+
+  test('more than 50 messages in the channel', () => {
+    for (let i = 0; i < 60; i++) {
+      sendMessage(user1.token, channel1.channelId, 'hello shin ${i}');
+    }
+
+    const result = channelMessage(user1.token, channel1.channelId, 0);
+    const result2 = channelMessage(user1.token, channel1.channelId, 50);
+    const numMessages = result.messages.length;
+    const numMessages2 = result2.messages.length;
+    expect(result).toStrictEqual({
+      messages: expect.any(Array),
+      start: 0,
+      end: 50,
+    });
+    expect(numMessages).toBe(50);
+    expect(result2).toStrictEqual({
+      messages: expect.any(Array),
+      start: 50,
+      end: -1,
+    });
+    expect(numMessages2).toBe(10);
   });
 });
