@@ -191,20 +191,21 @@ export function channelInviteV1(
  *                                    | User is not a member of the channel
  *                                    | User is invalid
  */
-export function channelDetailsV1(authUserId: number, channelId: number) {
+export function channelDetailsV1(token: string, channelId: number) {
   // If channelId doesn't refer to a valid channel,
   // returns error
+  const user = getUserByToken(token);
   if (!isChannel(channelId)) {
     return { error: 'channelId does not refer to a valid channel' };
-  } else if (!isUser(authUserId)) {
-    // If authUserId is invalid, returns error
-    return { error: 'Invalid authUserId' };
+  } else if (user === undefined) {
+    // If token is invalid, returns error
+    return { error: 'Invalid token' };
+  }
+  // If the user is not a member of the channel
+  if (!isChannelMember(channelId, user.authUserId)) {
+    return { error: user.authUserId + ' is not a member of the channel' };
   }
   const channelObj = findChannel(channelId);
-  // If the user is not a member of the channel
-  if (!isChannelMember(authUserId, channelId)) {
-    return { error: authUserId + ' is not a member of the channel' };
-  }
   return {
     name: channelObj.name,
     isPublic: channelObj.isPublic,

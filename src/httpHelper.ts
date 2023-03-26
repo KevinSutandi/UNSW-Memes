@@ -74,3 +74,11 @@ export function channelMessage(
     start,
   });
 }
+
+export function channelDetails(token: string, channelId: number) {
+  return requestHelper('GET', '/channel/details/v2', { token, channelId });
+}
+
+export function channelsList(token: string) {
+  return requestHelper('GET', '/channels/list/v2', { token });
+}

@@ -4,8 +4,8 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1 } from './auth';
-import { channelsCreateV1 } from './channels';
-import { channelMessagesV1 } from './channel';
+import { channelsCreateV1, channelsListV1 } from './channels';
+import { channelMessagesV1, channelDetailsV1 } from './channel';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -45,10 +45,11 @@ app.post('/channels/create/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-// app.get('/channels/list/v2', (req: Request, res: Response, next) => {
-//   const token = req.query.token as string;
-//   const result = channelsListV1(token);
-// });
+app.get('/channels/list/v2', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const result = channelsListV1(token);
+  return res.json(result);
+});
 
 app.delete('/clear/v1', (req: Request, res: Response, next) => {
   const result = clearV1();
@@ -60,6 +61,21 @@ app.get('/channel/messages/v2', (req: Request, res: Response, next) => {
   const channelId = parseInt(req.query.channelId as string);
   const start = parseInt(req.query.start as string);
   const result = channelMessagesV1(token, channelId, start);
+  return res.json(result);
+});
+
+/*
+app.get('/channels/list/v2', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const result = channelsListV1(token);
+  return res.json(result);
+});
+*/
+
+app.get('/channel/details/v2', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const channelId = parseInt(req.query.channelId as string);
+  const result = channelDetailsV1(token, channelId);
   return res.json(result);
 });
 
