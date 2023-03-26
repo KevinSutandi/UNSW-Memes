@@ -1,29 +1,6 @@
 import { getData } from './dataStore.js';
-
-// HELPER FUNCTIONS
-
-/**
- * @typedef {Object} user - object containing user information to be retuned
- * @property {number} uId - user's unique id
- * @property {string} handleStr - user's handlestring
- * @property {string} email - user's email
- * @property {string} nameFirst - user's first name
- * @property {string} nameLast - user's last name
- */
-
-/**
- * Determines whether a user is a valid user
- * by checking through users array in the
- * dataStore.js
- *
- * @param {number} userId - the authenticated user Id
- * @returns {boolean} - true if the user is in the dataStore
- *                    | false if the user isnt in the dataStore
- */
-export function isUser(userId) {
-  const data = getData();
-  return data.users.some((a) => a.authUserId === userId);
-}
+import { userObject, errorMessage } from './interfaces';
+import { isUser } from './functionHelper';
 
 /**
  * For a valid user, userProfileV1 returns information about the user
@@ -40,7 +17,10 @@ export function isUser(userId) {
  * the user object and its associated data if it exists in the dataStore
  *
  */
-export function userProfileV1(authUserId, uId) {
+export function userProfileV1(
+  authUserId: number,
+  uId: number
+): userObject | errorMessage {
   // Gets user from the dataStore
   const data = getData();
   // Check that authUserId is valid

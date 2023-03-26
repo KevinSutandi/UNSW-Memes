@@ -1,42 +1,10 @@
-import { getData, setData } from './dataStore.js';
-
-// HELPER FUNCTIONS
-
-/**
- * @typedef {Object} user - object containing user information to be retuned
- * @property {number} uId - user's unique id
- * @property {string} handleStr - user's handlestring
- * @property {string} email - user's email
- * @property {string} nameFirst - user's first name
- * @property {string} nameLast - user's last name
- */
-
-/**
- * Determines whether a user is a valid user
- * by checking through users array in the
- * dataStore.js
- *
- * @param {number} userId - the authenticated user Id
- * @returns {boolean} - true if the user is in the dataStore
- *                    = false if the user isnt in the dataStore
- */
-export function isUser(userId) {
-  const data = getData();
-  return data.users.some((a) => a.authUserId === userId);
-}
-
-/**
- * Finds the user object based on the given userId
- *
- * @param {number} userId - the authenticated user Id
- * @returns {undefined} - returns undefined if the user isnt in the dataStore
- * @returns {user} - returns user object if the user is in the dataStore
- *
- */
-export function findUser(userId) {
-  const data = getData();
-  return data.users.find((a) => a.authUserId === userId);
-}
+import { getData, setData } from './dataStore';
+import { isUser, getUserByToken } from './functionHelper';
+import {
+  channelsCreateReturn,
+  channelsListReturn,
+  errorMessage,
+} from './interfaces.js';
 
 /**
  * Creates a new channel with the given name,
@@ -44,7 +12,7 @@ export function findUser(userId) {
  * Then, pushes the created channel into
  * data.channels
  *
- * @param {number} authUserId - the authenticated user Id
+ * @param {string} token - the authenticated user token
  * @param {string} name - the channel's name
  * @param {boolean} isPublic - determines whether the channel is public or private
  * @returns {error: 'error message'} - if the channel's name' length is less than or more than 20
@@ -52,20 +20,24 @@ export function findUser(userId) {
  * @returns {{channelId: number}} - returns the channelId object
  *
  */
-export function channelsCreateV1(authUserId, name, isPublic) {
+export function channelsCreateV1(
+  token: string,
+  name: string,
+  isPublic: boolean
+): channelsCreateReturn | errorMessage {
   // Gets the data from database
   const data = getData();
   // Returns error if name's length is less than 1 or more than 20
   if (name.length < 1 || name.length > 20) {
     return { error: 'Invalid name length' };
   }
+  const user = getUserByToken(token);
   // Returns error if the given userId is invalid
-  if (!isUser(authUserId)) {
+  if (user === undefined) {
     return { error: 'Invalid authUserId' };
   }
   const newId = Math.floor(Math.random() * 10000);
   // Finds the user data
-  const user = findUser(authUserId);
   // Pushes the new channel's data into data
   data.channels.push({
     channelId: newId,
@@ -112,7 +84,7 @@ export function channelsCreateV1(authUserId, name, isPublic) {
  * when successful
  *
  */
-export function channelsListV1(authUserId) {
+export function channelsListV1(authUserId: number): channelsListReturn | errorMessage {
   const data = getData();
 
   if (!isUser(authUserId)) {
@@ -121,7 +93,7 @@ export function channelsListV1(authUserId) {
 
   // need to access our data and pull out all of the channels linked to user
   const authUserIdToFind = authUserId;
-  const userChannels = { channels: [] };
+  const userChannels: channelsListReturn = { channels: [] };
 
   data.channels.forEach((channel) => {
     const isUserInChannel = channel.allMembers.some(
@@ -137,7 +109,7 @@ export function channelsListV1(authUserId) {
   return userChannels;
 }
 
-export function channelsListAllV1(authUserId) {
+export function channelsListAllV1(authUserId: number): channelsListReturn | errorMessage {
   const data = getData();
   // If the given userId is invalid
   if (!isUser(authUserId)) {

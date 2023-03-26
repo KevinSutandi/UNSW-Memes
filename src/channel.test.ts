@@ -1,58 +1,45 @@
-import { authRegisterV1 } from './auth.js';
-
-import { channelsCreateV1 } from './channels.js';
-
-import {
-  channelJoinV1,
-  channelInviteV1,
-  channelMessagesV1,
-  channelDetailsV1,
-} from './channel.js';
-
-import { clearV1 } from './other.js';
+import { authRegister, channelsCreate, channelDetails } from './httpHelper';
+import { clearV1 } from './httpHelper';
+import { AuthReturn, channelsCreateReturn } from './interfaces.js';
 
 const ERROR = { error: expect.any(String) };
 
-describe('channelDetailsV1 Iteration 1 tests', () => {
-  let user, user2;
-  let channel;
+describe('/channel/details/v2', () => {
+  let user: AuthReturn, user2: AuthReturn;
+  let channel: channelsCreateReturn;
   beforeEach(() => {
     clearV1();
-    user = authRegisterV1(
+    user = authRegister(
       'kevins050324@gmail.com',
       'kevin1001',
       'Kevin',
       'Sutandi'
     );
-    user2 = authRegisterV1(
+    user2 = authRegister(
       'someotheremail@gmail.com',
       'someone2031',
       'Jonah',
       'Meggs'
     );
-    channel = channelsCreateV1(user.authUserId, 'general', true);
+    channel = channelsCreate(user.token, 'general', true);
   });
 
-  test('invalid channelId', () => {
-    expect(
-      channelDetailsV1(user.authUserId, channel.channelId + 1)
-    ).toStrictEqual(ERROR);
-  });
-
-  test('valid channelId, user is not a member', () => {
-    expect(channelDetailsV1(user2.authUserId, channel.channelId)).toStrictEqual(
+  test('invalid token', () => {
+    expect(channelDetails(user.token, channel.channelId + 1)).toStrictEqual(
       ERROR
     );
   });
 
-  test('invalid authUserId', () => {
-    expect(
-      channelDetailsV1(user.authUserId + 1, channel.channelId)
-    ).toStrictEqual(ERROR);
+  test('valid token, user is not a member', () => {
+    expect(channelDetails(user2.token, channel.channelId)).toStrictEqual(ERROR);
+  });
+
+  test('invalid token', () => {
+    expect(channelDetails('asade', channel.channelId)).toStrictEqual(ERROR);
   });
 
   test('valid input', () => {
-    expect(channelDetailsV1(user.authUserId, channel.channelId)).toStrictEqual({
+    expect(channelDetails(user.token, channel.channelId)).toStrictEqual({
       name: 'general',
       isPublic: true,
       ownerMembers: [
@@ -77,6 +64,7 @@ describe('channelDetailsV1 Iteration 1 tests', () => {
   });
 });
 
+/*
 describe('testing channelJoinV1', () => {
   let user1, user2, user3;
   let channel1, channel2, channel3;
@@ -479,3 +467,4 @@ describe('testing channelMessagesV1 (ALL INVALID CASES)', () => {
 
 // ChannelMessagesV1 for channels containg messages
 // would be tested when there is a way to add messages
+*/

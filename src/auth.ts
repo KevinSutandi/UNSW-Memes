@@ -1,11 +1,16 @@
 import validator from 'validator';
-import { getData, setData } from './dataStore.js';
+import { makeToken } from './functionHelper';
+import { AuthReturn, errorMessage, userData } from './interfaces';
+import { getData, setData } from './dataStore';
 
-export function authLoginV1(email, password) {
-  const data = getData();
+export function authLoginV1(
+  email: string,
+  password: string
+): AuthReturn | errorMessage {
+  const dataStore = getData();
 
-  let correctUser;
-  for (const user of data.users) {
+  let correctUser: userData;
+  for (const user of dataStore.users) {
     if (email === user.email && password === user.password) {
       correctUser = user;
     } else if (email === user.email && password !== user.password) {
@@ -13,7 +18,9 @@ export function authLoginV1(email, password) {
     }
   }
   if (correctUser !== undefined) {
-    return { authUserId: correctUser.authUserId };
+    const token = makeToken();
+    correctUser.token.push({ token: token });
+    return { authUserId: correctUser.authUserId, token: token };
   }
   return { error: 'Email entered does not belong to a user' };
 }
@@ -23,15 +30,20 @@ export function authLoginV1(email, password) {
  * @param {string} password - the password
  * @param {string} nameFirst - the firstname
  * @param {string} nameLast - the lastname
- * @returns {error: error message } - different error strings for different situations
- * @returns { authUserId: number } - new authorID who registered
+ * @returns { error : string } error - different error strings for different situations
+ * @returns { token: string, authUserId : number } token - the token for the user, authUserId - the authUserId for the user
  *
  */
 
-export function authRegisterV1(email, password, nameFirst, nameLast) {
+export function authRegisterV1(
+  email: string,
+  password: string,
+  nameFirst: string,
+  nameLast: string
+): AuthReturn | errorMessage {
   const dataStore = getData();
 
-  if (validator.isEmail(email) !== true) {
+  if (!validator.isEmail(email)) {
     return { error: 'Please enter valid email!' };
   }
 
@@ -46,34 +58,35 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
 
   if (nameFirst.length > 50) {
     return { error: 'Your first name is too long' };
+  } else if (nameFirst.length < 1) {
+    return { error: 'Your first name is too short' };
   }
 
   if (nameLast.length > 50) {
     return { error: 'Your last name is too long' };
+  } else if (nameLast.length < 1) {
+    return { error: 'Your last name is too short' };
   }
 
   const authId = Math.floor(Math.random() * 10000000);
-  // the handlestring == firstname+lastname
-  // only extract a-z0-9 characters, remove all characters to lowercases
-  // limit the authId in 20 characters
-  // if the handle is used, append the number at 21th
-  // const nameFirst_lowercase = nameFirst.toLowerCase();
-  // const nameLast_lowercase = nameLast.toLowerCase();
+
+  // Create a random token that is a string and it is unique every time
+  const token = makeToken();
+
   let handlestring = nameFirst + nameLast;
 
   handlestring = handlestring.toLowerCase();
   const regpattern = /[^a-z0-9]/g;
   handlestring = handlestring.replace(regpattern, '');
-  // handlestring = handlescleartring.replace(/\W/g, "");
 
   if (handlestring.length > 20) {
-    handlestring = handlestring.substring(0, 20); // exclusive
+    handlestring = handlestring.substring(0, 20);
   }
 
   const handleMap = dataStore.users.map((user) => user.handleStr);
-
+  const originalHandle = handlestring;
   for (let i = 0; handleMap.includes(handlestring); i++) {
-    handlestring = `${handlestring}${i}`;
+    handlestring = `${originalHandle}${i}`;
   }
 
   let isGlobalOwner = 2;
@@ -89,8 +102,10 @@ export function authRegisterV1(email, password, nameFirst, nameLast) {
     nameFirst: nameFirst,
     nameLast: nameLast,
     isGlobalOwner: isGlobalOwner,
+    token: [{ token: token }],
   });
+
   setData(dataStore);
 
-  return { authUserId: authId };
+  return { token: token, authUserId: authId };
 }
