@@ -175,3 +175,22 @@ describe('/channels/list/v2', () => {
     });
   });
 });
+
+describe('/channels/list/v2 no channels', () => {
+  let user: AuthReturn;
+  beforeEach(() => {
+    clearV1();
+    user = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+  });
+
+  test('no channels', () => {
+    expect(channelsList(user.token)).toStrictEqual({
+      channels: [],
+    });
+  });
+});
