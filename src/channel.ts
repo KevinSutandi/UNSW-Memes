@@ -195,18 +195,17 @@ export function channelDetailsV1(token: string, channelId: number) {
   // If channelId doesn't refer to a valid channel,
   // returns error
   const user = getUserByToken(token);
-  console.log(token);
   if (!isChannel(channelId)) {
     return { error: 'channelId does not refer to a valid channel' };
   } else if (user === undefined) {
     // If token is invalid, returns error
     return { error: 'Invalid token' };
   }
-  const channelObj = findChannel(channelId);
   // If the user is not a member of the channel
-  if (!isChannelMember(user.authUserId, channelId)) {
+  if (!isChannelMember(channelId, user.authUserId)) {
     return { error: user.authUserId + ' is not a member of the channel' };
   }
+  const channelObj = findChannel(channelId);
   return {
     name: channelObj.name,
     isPublic: channelObj.isPublic,
