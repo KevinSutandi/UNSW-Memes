@@ -1,5 +1,6 @@
 import request, { HttpVerb } from 'sync-request';
 import { port, url } from './config.json';
+import { channelsCreateReturn } from './interfaces';
 
 const SERVER_URL = `${url}:${port}`;
 // const ERROR = { error: expect.any(String) };
@@ -49,4 +50,15 @@ export function clearV1() {
 
 export function userProfileV1(token: string, uId: number) {
   return requestHelper('GET', '/user/profile/v2', { token, uId });
+}
+export function channelsCreate(
+  token: string,
+  name: string,
+  isPublic: boolean
+): channelsCreateReturn {
+  return requestHelper('POST', '/channels/create/v2', {
+    token,
+    name,
+    isPublic,
+  });
 }

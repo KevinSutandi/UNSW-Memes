@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { isUser, findUser } from './functionHelper';
+import { isUser, getUserByToken } from './functionHelper';
 import {
   channelsCreateReturn,
   channelsListReturn,
@@ -12,7 +12,7 @@ import {
  * Then, pushes the created channel into
  * data.channels
  *
- * @param {number} authUserId - the authenticated user Id
+ * @param {string} token - the authenticated user token
  * @param {string} name - the channel's name
  * @param {boolean} isPublic - determines whether the channel is public or private
  * @returns {error: 'error message'} - if the channel's name' length is less than or more than 20
@@ -21,7 +21,7 @@ import {
  *
  */
 export function channelsCreateV1(
-  authUserId: number,
+  token: string,
   name: string,
   isPublic: boolean
 ): channelsCreateReturn | errorMessage {
@@ -31,13 +31,13 @@ export function channelsCreateV1(
   if (name.length < 1 || name.length > 20) {
     return { error: 'Invalid name length' };
   }
+  const user = getUserByToken(token);
   // Returns error if the given userId is invalid
-  if (!isUser(authUserId)) {
+  if (user === undefined) {
     return { error: 'Invalid authUserId' };
   }
   const newId = Math.floor(Math.random() * 10000);
   // Finds the user data
-  const user = findUser(authUserId);
   // Pushes the new channel's data into data
   data.channels.push({
     channelId: newId,
