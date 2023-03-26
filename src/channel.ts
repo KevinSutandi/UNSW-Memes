@@ -195,6 +195,7 @@ export function channelDetailsV1(token: string, channelId: number) {
   // If channelId doesn't refer to a valid channel,
   // returns error
   const user = getUserByToken(token);
+  console.log(token);
   if (!isChannel(channelId)) {
     return { error: 'channelId does not refer to a valid channel' };
   } else if (user === undefined) {
