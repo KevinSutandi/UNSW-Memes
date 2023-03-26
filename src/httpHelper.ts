@@ -82,3 +82,11 @@ export function channelDetails(token: string, channelId: number) {
 export function channelsList(token: string) {
   return requestHelper('GET', '/channels/list/v2', { token });
 }
+
+export function messageSend(token: string, channelId: number, message: string) {
+  return requestHelper('POST', '/message/send/v1', {
+    token,
+    channelId,
+    message,
+  });
+}

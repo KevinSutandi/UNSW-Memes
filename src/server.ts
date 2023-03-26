@@ -6,6 +6,7 @@ import cors from 'cors';
 import { authRegisterV1, authLoginV1 } from './auth';
 import { channelsCreateV1, channelsListV1 } from './channels';
 import { channelMessagesV1, channelDetailsV1 } from './channel';
+import { messageSendV1 } from './message';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -86,6 +87,12 @@ app.get('/channel/details/v2', (req: Request, res: Response, next) => {
 //   const result = userProfileV1(token, uId);
 //   return res.json(result);
 // });
+
+app.post('/message/send/v1', (req: Request, res: Response, next) => {
+  const { token, channelId, message } = req.body;
+  const result = messageSendV1(token, channelId, message);
+  return res.json(result);
+});
 
 // start server
 const server = app.listen(PORT, HOST, () => {
