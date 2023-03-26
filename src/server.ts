@@ -54,7 +54,6 @@ app.delete('/clear/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-<<<<<<< HEAD
 // Will Reenable once user profile is working
 // app.get('/user/profile/v2', (req: Request, res: Response, next) => {
 //   const token = req.query.token as string;
@@ -62,13 +61,7 @@ app.delete('/clear/v1', (req: Request, res: Response, next) => {
 //   const result = userProfileV1(token, uId);
 //   return res.json(result);
 // });
-=======
-app.get('/channels/list/v2', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
-  const result = channelsListV1(token);
-  return res.json(result);
-});
->>>>>>> 3a46176eec3acbdff82e9d3a8ec064b1c5e30acc
+
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
