@@ -54,9 +54,8 @@ export function channelMessagesV1(
   }
 
   if (start + 50 > channelMessage) {
-    const messagesLeft = channelMessage - start;
     return {
-      messages: channel.messages.slice(start, messagesLeft),
+      messages: channel.messages.slice(start),
       start: start,
       end: -1,
     };
