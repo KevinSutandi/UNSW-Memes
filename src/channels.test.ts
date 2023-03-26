@@ -1,6 +1,10 @@
 import { AuthReturn, channelsCreateReturn, errorMessage } from './interfaces';
-import { clearV1 } from './other';
-import { authRegister, channelsCreate } from './httpHelper';
+import {
+  authRegister,
+  channelsCreate,
+  channelDetails,
+  clearV1,
+} from './httpHelper';
 
 const ERROR = { error: expect.any(String) };
 
@@ -91,13 +95,12 @@ describe('/channels/create/v2', () => {
     expect(channelsCreate('asade', 'general', false)).toStrictEqual(ERROR);
   });
 
-  /*
   test('valid input, with channelsDetailsV1', () => {
     channel = channelsCreate(user.token, 'general', false);
     expect(channel).toStrictEqual({
       channelId: expect.any(Number),
     });
-    expect(channelDetailsV1(user.authUserId, channel.channelId)).toStrictEqual({
+    expect(channelDetails(user.token, channel.channelId)).toStrictEqual({
       name: 'general',
       isPublic: false,
       ownerMembers: [
@@ -120,7 +123,6 @@ describe('/channels/create/v2', () => {
       ],
     });
   });
-  */
 });
 
 /*
