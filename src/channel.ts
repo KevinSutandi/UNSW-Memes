@@ -25,11 +25,11 @@ import { messages, errorMessage } from './interfaces';
  *                                    | User is invalid
  */
 export function channelMessagesV1(
-  authUserId: number,
+  token: string,
   channelId: number,
   start: number
 ): messages | errorMessage {
-  const user = findUser(authUserId);
+  const user = getUserByToken(token);
 
   const channel = findChannel(channelId);
 
@@ -54,9 +54,8 @@ export function channelMessagesV1(
   }
 
   if (start + 50 > channelMessage) {
-    const messagesLeft = channelMessage - start;
     return {
-      messages: channel.messages.slice(start, messagesLeft),
+      messages: channel.messages.slice(start),
       start: start,
       end: -1,
     };

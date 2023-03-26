@@ -63,6 +63,18 @@ export function channelsCreate(
   });
 }
 
+export function channelMessage(
+  token: string,
+  channelId: number,
+  start: number
+) {
+  return requestHelper('GET', '/channel/messages/v2', {
+    token,
+    channelId,
+    start,
+  });
+}
+
 export function channelDetails(token: string, channelId: number) {
   return requestHelper('GET', '/channel/details/v2', { token, channelId });
 }

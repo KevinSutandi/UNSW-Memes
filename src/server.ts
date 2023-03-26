@@ -5,7 +5,8 @@ import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1 } from './auth';
 import { channelsCreateV1, channelsListV1 } from './channels';
-import { channelDetailsV1 } from './channel';
+import { channelMessagesV1, channelDetailsV1 } from './channel';
+// import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
 // Set up web app
@@ -52,6 +53,14 @@ app.get('/channels/list/v2', (req: Request, res: Response, next) => {
 
 app.delete('/clear/v1', (req: Request, res: Response, next) => {
   const result = clearV1();
+  return res.json(result);
+});
+
+app.get('/channel/messages/v2', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const channelId = parseInt(req.query.channelId as string);
+  const start = parseInt(req.query.start as string);
+  const result = channelMessagesV1(token, channelId, start);
   return res.json(result);
 });
 
