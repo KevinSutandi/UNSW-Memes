@@ -47,6 +47,9 @@ export interface userData {
   nameFirst: string;
   nameLast: string;
   isGlobalOwner: number;
+  token: Array<{
+    token: string;
+  }>;
 }
 
 /**

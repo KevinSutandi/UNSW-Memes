@@ -1,15 +1,16 @@
 import validator from 'validator';
-import { getData, setData } from './dataStore.js';
-import { AuthReturn, errorMessage } from './interfaces.js';
+import { makeToken } from './functionHelper';
+import { AuthReturn, errorMessage, userData } from './interfaces';
+import { getData, setData } from './dataStore';
 
 export function authLoginV1(
   email: string,
   password: string
 ): AuthReturn | errorMessage {
-  const data = getData();
+  const dataStore = getData();
 
-  let correctUser;
-  for (const user of data.users) {
+  let correctUser: userData;
+  for (const user of dataStore.users) {
     if (email === user.email && password === user.password) {
       correctUser = user;
     } else if (email === user.email && password !== user.password) {
@@ -17,7 +18,9 @@ export function authLoginV1(
     }
   }
   if (correctUser !== undefined) {
-    return { authUserId: correctUser.authUserId };
+    const token = makeToken();
+    correctUser.token.push({ token: token });
+    return { authUserId: correctUser.authUserId, token: token };
   }
   return { error: 'Email entered does not belong to a user' };
 }

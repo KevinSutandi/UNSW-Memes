@@ -1,10 +1,9 @@
-import { getData, setData } from './dataStore.js';
-import { isUser, findUser } from './httpHelper.js';
+import { getData, setData } from './dataStore';
+import { isUser, findUser } from './functionHelper';
 import {
-  userData,
-  channels,
   channelsCreateReturn,
   channelsListReturn,
+  errorMessage,
 } from './interfaces.js';
 
 /**
@@ -25,7 +24,7 @@ export function channelsCreateV1(
   authUserId: number,
   name: string,
   isPublic: boolean
-): channelsCreateReturn {
+): channelsCreateReturn | errorMessage {
   // Gets the data from database
   const data = getData();
   // Returns error if name's length is less than 1 or more than 20
@@ -85,7 +84,7 @@ export function channelsCreateV1(
  * when successful
  *
  */
-export function channelsListV1(authUserId: number): channelsListReturn {
+export function channelsListV1(authUserId: number): channelsListReturn | errorMessage {
   const data = getData();
 
   if (!isUser(authUserId)) {
@@ -110,7 +109,7 @@ export function channelsListV1(authUserId: number): channelsListReturn {
   return userChannels;
 }
 
-export function channelsListAllV1(authUserId: number): channelsListReturn {
+export function channelsListAllV1(authUserId: number): channelsListReturn | errorMessage {
   const data = getData();
   // If the given userId is invalid
   if (!isUser(authUserId)) {

@@ -1,15 +1,15 @@
-import { authRegisterV1, clearV1, userProfileV1 } from './httpHelper';
-
+import { authLogin, authRegister, clearV1, userProfileV1 } from './httpHelper';
+import { AuthReturn } from './interfaces';
 const ERROR = { error: expect.any(String) };
-const IDPASS = { authUserId: expect.any(Number), token: expect.any(String) };
+const IDPASS = { authUserId: expect.any(Number) };
 
-describe('testing authRegisterV1', () => {
+describe('testing authRegisterV2', () => {
   beforeEach(() => {
     clearV1();
   });
 
   test('Test successful authRegister, without non-alphanumeric', () => {
-    const result = authRegisterV1(
+    const result = authRegister(
       'onlyfortest00@gmail.com',
       'testpw0000',
       'EL_001',
@@ -27,7 +27,7 @@ describe('testing authRegisterV1', () => {
 
   // for too long user handle- cut at 20th character; convert to lower cases as well
   test('Test successful authRegister with cut-off name', () => {
-    const result = authRegisterV1(
+    const result = authRegister(
       'onlyfortest01@gmail.com',
       'testpw0001',
       'abcdefghijklm',
@@ -45,13 +45,13 @@ describe('testing authRegisterV1', () => {
 
   // one userid has already been taken, append the smallest number after
   test('Test successful authRegister with ID already be used', () => {
-    const result = authRegisterV1(
+    const result = authRegister(
       'onlyfortest02@gmail.com',
       'testpw0002',
       'kevin',
       'sutandi'
     );
-    const result2 = authRegisterV1(
+    const result2 = authRegister(
       'onlyfortest01@gmail.com',
       'testpw0001',
       'kevin',
@@ -79,13 +79,13 @@ describe('testing authRegisterV1', () => {
 
   // one userid has already been taken, append the smallest number after again
   test('Test successful authRegister with ID already be used.2', () => {
-    const result = authRegisterV1(
+    const result = authRegister(
       'onlyfortest03@gmail.com',
       'testpw0003',
       'abcdefghijklm',
       'YIUopqrst'
     );
-    const result2 = authRegisterV1(
+    const result2 = authRegister(
       'onlyfortest02@gmail.com',
       'testpw0002',
       'abcdefghijklm',
@@ -113,7 +113,7 @@ describe('testing authRegisterV1', () => {
 
   test('Test invalid email', () => {
     expect(
-      authRegisterV1(
+      authRegister(
         'onlyfortest03gmail.com',
         'testpw0003',
         'abcdefghijklm',
@@ -123,14 +123,14 @@ describe('testing authRegisterV1', () => {
   });
 
   test('Test already used email', () => {
-    authRegisterV1(
+    authRegister(
       'onlyfortest03@gmail.com',
       'testpw0004',
       'EL0000',
       'EVE0000'
     );
     expect(
-      authRegisterV1(
+      authRegister(
         'onlyfortest03@gmail.com',
         'testpw0004',
         'EL0000',
@@ -141,13 +141,13 @@ describe('testing authRegisterV1', () => {
 
   test('Test too short password', () => {
     expect(
-      authRegisterV1('onlyfortest04@gmail.com', 'tpw', 'EL0001', 'EVE001')
+      authRegister('onlyfortest04@gmail.com', 'tpw', 'EL0001', 'EVE001')
     ).toStrictEqual(ERROR);
   });
 
   test('Test too long nameFirst', () => {
     expect(
-      authRegisterV1(
+      authRegister(
         'onlyfortest05@gmail.com',
         'testpw0005',
         'qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop0',
@@ -158,12 +158,43 @@ describe('testing authRegisterV1', () => {
 
   test('Test too long nameLast', () => {
     expect(
-      authRegisterV1(
+      authRegister(
         'onlyfortest06@gmail.com',
         'testpw0005',
         'EL0002',
         'qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop9'
       )
     ).toStrictEqual(ERROR);
+  });
+});
+
+describe('/auth/login/v2', () => {
+  let user: AuthReturn;
+  beforeEach(() => {
+    clearV1();
+    user = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+  });
+
+  test('returns an object with "token and authUserId" key if email and password match', () => {
+    const result = authLogin('kevins050324@gmail.com', 'kevin1001');
+    expect(result).toStrictEqual({
+      token: expect.any(String),
+      authUserId: user.authUserId,
+    });
+  });
+
+  test('returns an object with "error" key if email isnt valid', () => {
+    const result = authLogin('kevins050324@gmail.com', 'invalidpassword');
+    expect(result).toStrictEqual(ERROR);
+  });
+
+  test('returns an object with "error" key if email isnt valid', () => {
+    const result = authLogin('invalidemail', 'kevin1001');
+    expect(result).toStrictEqual(ERROR);
   });
 });
