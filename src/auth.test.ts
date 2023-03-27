@@ -1,4 +1,10 @@
-import { authLogin, authRegister, clearV1 } from './httpHelper';
+import {
+  authLogin,
+  authRegister,
+  channelsCreate,
+  channelsList,
+  clearV1,
+} from './httpHelper';
 import { AuthReturn } from './interfaces';
 const ERROR = { error: expect.any(String) };
 const IDPASS = { authUserId: expect.any(Number), token: expect.any(String) };
@@ -232,5 +238,44 @@ describe('/auth/login/v2', () => {
   test('returns an object with "error" key if email isnt valid', () => {
     const result = authLogin('invalidemail', 'kevin1001');
     expect(result).toStrictEqual(ERROR);
+  });
+});
+
+describe('/auth/logout/v1', () => {
+  let user: AuthReturn, user2: AuthReturn;
+  beforeEach(() => {
+    clearV1;
+    user = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+  });
+
+  test('invalid token', () => {
+    expect(authLogout('asade')).toStrictEqual(ERROR);
+  });
+  test('logout success', () => {
+    authLogout(user.token);
+    expect(channelsList(user.token)).toStrictEqual(ERROR);
+  });
+  test('logout, then login', () => {
+    authLogout(user.token);
+    user = authLogin('kevins050324@gmail.com', 'kevin1001');
+    expect(channelsCreate(user.token, 'general', true)).toStrictEqual({
+      channelId: expect.any(Number),
+    });
+  });
+  test('logout duplicate', () => {
+    authLogout(user.token);
+    expect(authLogout(user.token)).toStrictEqual(ERROR);
+  });
+  test('logged out but logged in on two devices', () => {
+    user2 = authLogin('kevins050324@gmail.com', 'kevin1001');
+    authLogout(user.token);
+    expect(channelsCreate(user2.token, 'general', true)).toStrictEqual({
+      channelId: expect.any(Number),
+    });
   });
 });
