@@ -245,7 +245,7 @@ describe('/auth/login/v2', () => {
 describe('/auth/logout/v1', () => {
   let user: AuthReturn, user2: AuthReturn;
   beforeEach(() => {
-    clearV1;
+    clearV1();
     user = authRegister(
       'kevins050324@gmail.com',
       'kevin1001',
