@@ -349,8 +349,8 @@ describe('testing channelJoinV1', () => {
     });
   });
 });
-
-describe('testing channelInviteV1', () => {
+*/
+describe('/channel/invite/v2', () => {
   let user1, user2, user3;
   let channel1, channel2, channel3;
   beforeEach(() => {
@@ -524,4 +524,3 @@ describe('testing channelInviteV1', () => {
     });
   });
 });
-*/
