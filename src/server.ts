@@ -94,6 +94,12 @@ app.post('/message/send/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.post('/channel/invite/v2', (req: Request, res: Response, next) => {
+  const { token, channelId, uId } = req.body;
+  const result = messageSendV1(token, channelId, uId);
+  return res.json(result);
+});
+
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
