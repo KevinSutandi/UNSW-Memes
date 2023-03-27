@@ -115,6 +115,6 @@ export function authLogoutV1(token: string) {
   if (user === undefined) {
     return { error: 'Invalid token' };
   }
-  user.token.filter((a) => a.token !== token);
+  user.token = user.token.filter((a) => a.token !== token);
   return {};
 }
