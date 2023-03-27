@@ -90,3 +90,7 @@ export function messageSend(token: string, channelId: number, message: string) {
     message,
   });
 }
+
+export function channelInvite(token: string, channelId: number, uId: number) {
+  return requestHelper('POST', '/channel/invite/v2', { token, channelId, uId });
+}
