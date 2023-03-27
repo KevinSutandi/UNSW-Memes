@@ -438,7 +438,6 @@ describe('/channel/invite/v2', () => {
       channelInvite(user3.token, channel2.channelId, user1.authUserId)
     ).toStrictEqual(ERROR);
   });
-
   test('Invite person to channel test 1', () => {
     channelInvite(user1.token, channel1.channelId, user3.authUserId);
     expect(channelDetails(user1.token, channel1.channelId)).toStrictEqual({
