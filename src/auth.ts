@@ -1,5 +1,5 @@
 import validator from 'validator';
-import { makeToken } from './functionHelper';
+import { getUserByToken, makeToken } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
 
@@ -110,4 +110,11 @@ export function authRegisterV1(
   return { token: token, authUserId: authId };
 }
 
-export function authLogoutV1(token: string) {}
+export function authLogoutV1(token: string) {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+  user.token.filter((a) => a.token !== token);
+  return {};
+}
