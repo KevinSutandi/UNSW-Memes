@@ -171,6 +171,7 @@ export function channelInviteV1(token: string, channelId: number, uId: number) {
   });
 
   setData(data);
+  return {};
 }
 
 /**
