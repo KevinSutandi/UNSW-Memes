@@ -109,3 +109,5 @@ export function authRegisterV1(
 
   return { token: token, authUserId: authId };
 }
+
+export function authLogoutV1(token: string) {}
