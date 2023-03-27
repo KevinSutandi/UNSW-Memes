@@ -1,3 +1,4 @@
+import { token } from 'morgan';
 import { getData, setData } from './dataStore';
 import {
   isChannel,
@@ -128,16 +129,13 @@ export function channelJoinV1(authUserId: number, channelId: number) {
   return {};
 }
 
-export function channelInviteV1(
-  authUserId: number,
-  channelId: number,
-  uId: number
-) {
+export function channelInviteV1(token: string, channelId: number, uId: number) {
   const data = getData();
 
   // Error cases
-  if (!isUser(authUserId)) {
-    return { error: 'Invalid authUserId' };
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    return { error: 'Invalid token' };
   }
   if (!isChannel(channelId)) {
     return { error: 'channelId does not refer to a valid channel' };
@@ -154,20 +152,23 @@ export function channelInviteV1(
     return { error: 'User already in the channel' };
   }
 
-  if (isChannel(channelId) && allMemberIds.includes(authUserId) === false) {
+  if (
+    isChannel(channelId) &&
+    allMemberIds.includes(user.authUserId) === false
+  ) {
     return { error: 'You are not a channel member' };
   }
   // Finds the user based on uId
-  const user = findUser(uId);
+  const invitedUser = findUser(uId);
   const channelNum = getChannelIndex(channelId);
 
   // Adds the user to the channel
   data.channels[channelNum].allMembers.push({
-    uId: user.authUserId,
-    email: user.email,
-    nameFirst: user.nameFirst,
-    nameLast: user.nameLast,
-    handleStr: user.handleStr,
+    uId: invitedUser.authUserId,
+    email: invitedUser.email,
+    nameFirst: invitedUser.nameFirst,
+    nameLast: invitedUser.nameLast,
+    handleStr: invitedUser.handleStr,
   });
 
   setData(data);
