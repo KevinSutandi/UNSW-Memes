@@ -47,7 +47,7 @@ describe('testing authRegisterV2', () => {
   });
 
   // one userid has already been taken, append the smallest number after
-  test('Test successful authRegister with ID already be used', () => {
+  test('Test successful authRegister with ID already be used (2 peeps)', () => {
     const result = authRegister(
       'onlyfortest02@gmail.com',
       'testpw0002',
@@ -81,7 +81,7 @@ describe('testing authRegisterV2', () => {
   });
 
   // one userid has already been taken, append the smallest number after again
-  test('Test successful authRegister with ID already be used.2', () => {
+  test('Test successful authRegister with ID already be used (3 peeps)', () => {
     const result = authRegister(
       'onlyfortest03@gmail.com',
       'testpw0003',
@@ -94,8 +94,15 @@ describe('testing authRegisterV2', () => {
       'abcdefghijklm',
       'YIUopqrst'
     );
+    const result3 = authRegister(
+      'onlyfortest06@gmail.com',
+      'testpw0006',
+      'abcdefghijklm',
+      'YIUopqrst'
+    );
     expect(result).toStrictEqual(IDPASS);
     expect(result2).toStrictEqual(IDPASS);
+    expect(result3).toStrictEqual(IDPASS);
     // expect(userProfileV1(result.authUserId, result.authUserId)).toStrictEqual({
     //   uId: result.authUserId,
     //   email: 'onlyfortest03@gmail.com',
@@ -112,12 +119,31 @@ describe('testing authRegisterV2', () => {
     //     handleStr: 'abcdefghijklmyiuopqr0',
     //   }
     // );
+    // expect(userProfileV1(result3.authUserId, result3.authUserId)).toStrictEqual(
+    //   {
+    //     uId: result3.authUserId,
+    //     email: 'onlyfortest06@gmail.com',
+    //     nameFirst: 'abcdefghijklm',
+    //     nameLast: 'YIUopqrst',
+    //     handleStr: 'abcdefghijklmyiuopqr1',
+    //   }
+    // );
   });
 
   test('Test invalid email', () => {
     expect(
+      authRegister('@gmail.com', 'testpw0003', 'abcdefghijklm', 'YIUopqrst')
+    ).toStrictEqual(ERROR);
+  });
+  test('Test invalid email 2', () => {
+    expect(
+      authRegister('doggo', 'testpw0003', 'abcdefghijklm', 'YIUopqrst')
+    ).toStrictEqual(ERROR);
+  });
+  test('Test invalid email 3', () => {
+    expect(
       authRegister(
-        'onlyfortest03gmail.com',
+        'doggo@gmail@gmail.com',
         'testpw0003',
         'abcdefghijklm',
         'YIUopqrst'
@@ -134,7 +160,13 @@ describe('testing authRegisterV2', () => {
 
   test('Test too short password', () => {
     expect(
-      authRegister('onlyfortest04@gmail.com', 'tpw', 'EL0001', 'EVE001')
+      authRegister('onlyfortest04@gmail.com', 'short', 'EL0001', 'EVE001')
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Test no password', () => {
+    expect(
+      authRegister('onlyfortest04@gmail.com', '', 'EL0001', 'EVE001')
     ).toStrictEqual(ERROR);
   });
 
