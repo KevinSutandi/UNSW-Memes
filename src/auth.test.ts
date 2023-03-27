@@ -4,6 +4,7 @@ import {
   channelsCreate,
   channelsList,
   clearV1,
+  authLogout,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 const ERROR = { error: expect.any(String) };
