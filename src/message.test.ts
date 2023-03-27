@@ -106,7 +106,6 @@ describe('testing sendMessages', () => {
       end: 50,
     });
     expect(numMessages).toBe(50);
-    console.log(result2);
     expect(result2).toStrictEqual({
       messages: expect.any(Array),
       start: 50,
