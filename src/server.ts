@@ -5,7 +5,11 @@ import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1 } from './auth';
 import { channelsCreateV1, channelsListV1 } from './channels';
-import { channelMessagesV1, channelDetailsV1 } from './channel';
+import {
+  channelMessagesV1,
+  channelDetailsV1,
+  channelInviteV1,
+} from './channel';
 import { messageSendV1 } from './message';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
@@ -96,7 +100,7 @@ app.post('/message/send/v1', (req: Request, res: Response, next) => {
 
 app.post('/channel/invite/v2', (req: Request, res: Response, next) => {
   const { token, channelId, uId } = req.body;
-  const result = messageSendV1(token, channelId, uId);
+  const result = channelInviteV1(token, channelId, uId);
   return res.json(result);
 });
 
