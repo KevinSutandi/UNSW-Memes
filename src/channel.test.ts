@@ -4,6 +4,7 @@ import {
   channelsCreate,
   channelMessage,
   channelDetails,
+  channelInvite,
 } from './httpHelper';
 import { AuthReturn, channelsCreateReturn } from './interfaces';
 
@@ -391,7 +392,7 @@ describe('/channel/invite/v2', () => {
   });
   test('invalid token test 1', () => {
     expect(
-      channelInvite('user1.token + 4', channel3.channelId, 'user2.token')
+      channelInvite('user1.token + 4', channel3.channelId, user2.authUserId)
     ).toStrictEqual(ERROR);
   });
   test('invalid token test 2', () => {
@@ -401,17 +402,17 @@ describe('/channel/invite/v2', () => {
   });
   test('invalid token test 3', () => {
     expect(
-      channelInvite(user3.token, channel2.channelId, 'user1.token')
+      channelInvite(user3.token, channel2.channelId, user1.authUserId + 99)
     ).toStrictEqual(ERROR);
   });
   test('person invited does not exist test 1', () => {
     expect(
-      channelInvite(user1.token, channel1.channelId, 'user2.token + 99')
+      channelInvite(user1.token, channel1.channelId, user2.authUserId + 99)
     ).toStrictEqual(ERROR);
   });
   test('person invited does not exist test 2', () => {
     expect(
-      channelInvite(user3.token, channel3.channelId, 'user1.token + 99')
+      channelInvite(user3.token, channel3.channelId, user1.authUserId + 99)
     ).toStrictEqual(ERROR);
   });
   // test('person invited already in channel test 1', () => {
