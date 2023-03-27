@@ -111,11 +111,3 @@ export function findChannelByMessageId(messageId: number) {
   );
   return channelFound;
 }
-
-export function getAllOwnerIds(channel: channelData) {
-  if (channel) {
-    return channel.ownerMembers.map((owner) => owner.uId);
-  } else {
-    return null;
-  }
-}

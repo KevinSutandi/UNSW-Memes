@@ -4,7 +4,6 @@ import {
   channelsCreate,
   clearV1,
   messageSend,
-  messageRemove,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -113,44 +112,5 @@ describe('testing sendMessages', () => {
       end: -1,
     });
     expect(numMessages2).toBe(10);
-  });
-});
-
-describe('testing removeMessages', () => {
-  let user1: AuthReturn;
-  let channel1: { channelId: number };
-  let message1: { messageId: number };
-  beforeEach(() => {
-    clearV1();
-    user1 = authRegister(
-      'kevins050324@gmail.com',
-      'kevin1001',
-      'Kevin',
-      'Sutandi'
-    );
-    channel1 = channelsCreate(user1.token, 'wego', true);
-    message1 = messageSend(user1.token, channel1.channelId, 'test moments');
-  });
-  test('token is invalid', () => {
-    expect(
-      messageRemove('laskdjflkasdfinvalid', message1.messageId)
-    ).toStrictEqual(ERROR);
-  });
-  test('user is not in channel', () => {
-    const user2 = authRegister(
-      'kevinesutandi@gmail.com',
-      'lesgo1001',
-      'Bevin',
-      'Bongo'
-    );
-    expect(messageRemove(user2.token, message1.messageId)).toStrictEqual(ERROR);
-  });
-  test('message does not exist', () => {
-    expect(messageRemove(user1.token, message1.messageId + 200)).toStrictEqual(
-      ERROR
-    );
-  });
-  test('remove own message', () => {
-    expect(messageRemove(user1.token, message1.messageId)).toStrictEqual({});
   });
 });
