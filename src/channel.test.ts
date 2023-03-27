@@ -163,7 +163,7 @@ describe('/channel/details/v2', () => {
       isPublic: true,
       ownerMembers: [
         {
-          uId: user.token,
+          uId: user.authUserId,
           email: 'kevins050324@gmail.com',
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
@@ -172,7 +172,7 @@ describe('/channel/details/v2', () => {
       ],
       allMembers: [
         {
-          uId: user.token,
+          uId: user.authUserId,
           email: 'kevins050324@gmail.com',
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
@@ -446,7 +446,7 @@ describe('/channel/invite/v2', () => {
       isPublic: true,
       ownerMembers: [
         {
-          uId: user1.token,
+          uId: user1.authUserId,
           email: 'kevins050324@gmail.com',
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
@@ -455,14 +455,14 @@ describe('/channel/invite/v2', () => {
       ],
       allMembers: [
         {
-          uId: user1.token,
+          uId: user1.authUserId,
           email: 'kevins050324@gmail.com',
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
         },
         {
-          uId: user3.token,
+          uId: user3.authUserId,
           email: 'z5352065@ad.unsw.edu.au',
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
@@ -478,7 +478,7 @@ describe('/channel/invite/v2', () => {
       isPublic: true,
       ownerMembers: [
         {
-          uId: user2.token,
+          uId: user2.authUserId,
           email: 'someotheremail@gmail.com',
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
@@ -487,14 +487,14 @@ describe('/channel/invite/v2', () => {
       ],
       allMembers: [
         {
-          uId: user2.token,
+          uId: user2.authUserId,
           email: 'someotheremail@gmail.com',
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
         },
         {
-          uId: user1.token,
+          uId: user1.authUserId,
           email: 'kevins050324@gmail.com',
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
