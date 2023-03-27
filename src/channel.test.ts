@@ -381,12 +381,12 @@ describe('/channel/invite/v2', () => {
   });
   test('channelId does not exist test 1', () => {
     expect(
-      channelInvite(user1.token, channel1.channelId + 5, user2.token)
+      channelInvite(user1.token, channel1.channelId + 5, user2.authUserId)
     ).toStrictEqual(ERROR);
   });
   test('channelId does not exist test 2', () => {
     expect(
-      channelInvite(user3.token, channel3.channelId + 3, user3.token)
+      channelInvite(user3.token, channel3.channelId + 3, user3.authUserId)
     ).toStrictEqual(ERROR);
   });
   test('invalid token test 1', () => {
@@ -396,7 +396,7 @@ describe('/channel/invite/v2', () => {
   });
   test('invalid token test 2', () => {
     expect(
-      channelInvite('user3.token + 10', channel2.channelId, user1.token)
+      channelInvite('user3.token + 10', channel2.channelId, user1.authUserId)
     ).toStrictEqual(ERROR);
   });
   test('invalid token test 3', () => {
@@ -429,17 +429,17 @@ describe('/channel/invite/v2', () => {
   // });
   test('person inviting is not in channel test 1', () => {
     expect(
-      channelInvite(user1.token, channel2.channelId, user3.token)
+      channelInvite(user1.token, channel2.channelId, user3.authUserId)
     ).toStrictEqual(ERROR);
   });
   test('person inviting is not in channel test 2', () => {
     expect(
-      channelInvite(user3.token, channel2.channelId, user1.token)
+      channelInvite(user3.token, channel2.channelId, user1.authUserId)
     ).toStrictEqual(ERROR);
   });
 
   test('Invite person to channel test 1', () => {
-    channelInvite(user1.token, channel1.channelId, user3.token);
+    channelInvite(user1.token, channel1.channelId, user3.authUserId);
     expect(channelDetails(user1.token, channel1.channelId)).toStrictEqual({
       name: 'Ketoprak',
       isPublic: true,
@@ -471,7 +471,7 @@ describe('/channel/invite/v2', () => {
     });
   });
   test('Join channel test 2', () => {
-    channelInvite(user2.token, channel2.channelId, user1.token);
+    channelInvite(user2.token, channel2.channelId, user1.authUserId);
     expect(channelDetails(user2.token, channel2.channelId)).toStrictEqual({
       name: 'Bakso',
       isPublic: true,
