@@ -5,7 +5,7 @@ import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1 } from './auth';
 import { channelsCreateV1, channelsListV1, channelsListAllV1 } from './channels';
-import { channelMessagesV1, channelDetailsV1, channelJoinV1 } from './channel';
+import { channelMessagesV1, channelDetailsV1, channelJoinV1, channelLeaveV1 } from './channel';
 import { messageSendV1 } from './message';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
@@ -77,11 +77,11 @@ app.get('/channel/messages/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-// app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
-//   const { token, channelId } = req.body;
-//   const result = channelleaveV1(token, channelId);
-//   return res.json(result);
-// });
+app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
+  const { token, channelId } = req.body;
+  const result = channelLeaveV1(token, channelId);
+  return res.json(result);
+});
 
 /*
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {

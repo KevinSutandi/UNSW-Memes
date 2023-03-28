@@ -8,6 +8,8 @@ import {
   getChannelIndex,
   isChannelMember,
   getUserByToken,
+  findMember,
+  isChannelOwner,
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
 
@@ -211,4 +213,43 @@ export function channelDetailsV1(token: string, channelId: number) {
     ownerMembers: channelObj.ownerMembers,
     allMembers: channelObj.allMembers,
   };
+}
+
+/**
+ * Given a channelId of a channel and token, removing the membership of that member,
+ * but remain the information of the authorised user
+ *
+ * @param {string} token - The authenticated token
+ * @param {number} channelId - The channel Id to join
+ * ...
+ *
+ * @returns {} - returns {} when successful
+ * @returns {error : 'error message'} - returns an error when
+ *                                    | channelId is invalid
+ *                                    | user is not the channel member
+ *                                    | User token is invalid
+ */
+export function channelLeaveV1(token: string, channelId: number) {
+  const user = getUserByToken(token);
+  if (!isChannel(channelId)) {
+    return { error: 'channelId does not refer to a valid channel' };
+  }
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+  // If the user is not a member of the channel
+  if (!isChannelMember(channelId, user.authUserId)) {
+    return { error: user.authUserId + ' is not a member of the channel' };
+  }
+
+  const memberId = user.authUserId;
+  const channelFound = findChannel(channelId);
+  const removing = findMember(memberId, channelId);
+  delete removing.uId;
+
+  // if user is the owner
+  if (isChannelOwner(memberId, channelId)) {
+    delete channelFound.ownerMembers.uId;
+  }
+  return {};
 }
