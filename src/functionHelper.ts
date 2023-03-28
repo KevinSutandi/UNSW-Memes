@@ -112,6 +112,14 @@ export function findChannelByMessageId(messageId: number) {
   return channelFound;
 }
 
+export function getAllOwnerIds(channel: channelData) {
+  if (channel) {
+    return channel.ownerMembers.map((owner) => owner.uId);
+  } else {
+    return null;
+  }
+}
+
 export function findTokenIndex(user: userData, token: string) {
   return user.token.findIndex((item) => item.token === token);
 }

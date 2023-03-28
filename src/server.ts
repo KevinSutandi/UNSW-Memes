@@ -6,7 +6,7 @@ import cors from 'cors';
 import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
 import { channelsCreateV1, channelsListV1 } from './channels';
 import { channelMessagesV1, channelDetailsV1 } from './channel';
-import { messageSendV1 } from './message';
+import { messageRemoveV1, messageSendV1 } from './message';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -91,6 +91,13 @@ app.get('/channel/details/v2', (req: Request, res: Response, next) => {
 app.post('/message/send/v1', (req: Request, res: Response, next) => {
   const { token, channelId, message } = req.body;
   const result = messageSendV1(token, channelId, message);
+  return res.json(result);
+});
+
+app.delete('/message/remove/v1', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const messageId = parseInt(req.query.messageId as string);
+  const result = messageRemoveV1(token, messageId);
   return res.json(result);
 });
 
