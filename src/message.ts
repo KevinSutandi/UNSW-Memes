@@ -1,8 +1,10 @@
+import { getData, setData } from './dataStore';
 import {
   findChannel,
   findChannelByMessageId,
   getAllMemberIds,
   getAllOwnerIds,
+  getChannelIndex,
   getUserByToken,
 } from './functionHelper';
 
@@ -11,9 +13,12 @@ export function messageSendV1(
   channelId: number,
   message: string
 ) {
+  const data = getData();
   const user = getUserByToken(token);
   const channel = findChannel(channelId);
   const allMemberIds = getAllMemberIds(channel);
+
+  // Error Checking
   if (user === undefined) {
     return { error: 'Token is invalid' };
   }
@@ -29,6 +34,8 @@ export function messageSendV1(
   if (message.length > 1000) {
     return { error: 'Message is too long' };
   }
+
+  const channelIndex = getChannelIndex(channelId);
   const messageId = Math.floor(Math.random() * 1000000);
   const newMessage = {
     messageId: messageId,
@@ -36,7 +43,8 @@ export function messageSendV1(
     message: message,
     timeSent: Math.floor(Date.now() / 1000),
   };
-  channel.messages.push(newMessage);
+  data.channels[channelIndex].messages.push(newMessage);
+  setData(data);
   return { messageId: messageId };
 }
 

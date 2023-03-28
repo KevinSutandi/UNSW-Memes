@@ -94,3 +94,7 @@ export function messageSend(token: string, channelId: number, message: string) {
 export function messageRemove(token: string, messageId: number) {
   return requestHelper('DELETE', '/message/remove/v1', { token, messageId });
 }
+
+export function authLogout(token: string) {
+  return requestHelper('POST', '/auth/logout/v1', { token });
+}
