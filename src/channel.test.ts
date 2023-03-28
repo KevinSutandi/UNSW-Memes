@@ -5,6 +5,7 @@ import {
   channelMessage,
   channelDetails,
   channelJoin,
+  channelLeave,
 } from './httpHelper';
 import { AuthReturn, channelsCreateReturn } from './interfaces';
 
@@ -354,6 +355,178 @@ describe('testing channelJoinV2', () => {
       ],
     });
   });
+});
+
+// push the test first
+// invalid channelid;
+// invalid token;
+// user is not the member of the channel
+// valid cases: the only user leaves the channel;
+//              leaving one by one
+
+// details to check if the user is not member anymore but teh information still will be in the channel
+describe('testing channelLeaveV1', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let user3: AuthReturn;
+  let channel1: channelsCreateReturn;
+  let channel2: channelsCreateReturn;
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'someotheremail@gmail.com',
+      'someone2031',
+      'Jonah',
+      'Meggs'
+    );
+    user3 = authRegister(
+      'z5352065@ad.unsw.edu.au',
+      'big!password3',
+      'Zombie',
+      'Ibrahim'
+    );
+    channel1 = channelsCreate(user1.token, 'Ketoprak', true);
+    channel2 = channelsCreate(user2.token, 'Bakso', true);
+  });
+
+  test('Invalid channelId test 1', () => {
+    expect(
+      channelLeave(user2.token, channel2.channelId + 10)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Invalid channelId test 2', () => {
+    expect(
+      channelLeave(user1.token, channel1.channelId + 3)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('invalid token test 1', () => {
+    expect(
+      channelLeave(user1.token + 10, channel1.channelId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('invalid token test 2', () => {
+    expect(
+      channelLeave(user2.token + 1, channel2.channelId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Not authorised user test 1', () => {
+    expect(
+      channelLeave(user1.token, channel2.channelId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Not authorised user test 2', () => {
+    expect(
+      channelLeave(user3.token, channel2.channelId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Not authorised user test 2', () => {
+    expect(
+      channelLeave(user3.token, channel2.channelId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('The only owner leaving test, no longer member', () => {
+    channelLeave(user1.token, channel1.channelId);
+    expect(
+      channelDetails(user1.token, channel1.channelId)
+    ).toStrictEqual({ error: user1.authUserId + ' is not a member of the channel' });
+  });
+
+  test('One of the users leave test, no longer member', () => {
+    channelJoin(user2.token, channel1.channelId);
+    channelLeave(user2.token, channel1.channelId);
+    expect(
+      channelDetails(user2.token, channel1.channelId)
+    ).toStrictEqual({ error: user2.authUserId + ' is not a member of the channel' });
+  });
+
+  test('One of the users leave test, but information stay remain', () => {
+    channelJoin(user2.token, channel1.channelId);
+    channelLeave(user2.token, channel1.channelId);
+    // user1 and user2 information without user2.authuserid
+    expect(
+      channelDetails(user1.token, channel1.channelId)
+    ).toStrictEqual({
+      name: 'Ketoprak',
+      isPublic: true,
+      ownerMembers: [
+        {
+          uId: user1.authUserId,
+          email: 'kevins050324@gmail.com',
+          nameFirst: 'Kevin',
+          nameLast: 'Sutandi',
+          handleStr: 'kevinsutandi',
+        },
+      ],
+      allMembers: [
+        {
+          uId: user1.authUserId,
+          email: 'kevins050324@gmail.com',
+          nameFirst: 'Kevin',
+          nameLast: 'Sutandi',
+          handleStr: 'kevinsutandi',
+        },
+        {
+          // uId: user2.authUserId,
+          email: 'someotheremail@gmail.com',
+          nameFirst: 'Jonah',
+          nameLast: 'Meggs',
+          handleStr: 'jonahmeggs',
+        },
+      ],
+    });
+  });
+
+  test('Owner leave, but information stay remain', () => {
+    channelJoin(user2.token, channel1.channelId);
+    channelLeave(user1.token, channel1.channelId);
+    // user1 and user2 information without user1.authuserid
+    expect(
+      channelDetails(user2.token, channel1.channelId)
+    ).toStrictEqual({
+      name: 'Ketoprak',
+      isPublic: true,
+      ownerMembers: [
+        {
+          // uId: user1.authUserId,
+          email: 'kevins050324@gmail.com',
+          nameFirst: 'Kevin',
+          nameLast: 'Sutandi',
+          handleStr: 'kevinsutandi',
+        },
+      ],
+      allMembers: [
+        {
+          // uId: user1.authUserId,
+          email: 'kevins050324@gmail.com',
+          nameFirst: 'Kevin',
+          nameLast: 'Sutandi',
+          handleStr: 'kevinsutandi',
+        },
+        {
+          uId: user2.authUserId,
+          email: 'someotheremail@gmail.com',
+          nameFirst: 'Jonah',
+          nameLast: 'Meggs',
+          handleStr: 'jonahmeggs',
+        },
+      ],
+    });
+  });
+
+  // everyone leaves test might be added
 });
 
 /*

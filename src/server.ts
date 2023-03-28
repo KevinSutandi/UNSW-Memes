@@ -77,6 +77,12 @@ app.get('/channel/messages/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+// app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
+//   const { token, channelId } = req.body;
+//   const result = channelleaveV1(token, channelId);
+//   return res.json(result);
+// });
+
 /*
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
