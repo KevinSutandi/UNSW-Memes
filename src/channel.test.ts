@@ -132,13 +132,13 @@ describe('/channel/details/v2', () => {
       'kevins050324@gmail.com',
       'kevin1001',
       'Kevin',
-      'Sutandi',
+      'Sutandi'
     );
     user2 = authRegister(
       'someotheremail@gmail.com',
       'someone2031',
       'Jonah',
-      'Meggs',
+      'Meggs'
     );
     channel = channelsCreate(user.token, 'general', true);
   });
