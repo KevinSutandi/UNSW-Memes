@@ -4,6 +4,7 @@ import {
   channelsCreate,
   channelMessage,
   channelDetails,
+  channelJoin,
 } from './httpHelper';
 import { AuthReturn, channelsCreateReturn } from './interfaces';
 
@@ -182,6 +183,179 @@ describe('/channel/details/v2', () => {
   });
 });
 
+// push test first please
+// given channel id and token, authorised users can join this channel
+describe ('testing channelJoinV2', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let user3: AuthReturn;
+  let channel1: channelsCreateReturn;
+  let channel2: channelsCreateReturn;
+  let channel3: channelsCreateReturn;
+  beforeEach (() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'someotheremail@gmail.com',
+      'someone2031',
+      'Jonah',
+      'Meggs'
+    );
+    user3 = authRegister(
+      'z5352065@ad.unsw.edu.au',
+      'big!password3',
+      'Zombie',
+      'Ibrahim'
+    );
+    channel1 = channelsCreate(user1.token, 'Ketoprak', true);
+    channel2 = channelsCreate(user2.token, 'Bakso', true);
+    channel3 = channelsCreate(user3.token, 'Batagor', false);
+  });
+  test('channelId does not exist test 1', () => {
+    expect(
+      channelJoin(user1.token, channel2.channelId + 5)
+    ).toStrictEqual(ERROR);
+  });
+  test('channelId does not exist test 2', () => {
+    expect(
+      channelJoin(user3.token, channel2.channelId + 3)
+    ).toStrictEqual(ERROR);
+  });
+  test('invalid token test 1', () => {
+    expect(
+      channelJoin(user1.token + 4, channel3.channelId)
+    ).toStrictEqual(ERROR);
+  });
+  test('invalid token test 2', () => {
+    expect(
+      channelJoin(user3.token + 10, channel2.channelId)
+    ).toStrictEqual(ERROR);
+  });
+  test('authUserId already in channel test 1', () => {
+    expect(channelJoin(user1.token, channel1.channelId)).toStrictEqual(
+      ERROR
+    );
+  });
+  test('authUserId already in channel test 2', () => {
+    expect(channelJoin(user2.token, channel2.channelId)).toStrictEqual(
+      ERROR
+    );
+  });
+  test('channel is private while non gloabalOwner is joining', () => {
+    expect(channelJoin(user2.token, channel3.channelId)).toStrictEqual(
+      ERROR
+    );
+  });
+  test('channel is private while globalOwner is joining', () => {
+    channelJoin(user1.token, channel3.channelId);
+    expect(
+      channelDetails(user1.token, channel3.channelId)
+    ).toStrictEqual({
+      name: 'Batagor',
+      isPublic: false,
+      ownerMembers: [
+        {
+          uId: user3.authUserId,
+          email: 'z5352065@ad.unsw.edu.au',
+          nameFirst: 'Zombie',
+          nameLast: 'Ibrahim',
+          handleStr: 'zombieibrahim',
+        },
+      ],
+      allMembers: [
+        {
+          uId: user3.authUserId,
+          email: 'z5352065@ad.unsw.edu.au',
+          nameFirst: 'Zombie',
+          nameLast: 'Ibrahim',
+          handleStr: 'zombieibrahim',
+        },
+        {
+          uId: user1.authUserId,
+          email: 'kevins050324@gmail.com',
+          nameFirst: 'Kevin',
+          nameLast: 'Sutandi',
+          handleStr: 'kevinsutandi',
+        },
+      ],
+    });
+  });
+
+  test('Join channel test 1', () => {
+    channelJoin(user3.token, channel1.channelId);
+    expect(
+      channelDetails(user3.token, channel1.channelId)
+    ).toStrictEqual({
+      name: 'Ketoprak',
+      isPublic: true,
+      ownerMembers: [
+        {
+          uId: user1.authUserId,
+          email: 'kevins050324@gmail.com',
+          nameFirst: 'Kevin',
+          nameLast: 'Sutandi',
+          handleStr: 'kevinsutandi',
+        },
+      ],
+      allMembers: [
+        {
+          uId: user1.authUserId,
+          email: 'kevins050324@gmail.com',
+          nameFirst: 'Kevin',
+          nameLast: 'Sutandi',
+          handleStr: 'kevinsutandi',
+        },
+        {
+          uId: user3.authUserId,
+          email: 'z5352065@ad.unsw.edu.au',
+          nameFirst: 'Zombie',
+          nameLast: 'Ibrahim',
+          handleStr: 'zombieibrahim',
+        },
+      ],
+    });
+  });
+  test('Join channel test 2', () => {
+    channelJoin(user1.token, channel2.channelId);
+    expect(
+      channelDetails(user1.token, channel2.channelId)
+    ).toStrictEqual({
+      name: 'Bakso',
+      isPublic: true,
+      ownerMembers: [
+        {
+          uId: user2.authUserId,
+          email: 'someotheremail@gmail.com',
+          nameFirst: 'Jonah',
+          nameLast: 'Meggs',
+          handleStr: 'jonahmeggs',
+        },
+      ],
+      allMembers: [
+        {
+          uId: user2.authUserId,
+          email: 'someotheremail@gmail.com',
+          nameFirst: 'Jonah',
+          nameLast: 'Meggs',
+          handleStr: 'jonahmeggs',
+        },
+        {
+          uId: user1.authUserId,
+          email: 'kevins050324@gmail.com',
+          nameFirst: 'Kevin',
+          nameLast: 'Sutandi',
+          handleStr: 'kevinsutandi',
+        },
+      ],
+    });
+  });
+});
+  
 /*
 describe('testing channelJoinV1', () => {
   let user1, user2, user3;
