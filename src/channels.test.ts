@@ -10,7 +10,6 @@ import {
 
 const ERROR = { error: expect.any(String) };
 
-
 // push the test first please
 describe('testing channelsListAllV2', () => {
   let user: AuthReturn;
@@ -66,7 +65,6 @@ describe('testing channelsListAllV2', () => {
     });
   });
 });
-
 
 describe('/channels/create/v2', () => {
   let user: AuthReturn;
