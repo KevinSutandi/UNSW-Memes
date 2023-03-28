@@ -1,10 +1,12 @@
 import { findChannel, getAllMemberIds, getUserByToken } from './functionHelper';
+import { getData, setData } from './dataStore';
 
 export function messageSendV1(
   token: string,
   channelId: number,
   message: string
 ) {
+  const data = getData();
   const user = getUserByToken(token);
   const channel = findChannel(channelId);
   const allMemberIds = getAllMemberIds(channel);
@@ -31,5 +33,6 @@ export function messageSendV1(
     timeSent: Math.floor(Date.now() / 1000),
   };
   channel.messages.push(newMessage);
+  setData(data);
   return { messageId: messageId };
 }
