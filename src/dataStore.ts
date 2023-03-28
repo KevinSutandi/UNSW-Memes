@@ -1,4 +1,4 @@
-// YOU SHOULD MODIFY THIS OBJECT BELOW
+import fs from 'fs';
 
 interface users {
   authUserId: number;
@@ -68,7 +68,9 @@ Example usage
 */
 
 // Use get() to access the data
-export function getData() {
+export function getData(): newData {
+  const dataString = fs.readFileSync('dataStore.json', 'utf8');
+  data = JSON.parse(dataString);
   return data;
 }
 
@@ -78,4 +80,5 @@ export function getData() {
 // Hint: this function might be useful to edit in iteration 2
 export function setData(newData: newData) {
   data = newData;
+  fs.writeFileSync('dataStore.json', JSON.stringify(data));
 }

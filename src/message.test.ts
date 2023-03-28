@@ -24,6 +24,10 @@ describe('testing sendMessages', () => {
     channel1 = channelsCreate(user1.token, 'wego', true);
   });
 
+  afterEach(() => {
+    clearV1();
+  });
+
   test('channel does not exist', () => {
     expect(
       messageSend(user1.token, channel1.channelId + 200, 'hello world')

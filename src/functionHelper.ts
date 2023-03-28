@@ -1,5 +1,5 @@
 import { getData } from './dataStore';
-import { channelData } from './interfaces';
+import { channelData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -118,4 +118,8 @@ export function getAllOwnerIds(channel: channelData) {
   } else {
     return null;
   }
+}
+
+export function findTokenIndex(user: userData, token: string) {
+  return user.token.findIndex((item) => item.token === token);
 }
