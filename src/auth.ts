@@ -111,10 +111,13 @@ export function authRegisterV1(
 }
 
 export function authLogoutV1(token: string) {
+  const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    return { error: 'Token is invalid' };
   }
-  user.token = user.token.filter((a) => a.token !== token);
+  const tokenIndex = user.token.findIndex((item) => item.token === token);
+  data.users[tokenIndex].token.splice(tokenIndex, 1);
+  setData(data);
   return {};
 }
