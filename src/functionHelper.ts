@@ -1,5 +1,5 @@
 import { getData } from './dataStore';
-import { channelData } from './interfaces';
+import { AuthReturn, channelData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
