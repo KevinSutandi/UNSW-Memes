@@ -1,5 +1,5 @@
 import validator from 'validator';
-import { getUserByToken, makeToken } from './functionHelper';
+import { findTokenIndex, getUserByToken, makeToken } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
 
@@ -116,7 +116,7 @@ export function authLogoutV1(token: string) {
   if (user === undefined) {
     return { error: 'Token is invalid' };
   }
-  const tokenIndex = user.token.findIndex((item) => item.token === token);
+  const tokenIndex = findTokenIndex(user, token);
   data.users[tokenIndex].token.splice(tokenIndex, 1);
   setData(data);
   return {};
