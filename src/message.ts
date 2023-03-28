@@ -49,6 +49,7 @@ export function messageSendV1(
 }
 
 export function messageRemoveV1(token: string, messageId: number) {
+  const data = getData();
   const user = getUserByToken(token);
   const channel = findChannelByMessageId(messageId);
   const allOwnerIds = getAllOwnerIds(channel);
@@ -63,9 +64,11 @@ export function messageRemoveV1(token: string, messageId: number) {
   if (allMemberIds.includes(user.authUserId) === false) {
     return { error: 'User is not registered in channel' };
   }
-  const message = channel.messages.find(
+  const channelIndex = getChannelIndex(channel.channelId);
+  const message = data.channels[channelIndex].messages.find(
     (message) => message.messageId === messageId
   );
+
   if (message === undefined) {
     return { error: 'Message Not Found' };
   }
@@ -76,8 +79,8 @@ export function messageRemoveV1(token: string, messageId: number) {
   ) {
     return { error: 'User is not the author of the message and not an owner' };
   }
-  channel.messages = channel.messages.filter(
-    (message) => message.messageId !== messageId
-  );
+  const messageIndex = data.channels[channelIndex].messages.indexOf(message);
+  data.channels[channelIndex].messages.splice(messageIndex, 1);
+  setData(data);
   return {};
 }

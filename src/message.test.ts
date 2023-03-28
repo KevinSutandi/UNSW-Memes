@@ -152,6 +152,11 @@ describe('testing removeMessages', () => {
   });
   test('remove own message', () => {
     expect(messageRemove(user1.token, message1.messageId)).toStrictEqual({});
+    expect(channelMessage(user1.token, channel1.channelId, 0)).toStrictEqual({
+      messages: [],
+      start: 0,
+      end: -1,
+    });
   });
   /**
    *   Will add more tests when channelJoin is available to test multiple user in channel
