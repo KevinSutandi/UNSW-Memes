@@ -56,7 +56,7 @@ app.post('/channel/join/v2', (req: Request, res: Response, next) => {
   const { token, channelId } = req.body;
   const result = channelJoinV1(token, channelId);
   return res.json(result);
-})
+});
 
 app.delete('/clear/v1', (req: Request, res: Response, next) => {
   const result = clearV1();

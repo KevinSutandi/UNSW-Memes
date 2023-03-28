@@ -185,14 +185,14 @@ describe('/channel/details/v2', () => {
 
 // push test first please
 // given channel id and token, authorised users can join this channel
-describe ('testing channelJoinV2', () => {
+describe('testing channelJoinV2', () => {
   let user1: AuthReturn;
   let user2: AuthReturn;
   let user3: AuthReturn;
   let channel1: channelsCreateReturn;
   let channel2: channelsCreateReturn;
   let channel3: channelsCreateReturn;
-  beforeEach (() => {
+  beforeEach(() => {
     clearV1();
     user1 = authRegister(
       'kevins050324@gmail.com',
@@ -355,7 +355,7 @@ describe ('testing channelJoinV2', () => {
     });
   });
 });
-  
+
 /*
 describe('testing channelJoinV1', () => {
   let user1, user2, user3;
