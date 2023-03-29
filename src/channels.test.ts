@@ -76,6 +76,10 @@ describe('/channels/create/v2', () => {
     );
   });
 
+  afterEach(() => {
+    clearV1();
+  });
+
   test('valid input', () => {
     expect(channelsCreate(user.token, 'general', false)).toStrictEqual({
       channelId: expect.any(Number),
@@ -145,6 +149,10 @@ describe('/channels/list/v2', () => {
     channel3 = channelsCreate(user2.token, "Jonah's personal", true);
   });
 
+  afterEach(() => {
+    clearV1();
+  });
+
   test('Token is invalid', () => {
     expect(channelsList('asade')).toStrictEqual(ERROR);
   });
@@ -186,6 +194,10 @@ describe('/channels/list/v2 no channels', () => {
       'Kevin',
       'Sutandi'
     );
+  });
+
+  afterEach(() => {
+    clearV1();
   });
 
   test('no channels', () => {
