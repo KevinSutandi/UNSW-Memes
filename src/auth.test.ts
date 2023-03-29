@@ -18,6 +18,10 @@ describe('testing authRegisterV2', () => {
     clearV1();
   });
 
+  afterEach(() => {
+    clearV1();
+  });
+
   test('Test successful authRegister, without non-alphanumeric', () => {
     const result = authRegister(
       'onlyfortest00@gmail.com',
@@ -223,6 +227,10 @@ describe('/auth/login/v2', () => {
     );
   });
 
+  afterEach(() => {
+    clearV1();
+  });
+
   test('returns an object with "token and authUserId" key if email and password match', () => {
     const result = authLogin('kevins050324@gmail.com', 'kevin1001');
     expect(result).toStrictEqual({
@@ -252,6 +260,10 @@ describe('/auth/logout/v1', () => {
       'Kevin',
       'Sutandi'
     );
+  });
+
+  afterEach(() => {
+    clearV1();
   });
 
   test('invalid token', () => {
