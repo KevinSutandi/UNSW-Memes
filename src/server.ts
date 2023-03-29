@@ -65,6 +65,11 @@ app.get('/channel/messages/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.post('/dm/create/v1', (req: Request, res: Response, next) => {
+  const { token, uIds } = req.body;
+  const result = dmCreateV1(token, uIds);
+  return res.json(result);
+})
 /*
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
