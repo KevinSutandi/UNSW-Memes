@@ -24,6 +24,10 @@ describe('testing sendMessages', () => {
     channel1 = channelsCreate(user1.token, 'wego', true);
   });
 
+  afterEach(() => {
+    clearV1();
+  });
+
   test('channel does not exist', () => {
     expect(
       messageSend(user1.token, channel1.channelId + 200, 'hello world')
@@ -152,6 +156,11 @@ describe('testing removeMessages', () => {
   });
   test('remove own message', () => {
     expect(messageRemove(user1.token, message1.messageId)).toStrictEqual({});
+    expect(channelMessage(user1.token, channel1.channelId, 0)).toStrictEqual({
+      messages: [],
+      start: 0,
+      end: -1,
+    });
   });
   /**
    *   Will add more tests when channelJoin is available to test multiple user in channel

@@ -1,5 +1,5 @@
 import validator from 'validator';
-import { makeToken } from './functionHelper';
+import { findTokenIndex, getUserByToken, makeToken } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
 
@@ -18,8 +18,12 @@ export function authLoginV1(
     }
   }
   if (correctUser !== undefined) {
+    const userIndex = dataStore.users.findIndex(
+      (item) => item.authUserId === correctUser.authUserId
+    );
     const token = makeToken();
-    correctUser.token.push({ token: token });
+    dataStore.users[userIndex].token.push({ token: token });
+    setData(dataStore);
     return { authUserId: correctUser.authUserId, token: token };
   }
   return { error: 'Email entered does not belong to a user' };
@@ -108,4 +112,16 @@ export function authRegisterV1(
   setData(dataStore);
 
   return { token: token, authUserId: authId };
+}
+
+export function authLogoutV1(token: string) {
+  const data = getData();
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    return { error: 'Token is invalid' };
+  }
+  const tokenIndex = findTokenIndex(user, token);
+  data.users[tokenIndex].token.splice(tokenIndex, 1);
+  setData(data);
+  return {};
 }
