@@ -3,10 +3,17 @@ import { echo } from './echo';
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
+<<<<<<< HEAD
 import { authRegisterV1, authLoginV1 } from './auth';
 import { channelsCreateV1, channelsListV1, channelsListAllV1 } from './channels';
 import { channelMessagesV1, channelDetailsV1, channelJoinV1, channelLeaveV1 } from './channel';
 import { messageSendV1 } from './message';
+=======
+import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
+import { channelsCreateV1, channelsListV1 } from './channels';
+import { channelMessagesV1, channelDetailsV1 } from './channel';
+import { messageRemoveV1, messageSendV1 } from './message';
+>>>>>>> 1b0b6baeca4346a3e327dec141927f85a6369761
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -109,6 +116,19 @@ app.get('/channel/details/v2', (req: Request, res: Response, next) => {
 app.post('/message/send/v1', (req: Request, res: Response, next) => {
   const { token, channelId, message } = req.body;
   const result = messageSendV1(token, channelId, message);
+  return res.json(result);
+});
+
+app.delete('/message/remove/v1', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const messageId = parseInt(req.query.messageId as string);
+  const result = messageRemoveV1(token, messageId);
+  return res.json(result);
+});
+
+app.post('/auth/logout/v1', (req: Request, res: Response, next) => {
+  const { token } = req.body;
+  const result = authLogoutV1(token);
   return res.json(result);
 });
 
