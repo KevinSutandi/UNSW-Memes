@@ -7,6 +7,7 @@ import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
 import { channelsCreateV1, channelsListV1 } from './channels';
 import { channelMessagesV1, channelDetailsV1 } from './channel';
 import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
+import { dmCreateV1 } from './dm';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -69,7 +70,7 @@ app.post('/dm/create/v1', (req: Request, res: Response, next) => {
   const { token, uIds } = req.body;
   const result = dmCreateV1(token, uIds);
   return res.json(result);
-})
+});
 /*
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
