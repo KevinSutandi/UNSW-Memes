@@ -135,6 +135,11 @@ describe('testing removeMessages', () => {
     channel1 = channelsCreate(user1.token, 'wego', true);
     message1 = messageSend(user1.token, channel1.channelId, 'test moments');
   });
+
+  afterEach(() => {
+    clearV1();
+  });
+
   test('token is invalid', () => {
     expect(
       messageRemove('laskdjflkasdfinvalid', message1.messageId)
