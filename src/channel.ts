@@ -8,7 +8,6 @@ import {
   getChannelIndex,
   isChannelMember,
   getUserByToken,
-  findMember,
   isChannelOwner,
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
@@ -193,6 +192,7 @@ export function channelInviteV1(
  *                                    | User is invalid
  */
 export function channelDetailsV1(token: string, channelId: number) {
+  // console.log(JSON.stringify(getData(), null, 4));
   // If channelId doesn't refer to a valid channel,
   // returns error
   const user = getUserByToken(token);
@@ -273,7 +273,7 @@ export function channelLeaveV1(token: string, channelId: number) {
 }
 
 // errors
-export function channelAddOwner(token: string, channelId: number, uId: number) {
+export function channelAddOwnerV1(token: string, channelId: number, uId: number) {
   const data = getData();
   const user = getUserByToken(token);
   if (!isChannel(channelId)) {
@@ -282,44 +282,43 @@ export function channelAddOwner(token: string, channelId: number, uId: number) {
   // invalid uId
   const uIdfound = findUser(uId);
   if (uIdfound === undefined) {
-    return { error: 'Invalid uId'};
+    return { error: 'Invalid uId' };
   }
   // invalid token
   if (user === undefined) {
     return { error: 'Invalid token' };
   }
   // If the user is not a member of the channel
-  if (!isChannelMember(channelId, uId)) {
+  if (!isChannelMember(channelId, uId) && (user.isGlobalOwner !== 1)) {
     return { error: user.authUserId + ' is not a member of the channel' };
   }
   // user with that uId is already owner of the channel
   if (isChannelOwner(uId, channelId)) {
-    return { error: 'The user is already owner of this channel'};
+    return { error: 'The user is already owner of this channel' };
   }
   // user with token is either channel owner or the global owner
   // global owner if 1
-  if (!isChannelOwner(uId, channelId)) {
-    if (user.isGlobalOwner !== 1) {
-      return { error: 'You donot have the owner permission'};
-    }
+  if (!isChannelOwner(uId, channelId) && (user.isGlobalOwner !== 1)) {
+    return { error: 'You donot have the owner permission' };
   }
 
   // owner adds the user with uId to the ownermembers and allmembers of the channel
-  data.channels.ownerMembers.push({
+  const channelfound = data.channels.find((a) => a.channelId === channelId);
+  channelfound.ownerMembers.push({
     uId: uIdfound.authUserId,
     email: uIdfound.email,
     nameFirst: uIdfound.nameFirst,
     nameLast: uIdfound.nameLast,
     handleStr: uIdfound.handleStr,
-  })
+  });
 
-  data.channels.allMembers.push({
+  channelfound.allMembers.push({
     uId: uIdfound.authUserId,
     email: uIdfound.email,
     nameFirst: uIdfound.nameFirst,
     nameLast: uIdfound.nameLast,
     handleStr: uIdfound.handleStr,
-  })
-
+  });
   setData(data);
+  return {};
 }

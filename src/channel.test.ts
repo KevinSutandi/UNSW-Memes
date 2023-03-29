@@ -495,15 +495,14 @@ describe('testing channelLeaveV1', () => {
         nameFirst: 'Jonah',
         nameLast: 'Meggs',
         handleStr: 'jonahmeggs',
-    }],
+      }],
     });
   });
 
   // everyone leaves test might be added
 });
 
-
-// push the test please 
+// push the test please
 // 6 errors
 // invalid channel;token; invalid uId; user with uId is not member
 // the member with uid is already owner
@@ -580,7 +579,7 @@ describe('testing channelAddowner', () => {
 
   test('user not member test 1', () => {
     expect(
-      channelAddOwner(user1.token, channel1.channelId, user2.authUserId)
+      channelAddOwner(user3.token, channel1.channelId, user2.authUserId)
     ).toStrictEqual(ERROR);
   });
 
@@ -588,7 +587,7 @@ describe('testing channelAddowner', () => {
     expect(
       channelAddOwner(user2.token, channel2.channelId, user3.authUserId)
     ).toStrictEqual(ERROR);
-  }); 
+  });
 
   test('user already is owner test 1', () => {
     expect(
@@ -600,7 +599,7 @@ describe('testing channelAddowner', () => {
     expect(
       channelAddOwner(user2.token, channel2.channelId, user2.authUserId)
     ).toStrictEqual(ERROR);
-  }); 
+  });
 
   test('user has no permission test 1', () => {
     // not owner and not global
@@ -626,11 +625,11 @@ describe('testing channelAddowner', () => {
       isPublic: false,
       ownerMembers: [
         {
-          uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
+          uId: user3.authUserId,
+          email: 'z5352065@ad.unsw.edu.au',
+          nameFirst: 'Zombie',
+          nameLast: 'Ibrahim',
+          handleStr: 'zombieibrahim',
         },
         {
           uId: user2.authUserId,
@@ -642,11 +641,11 @@ describe('testing channelAddowner', () => {
       ],
       allMembers: [
         {
-          uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
+          uId: user3.authUserId,
+          email: 'z5352065@ad.unsw.edu.au',
+          nameFirst: 'Zombie',
+          nameLast: 'Ibrahim',
+          handleStr: 'zombieibrahim',
         },
         {
           uId: user2.authUserId,
@@ -657,7 +656,7 @@ describe('testing channelAddowner', () => {
         },
       ],
     });
-  })
+  });
 
   test('channel owner adds others test', () => {
     // user2 makes user3 the owner of the channel2
@@ -701,5 +700,5 @@ describe('testing channelAddowner', () => {
         },
       ],
     });
-  })
+  });
 });

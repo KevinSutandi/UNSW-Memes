@@ -122,11 +122,8 @@ export function findMember(userId: number, channelId: number) {
 
 export function isChannelOwner(userId: number, channelId: number): boolean {
   const channelFound = findChannel(channelId);
-  if (channelFound.ownerMembers.uId === userId) {
-    return true;
-  } else {
-    return false;
-  }
+  const ownerMembersIds = channelFound.ownerMembers.map((member) => member.uId);
+  return ownerMembersIds.includes(userId);
 }
 
 export function getAllOwnerIds(channel: channelData) {

@@ -14,7 +14,7 @@ import {
   channelDetailsV1,
   channelLeaveV1,
   channelJoinV1,
-
+  channelAddOwnerV1,
 } from './channel';
 
 import { messageRemoveV1, messageSendV1 } from './message';
