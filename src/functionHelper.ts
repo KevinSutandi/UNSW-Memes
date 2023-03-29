@@ -118,17 +118,16 @@ export function findMember(userId: number, channelId: number) {
   return memberfound;
 }
 
-export function findOwner(userId: number, channelId: number) {
-  const channelFound = findChannel(channelId);
-  const onwerfound = channelFound.ownerMembers.find((owner) => owner.uId === userId);
-  return ownerfound;
-}
+// export function findOwner(userId: number, channelId: number) {
+//   const channelFound = findChannel(channelId);
+//   const onwerfound = channelFound.ownerMembers.find((owner) => owner.uId === userId);
+//   return ownerfound;
+// }
 
-export function isChannelOwner(userId: number, channelId: number): boolean {
-  const channelFound = findChannel(channelId);
-  if (channelFound.ownerMembers.uId === userId) {
-    return true;
-  } else {
-    return false;
-  }
-}
+// export function isChannelOwner(userId: number, channelId: number): boolean {
+//   const channelFound = findChannel(channelId);
+//   if (channelFound.ownerMembers.uId === userId) {
+//     return true;
+//   } else {
+//     return false;
+//   }

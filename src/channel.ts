@@ -8,9 +8,6 @@ import {
   getChannelIndex,
   isChannelMember,
   getUserByToken,
-  findMember,
-  findOwner,
-  isChannelOwner,
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
 
@@ -230,7 +227,7 @@ export function channelDetailsV1(token: string, channelId: number) {
  *                                    | user is not the channel member
  *                                    | User token is invalid
  */
- export function channelLeaveV1(token: string, channelId: number) {
+export function channelLeaveV1(token: string, channelId: number) {
   const data = getData();
   const user = getUserByToken(token);
   if (!isChannel(channelId)) {
@@ -271,4 +268,3 @@ export function channelDetailsV1(token: string, channelId: number) {
   setData(data);
   return {};
 }
-
