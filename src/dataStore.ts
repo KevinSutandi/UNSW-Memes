@@ -41,14 +41,42 @@ interface Channel {
   end: number;
 }
 
+interface Dm {
+  dmId: number;
+  name: string;
+  ownerMembers: Array<{
+    uId: number;
+    email: string;
+    nameFirst: string;
+    nameLast: string;
+    handleStr: string;
+  }>;
+  allMembers: Array<{
+    uId: number;
+    email: string;
+    nameFirst: string;
+    nameLast: string;
+    handleStr: string;
+  }>;
+  messages: Array<{
+    messageId: number;
+    uId: number;
+    message: string;
+    timeSent: number;
+  }>;
+  start: number;
+  end: number;
+}
 interface newData {
   users: Array<users>;
   channels: Array<Channel>;
+  dm: Array<Dm>;
 }
 
-let data: { users: users[]; channels: Channel[] } = {
+let data: { users: users[]; channels: Channel[]; dm: Dm[] } = {
   users: [],
   channels: [],
+  dm: [],
 };
 
 // YOU SHOULDNT NEED TO MODIFY THE FUNCTIONS BELOW IN ITERATION 1
