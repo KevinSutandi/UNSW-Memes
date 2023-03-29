@@ -21,7 +21,7 @@ export function isDmMember(dmId: number, userId: number): boolean {
   
 export function findDm(dmId: number): dmData | undefined {
     const data = getData();
-    return data.dms.find((a) => a.dmId === dmId);
+    return data.dm.find((a) => a.dmId === dmId);
 }
 
 export function getAllMemberIds(dm: dmData) {
@@ -56,6 +56,7 @@ export function dmLeaveV1 (
     if (!isDmMember(dmId, user.authUserId)) {
         return { error: user.authUserId + ' is not a member of the DM'}
     }
+
 
 
     // whatever the given dmId is, we remove it from our member list,
