@@ -98,3 +98,11 @@ export function messageRemove(token: string, messageId: number) {
 export function authLogout(token: string) {
   return requestHelper('POST', '/auth/logout/v1', { token });
 }
+
+export function messageEdit(token: string, messageId: number, message: string) {
+  return requestHelper('PUT', '/message/edit/v1', {
+    token,
+    messageId,
+    message,
+  });
+}
