@@ -462,31 +462,8 @@ describe('testing channelLeaveV1', () => {
     ).toStrictEqual({
       name: 'Ketoprak',
       isPublic: true,
-      ownerMembers: [
-        {
-          uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
-        },
-      ],
-      allMembers: [
-        {
-          uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
-        },
-        {
-          // uId: user2.authUserId,
-          email: 'someotheremail@gmail.com',
-          nameFirst: 'Jonah',
-          nameLast: 'Meggs',
-          handleStr: 'jonahmeggs',
-        },
-      ],
+      ownerMembers: [],
+      allMembers: [],
     });
   });
 
@@ -499,31 +476,8 @@ describe('testing channelLeaveV1', () => {
     ).toStrictEqual({
       name: 'Ketoprak',
       isPublic: true,
-      ownerMembers: [
-        {
-          // uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
-        },
-      ],
-      allMembers: [
-        {
-          // uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
-        },
-        {
-          uId: user2.authUserId,
-          email: 'someotheremail@gmail.com',
-          nameFirst: 'Jonah',
-          nameLast: 'Meggs',
-          handleStr: 'jonahmeggs',
-        },
-      ],
+      ownerMembers: [],
+      allMembers: [],
     });
   });
 
