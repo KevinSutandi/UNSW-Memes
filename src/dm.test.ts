@@ -1,8 +1,7 @@
 import {
     authRegister,
     clearV1,
-    messageSend,
-    dmCreate,
+    dmCreateV1,
   } from './httpHelper';
   import { AuthReturn } from './interfaces';
   
@@ -11,8 +10,7 @@ import {
   
   // error testing
   
-  describe('testing dm create v1', () => {
-  
+  describe('testing dmCreateV1', () => {
   
   // error testing
     test('any uId does not refer to a valid user', () => {
@@ -25,7 +23,7 @@ import {
       expect(
         messageSend(user1.token, user1.uId)
       ).toStrictEqual(ERROR);
-      )
+    });
     
     test('user token is not valid', () => {
         expect(
@@ -36,6 +34,7 @@ import {
   
   // test that dm is successful
   
+      
   
   
   // test that if multiple are created that it is also successful
@@ -47,6 +46,6 @@ import {
   
   
   
+
   
-  
-  });
+});
