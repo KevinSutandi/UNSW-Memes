@@ -246,16 +246,16 @@ export function channelLeaveV1(token: string, channelId: number) {
   const channelIndex = data.channels.findIndex(
     (item) => item.channelId === channelId
   );
-  const userOwnerIndex = data.channels[channelsIndex].ownerMembers.findIndex(
-    (item) => item.uId === authUserId
+  const userOwnerIndex = data.channels[channelIndex].ownerMembers.findIndex(
+    (item) => item.uId === user.authUserId
   );
-  const userMemberIndex = data.channels[channelsIndex].allMembers.findIndex(
-    (item) => item.uId === authUserId
+  const userMemberIndex = data.channels[channelIndex].allMembers.findIndex(
+    (item) => item.uId === user.authUserId
   );
   if (userOwnerIndex !== undefined) {
-    data.channels(channelIndex).ownerMembers.splice(userOwnerIndex, 1)
+    data.channels[channelIndex].ownerMembers.splice(userOwnerIndex, 1)
   }
-  data.channels(channelIndex).allMembers.splice(userMemeberIndex, 1)
+  data.channels[channelIndex].allMembers.splice(userMemberIndex, 1)
   setData(data);
   return {};
 }
