@@ -1,7 +1,8 @@
 import {
     authRegister,
     clearV1,
-    dmCreateV1,
+    dmCreate,
+    messageSend,
   } from './httpHelper';
   import { AuthReturn } from './interfaces';
   
@@ -11,23 +12,32 @@ import {
   // error testing
   
   describe('testing dmCreateV1', () => {
+  let user: AuthReturn;
+    beforeEach(() => {
+      clearV1();
+      user = authRegister(
+        'onlyfortestttt06@gmail.com',
+        'testpw0005',
+        'Jonah',
+        'Meggs'
+      );
+    });
   
+    afterEach(() => {
+      clearV1();
+    });
   // error testing
     test('any uId does not refer to a valid user', () => {
-      const user1 = authRegister(
-        'alminak1938@gmail.com',
-        'mina001',
-        'Almina',
-        'Kov',
-      );
+      const uIds = [user.authUserId]
       expect(
-        messageSend(user1.token, user1.uId)
+        dmCreate(user.token, uIds)
       ).toStrictEqual(ERROR);
     });
     
     test('user token is not valid', () => {
+      const uIds = [user.authUserId]
         expect(
-          messageSend('alminaaaaascnj', user1.uId)
+          dmCreate('alminaaaaascnj', uIds)
         ).toStrictEqual(ERROR);
       }); 
   

@@ -1,6 +1,6 @@
 import request, { HttpVerb } from 'sync-request';
 import { port, url } from './config.json';
-import { channelsCreateReturn } from './interfaces';
+import { channelsCreateReturn, uId } from './interfaces';
 
 const SERVER_URL = `${url}:${port}`;
 // const ERROR = { error: expect.any(String) };

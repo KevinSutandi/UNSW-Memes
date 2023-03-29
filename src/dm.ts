@@ -2,13 +2,14 @@ import { getData, setData } from './dataStore';
 import { isUser, getUserByToken } from './functionHelper';
 import {
   errorMessage,
-  dmCreateReturn
-} from './interfaces.js';
+  dmCreateReturn,
+  uId
+} from './interfaces';
 
 
 export function dmCreateV1(
     token: string,
-    uIds: Array<uId>
+    uIds: Array<Number>
   ): dmCreateReturn | errorMessage {
     const data = getData();
     const user = getUserByToken(token);
