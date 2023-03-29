@@ -9,6 +9,7 @@ import {
   isChannelMember,
   getUserByToken,
   findMember,
+  findOwner,
   isChannelOwner,
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
@@ -249,6 +250,8 @@ export function channelLeaveV1(token: string, channelId: number) {
 
   // if user is the owner
   if (isChannelOwner(memberId, channelId)) {
+    const removing2 = findOwner(memberId, channelId);
+    delete removing2.uId;
     delete channelFound.ownerMembers.uId;
   }
   return {};
