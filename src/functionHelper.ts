@@ -1,5 +1,5 @@
 import { getData } from './dataStore';
-import { channelData } from './interfaces';
+import { channelData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -114,15 +114,29 @@ export function findChannelByMessageId(messageId: number) {
 
 export function findMember(userId: number, channelId: number) {
   const channelFound = findChannel(channelId);
-  const memberfound = channelFound.allMembers.find((member) => member.uId === userId);
+  const memberfound = channelFound.allMembers.find(
+    (member) => member.uId === userId
+  );
   return memberfound;
 }
 
-export function isChannelOwner(userId: number, channelId: number): boolean {
-  const channelFound = findChannel(channelId);
-  if (channelFound.ownerMembers.uId === userId) {
-    return true;
+// export function isChannelOwner(userId: number, channelId: number): boolean {
+//   const channelFound = findChannel(channelId);
+//   if (channelFound.ownerMembers.uId === userId) {
+//     return true;
+//   } else {
+//     return false;
+//   }
+// }
+
+export function getAllOwnerIds(channel: channelData) {
+  if (channel) {
+    return channel.ownerMembers.map((owner) => owner.uId);
   } else {
-    return false;
+    return null;
   }
+}
+
+export function findTokenIndex(user: userData, token: string) {
+  return user.token.findIndex((item) => item.token === token);
 }
