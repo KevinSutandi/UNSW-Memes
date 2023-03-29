@@ -462,8 +462,20 @@ describe('testing channelLeaveV1', () => {
     ).toStrictEqual({
       name: 'Ketoprak',
       isPublic: true,
-      ownerMembers: [],
-      allMembers: [],
+      ownerMembers: [ {
+        uId: user1.authUserId,
+        email: 'kevins050324@gmail.com',
+        nameFirst: 'Kevin',
+        nameLast: 'Sutandi',
+        handleStr: 'kevinsutandi',
+      }],
+      allMembers: [{
+        uId: user1.authUserId,
+        email: 'kevins050324@gmail.com',
+        nameFirst: 'Kevin',
+        nameLast: 'Sutandi',
+        handleStr: 'kevinsutandi',
+      }],
     });
   });
 
@@ -477,7 +489,13 @@ describe('testing channelLeaveV1', () => {
       name: 'Ketoprak',
       isPublic: true,
       ownerMembers: [],
-      allMembers: [],
+      allMembers: [{
+        uId: user2.authUserId,
+        email: 'someotheremail@gmail.com',
+        nameFirst: 'Jonah',
+        nameLast: 'Meggs',
+        handleStr: 'jonahmeggs',
+    }],
     });
   });
 

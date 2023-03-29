@@ -264,7 +264,7 @@ export function channelDetailsV1(token: string, channelId: number) {
   const userMemberIndex = data.channels[channelIndex].allMembers.findIndex(
     (item) => item.uId === user.authUserId
   );
-  if (userOwnerIndex !== undefined) {
+  if (userOwnerIndex !== -1) {
     data.channels[channelIndex].ownerMembers.splice(userOwnerIndex, 1);
   }
   data.channels[channelIndex].allMembers.splice(userMemberIndex, 1);
