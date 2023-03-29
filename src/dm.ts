@@ -6,65 +6,79 @@ import {
 } from './interfaces.js';
 
 
-export function dmCreateV1 (
+export function dmCreateV1(
     token: string,
-    uId: number,
-): dmCreateReturn | errorMessage {
-
+    uIds: Array<uId>
+  ): dmCreateReturn | errorMessage {
     const data = getData();
     const user = getUserByToken(token);
-
-    // error condtions first
-    if (user == undefined) {
-        return { error: 'invalid token' };
+    if (!user) {
+      return {
+        error: 'Invalid token',
+      };
     }
-    if (!isUser(uId)) {
-        return { error: 'uId does not refer to a valid user'};
+  
+    // Check if all uIds are valid & not the same
+    const uIdsSet = new Set();
+    for (const uId of uIds) {
+      if (!isUser(uId.uId)) {
+        return {
+          error: 'Invalid uId',
+        };
+      }
+      if (uIdsSet.has(uId.uId)) {
+        return {
+          error: 'Duplicate uId',
+        };
+      }
+      uIdsSet.add(uId.uId);
     }
-
-    // first check that there are no duplicates, if there is then
-    // error
-    // i think make helper function that turns it into arry
-    // so can check if array is empty, bc then there is only the creater
-    const duplicateuId = dataStore.users.find((item) => user.uId === uId);
-        if (duplicateuId !== undefined) {
-            return { error: 'There are duplicate uIds in uId!' };
-        }
-
-    // The name should be an alphabetically-sorted, comma-and-space-separated 
-    // list of user handles,
-    // use helper function here
-    const uIdHandles = // helper function that adds my uid user HANDLES handlestr? into array
-    const sortedAlphabetical = uIdHandles.sort();
-
-    // then return new dmId
-    const newId = Math.floor(Math.random() * 10000);
-
-    data.dm.push({
-        dmId: newId,
-        name: sortedAlphabetical,
-        ownerMembers: [
-            {
-                uId: user.authUserId,
-                handleStr: user.handleStr,
-                email: user.email,
-                nameFirst: user.nameFirst,
-                nameLast: user.nameLast,
-            },
-        ],
-        allMembers: [
-            {
-              uId: user.authUserId,
-              handleStr: user.handleStr,
-              email: user.email,
-              nameFirst: user.nameFirst,
-              nameLast: user.nameLast,
-            },
-        ],      
+  
+    // Set name to list of handlestrings in alphabetical order
+    const dmName = uIds
+      .map((uId) => data.users[uId.uId].handleStr)
+      .sort()
+      .join(', ');
+  
+    // create Array for allMembers just having
+    // uId
+    // email
+    // handleStr
+    // nameFirst
+    // nameLast
+  
+    const allMembers = uIds.map((uId) => {
+      const user = data.users[uId.uId];
+      return {
+        uId: user.authUserId,
+        email: user.email,
+        handleStr: user.handleStr,
+        nameFirst: user.nameFirst,
+        nameLast: user.nameLast,
+      };
     });
+  
+    // Create new dm
+    const dmId = Math.floor(Math.random() * 1000000000);
+    data.dm.push({
+      dmId: dmId,
+      name: dmName,
+      ownerMembers: [
+        {
+          uId: user.authUserId,
+          email: user.email,
+          handleStr: user.handleStr,
+          nameFirst: user.nameFirst,
+          nameLast: user.nameLast,
+        },
+      ],
+      allMembers: allMembers,
+      messages: [],
+      start: 0,
+      end: -1,
+    });
+  
+    // set data
     setData(data);
-    return {
-        dmId: newId,
-    };
-
-}
+    return { dmId: dmId };
+  }
