@@ -3,17 +3,10 @@ import { echo } from './echo';
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
-<<<<<<< HEAD
-import { authRegisterV1, authLoginV1 } from './auth';
-import { channelsCreateV1, channelsListV1, channelsListAllV1 } from './channels';
-import { channelMessagesV1, channelDetailsV1, channelJoinV1, channelLeaveV1 } from './channel';
-import { messageSendV1 } from './message';
-=======
 import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
 import { channelsCreateV1, channelsListV1 } from './channels';
-import { channelMessagesV1, channelDetailsV1 } from './channel';
+import { channelMessagesV1, channelDetailsV1, channelJoinV1, channelLeaveV1 } from './channel';
 import { messageRemoveV1, messageSendV1 } from './message';
->>>>>>> 1b0b6baeca4346a3e327dec141927f85a6369761
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
