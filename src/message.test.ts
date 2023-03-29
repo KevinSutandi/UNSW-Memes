@@ -375,5 +375,15 @@ describe('testing messageEdit', () => {
     });
   });
 
+  test('edit other user message when user is channelMember', () => {
+    const user2 = authRegister(
+      'kevinesutandi@gmail.com',
+      'lesgo1001',
+      'Bevin',
+      'Bongo'
+    );
+    channelJoin(user2.token, channel1.channelId);
+    expect(messageEdit(user2.token, message1.messageId, 'hello world')).toStrictEqual(ERROR);
+  });
   */
 });
