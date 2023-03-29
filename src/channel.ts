@@ -263,11 +263,63 @@ export function channelLeaveV1(token: string, channelId: number) {
   const userMemberIndex = data.channels[channelIndex].allMembers.findIndex(
     (item) => item.uId === user.authUserId
   );
-  if (userOwnerIndex !== undefined) {
+  if (userOwnerIndex !== -1) {
     data.channels[channelIndex].ownerMembers.splice(userOwnerIndex, 1);
   }
   data.channels[channelIndex].allMembers.splice(userMemberIndex, 1);
 
   setData(data);
   return {};
+}
+
+// errors
+export function channelAddOwner(token: string, channelId: number, uId: number) {
+  const data = getData();
+  const user = getUserByToken(token);
+  if (!isChannel(channelId)) {
+    return { error: 'channelId does not refer to a valid channel' };
+  }
+  // invalid uId
+  const uIdfound = findUser(uId);
+  if (uIdfound === undefined) {
+    return { error: 'Invalid uId'};
+  }
+  // invalid token
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+  // If the user is not a member of the channel
+  if (!isChannelMember(channelId, uId)) {
+    return { error: user.authUserId + ' is not a member of the channel' };
+  }
+  // user with that uId is already owner of the channel
+  if (isChannelOwner(uId, channelId)) {
+    return { error: 'The user is already owner of this channel'};
+  }
+  // user with token is either channel owner or the global owner
+  // global owner if 1
+  if (!isChannelOwner(uId, channelId)) {
+    if (user.isGlobalOwner !== 1) {
+      return { error: 'You donot have the owner permission'};
+    }
+  }
+
+  // owner adds the user with uId to the ownermembers and allmembers of the channel
+  data.channels.ownerMembers.push({
+    uId: uIdfound.authUserId,
+    email: uIdfound.email,
+    nameFirst: uIdfound.nameFirst,
+    nameLast: uIdfound.nameLast,
+    handleStr: uIdfound.handleStr,
+  })
+
+  data.channels.allMembers.push({
+    uId: uIdfound.authUserId,
+    email: uIdfound.email,
+    nameFirst: uIdfound.nameFirst,
+    nameLast: uIdfound.nameLast,
+    handleStr: uIdfound.handleStr,
+  })
+
+  setData(data);
 }

@@ -120,14 +120,14 @@ export function findMember(userId: number, channelId: number) {
   return memberfound;
 }
 
-// export function isChannelOwner(userId: number, channelId: number): boolean {
-//   const channelFound = findChannel(channelId);
-//   if (channelFound.ownerMembers.uId === userId) {
-//     return true;
-//   } else {
-//     return false;
-//   }
-// }
+export function isChannelOwner(userId: number, channelId: number): boolean {
+  const channelFound = findChannel(channelId);
+  if (channelFound.ownerMembers.uId === userId) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 export function getAllOwnerIds(channel: channelData) {
   if (channel) {

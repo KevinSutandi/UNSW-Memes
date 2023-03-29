@@ -14,6 +14,7 @@ import {
   channelDetailsV1,
   channelLeaveV1,
   channelJoinV1,
+
 } from './channel';
 
 import { messageRemoveV1, messageSendV1 } from './message';
@@ -92,6 +93,18 @@ app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
   const result = channelLeaveV1(token, channelId);
   return res.json(result);
 });
+
+app.post('/channel/addowner/v1', (req: Request, res: Response, next) => {
+  const { token, channelId, uId } = req.body;
+  const result = channelAddOwnerV1(token, channelId, uId);
+  return res.json(result);
+});
+
+// app.post('/channel/removeowner/v1', (req: Request, res: Response, next) => {
+//   const { token, channelId, uId } = req.body;
+//   const result = channelRemoveOwnerV1(token, channelId, uId);
+//   return res.json(result);
+// });
 
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
