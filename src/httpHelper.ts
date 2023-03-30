@@ -103,6 +103,10 @@ export function authLogout(token: string) {
   return requestHelper('POST', '/auth/logout/v1', { token });
 }
 
+export function dmCreate(token: string, uIds: Array<number>) {
+  return requestHelper('POST', '/dm/create/v1', { token, uIds });
+}
+
 export function messageEdit(token: string, messageId: number, message: string) {
   return requestHelper('PUT', '/message/edit/v1', {
     token,
