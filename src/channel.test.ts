@@ -42,6 +42,11 @@ describe('testing channelMessage (ALL INVALID CASES)', () => {
     channel2 = channelsCreate(user2.token, 'lesgo', true);
     channel3 = channelsCreate(user3.token, 'yes', false);
   });
+
+  afterEach(() => {
+    clearV1();
+  });
+
   test('channelId does not exist test', () => {
     expect(
       channelMessage(user1.token, channel1.channelId + 100000, 0)
@@ -146,6 +151,10 @@ describe('/channel/details/v2', () => {
     channel = channelsCreate(user.token, 'general', true);
   });
 
+  afterEach(() => {
+    clearV1();
+  });
+
   test('invalid token', () => {
     expect(channelDetails(user.token, channel.channelId + 1)).toStrictEqual(
       ERROR
@@ -219,6 +228,11 @@ describe('testing channelJoinV2', () => {
     channel2 = channelsCreate(user2.token, 'Bakso', true);
     channel3 = channelsCreate(user3.token, 'Batagor', false);
   });
+
+  afterEach(() => {
+    clearV1();
+  });
+
   test('channelId does not exist test 1', () => {
     expect(channelJoin(user1.token, channel2.channelId + 5)).toStrictEqual(
       ERROR
@@ -384,6 +398,10 @@ describe('testing channelLeaveV1', () => {
     channel2 = channelsCreate(user2.token, 'Bakso', true);
   });
 
+  afterEach(() => {
+    clearV1();
+  });
+
   test('Invalid channelId test 1', () => {
     expect(channelLeave(user2.token, channel2.channelId + 10)).toStrictEqual(
       ERROR
@@ -522,7 +540,11 @@ describe('testing channelAddowner', () => {
     );
     channel1 = channelsCreate(user1.token, 'Ketoprak', true);
     channel2 = channelsCreate(user2.token, 'Bakso', true);
-    channel3 = channelsCreate(user3.token, 'Batagor', false);
+    channel3 = channelsCreate(user3.token, 'Batagor', true);
+  });
+
+  afterEach(() => {
+    clearV1();
   });
 
   test('Invalid channelId test 1', () => {
@@ -600,11 +622,12 @@ describe('testing channelAddowner', () => {
 
   test('testing user1 is global owner', () => {
     // user1 makes user2 the owner of the channel3
+    channelJoin(user1.token, channel3.channelId);
     channelJoin(user2.token, channel3.channelId);
     channelAddOwner(user1.token, channel3.channelId, user2.authUserId);
     expect(channelDetails(user2.token, channel3.channelId)).toStrictEqual({
       name: 'Batagor',
-      isPublic: false,
+      isPublic: true,
       ownerMembers: [
         {
           uId: user3.authUserId,
@@ -628,6 +651,13 @@ describe('testing channelAddowner', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+        },
+        {
+          uId: user1.authUserId,
+          email: 'kevins050324@gmail.com',
+          nameFirst: 'Kevin',
+          nameLast: 'Sutandi',
+          handleStr: 'kevinsutandi',
         },
         {
           uId: user2.authUserId,
@@ -714,6 +744,10 @@ describe('testing removing owner from channel', () => {
     channel1 = channelsCreate(user1.token, 'Ketoprak', true);
     channel2 = channelsCreate(user2.token, 'Bakso', true);
     channel3 = channelsCreate(user3.token, 'Batagor', false);
+  });
+
+  afterEach(() => {
+    clearV1();
   });
 
   test('Invalid channelId test 1', () => {

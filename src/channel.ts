@@ -294,7 +294,7 @@ export function channelAddOwnerV1(
     return { error: 'Invalid token' };
   }
   // If the user is not a member of the channel
-  if (!isChannelMember(channelId, uId) && user.isGlobalOwner !== 1) {
+  if (!isChannelMember(channelId, uId)) {
     return { error: ' is not a member of the channel' };
   }
   // user with that uId is already owner of the channel
@@ -303,12 +303,13 @@ export function channelAddOwnerV1(
   }
   // user with token is neither channel owner nor the global owner
   // global owner if 1
-  if (!isChannelOwner(user.authUserId, channelId) && user.isGlobalOwner !== 1) {
+  if (!isChannelOwner(user.authUserId, channelId) && user.isGlobalOwner === 2) {
     return { error: user.authUserId + 'has no owner permission' };
   }
 
   // owner adds the user with uId to the ownermembers and allmembers of the channel
   const channelfound = data.channels.find((a) => a.channelId === channelId);
+  console.log(channelfound.allMembers);
   channelfound.ownerMembers.push({
     uId: uIdfound.authUserId,
     email: uIdfound.email,
@@ -341,6 +342,12 @@ export function channelRemoveOwnerV1(
   if (user === undefined) {
     return { error: 'Invalid token' };
   }
+
+  // Check if user is in the channel
+  if (!isChannelMember(channelId, uId)) {
+    return { error: ' is not a member of the channel' };
+  }
+
   // uId user is not owner of the channel
   if (!isChannelOwner(uId, channelId)) {
     return { error: user.authUserId + ' is not owner of this channel' };
