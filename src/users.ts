@@ -1,6 +1,7 @@
-import { getData } from './dataStore.js';
+import { getData } from './dataStore';
 import { userObject, errorMessage } from './interfaces';
-import { isUser } from './functionHelper';
+import { isUser, getUserByToken } from './functionHelper';
+import validator from 'validator';
 
 /**
  * For a valid user, userProfileV1 returns information about the user
@@ -41,4 +42,128 @@ export function userProfileV1(
     nameLast: data.users[userNum].nameLast,
     handleStr: data.users[userNum].handleStr,
   };
+}
+
+/**
+ * Get user profile based on the given token and user ID.
+ *
+ * @param {string} token - The user's access token.
+ * @param {number} uId - The user ID to retrieve the profile for.
+ * @return {Object | errorMessage} Returns a user object if successful, or an error message if unsuccessful.
+ */
+export function userProfileV2(
+  token: string,
+  uId: number
+): userObject | errorMessage {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+
+  const getUser = userProfileV1(user.authUserId, uId);
+  return getUser;
+}
+
+/**
+ * Set the email address of the authenticated user.
+ *
+ * @param {string} token - The user's access token.
+ * @param {string} email - The new email address to set for the user.
+ * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
+ */
+export function setEmail(token: string, email: string): {} | errorMessage {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+
+  if (!validator.isEmail(email)) {
+    return { error: 'invalid email' };
+  }
+
+  const data = getData();
+  let emailExist: boolean = false;
+  data?.users.forEach((user) => {
+    if (user.email === email) {
+      emailExist = true;
+    }
+  });
+  if (emailExist) {
+    return { error: 'email address is already being used by another user' };
+  }
+
+  user.email = email;
+  return {};
+}
+
+/**
+ * Set the first and last name of the authenticated user.
+ *
+ * @param {string} token - The user's access token.
+ * @param {string} nameFirst - The user's new first name.
+ * @param {string} nameLast - The user's new last name.
+ * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
+ */
+export function setName(
+  token: string,
+  nameFirst: string,
+  nameLast: string
+): {} | errorMessage {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+
+  if (
+    nameFirst.length < 1 ||
+    nameFirst.length > 50 ||
+    nameLast.length < 1 ||
+    nameLast.length > 50
+  ) {
+    return { error: 'name length should in range of 1 to 50' };
+  }
+
+  user.nameFirst = nameFirst;
+  user.nameLast = nameLast;
+
+  return {};
+}
+
+/**
+ * Set the handle (username) of the authenticated user.
+ *
+ * @param {string} token - The user's access token.
+ * @param {string} handleStr - The new handle for the user.
+ * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
+ */
+export function setHandle(token: string, handleStr: string): {} | errorMessage {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+
+  if (handleStr.length > 20 || handleStr.length < 3) {
+    return { error: 'handle length should in range of 3 to 20' };
+  }
+
+  user.handleStr = handleStr;
+
+  return {};
+}
+
+/**
+ * Get all users.
+ *
+ * @param {string} token - The user's access token.
+ * @return {Array<Object> | errorMessage} Returns an array of user objects if successful, or an error message if unsuccessful.
+ */
+export function getAllUsers(token: string): Array<Object> | errorMessage {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+
+  const users = getData().users;
+
+  return users;
 }
