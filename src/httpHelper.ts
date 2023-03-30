@@ -111,7 +111,6 @@ export function authLogout(token: string) {
   return requestHelper('POST', '/auth/logout/v1', { token });
 }
 
-
 export function channelAddOwner(token: string, channelId: number, uId: number) {
   return requestHelper('POST', '/channel/addowner/v1', { token, channelId, uId });
 }

@@ -1,5 +1,1 @@
-{
-  "users": [],
-  "channels": [],
-  "dm": []
-}
+{"users":[],"channels":[],"dm":[{"dmId":602666802,"name":"jonahmeggs, jonahmeggs","ownerMembers":[{"uId":2356104,"email":"onlyfortestttt06@gmail.com","handleStr":"jonahmeggs","nameFirst":"Jonah","nameLast":"Meggs"}],"allMembers":[{"uId":2356104,"email":"onlyfortestttt06@gmail.com","handleStr":"jonahmeggs","nameFirst":"Jonah","nameLast":"Meggs"},{"uId":2356104,"email":"onlyfortestttt06@gmail.com","handleStr":"jonahmeggs","nameFirst":"Jonah","nameLast":"Meggs"}],"messages":[],"start":0,"end":-1},{"dmId":966595563,"name":"aevinsutandi, jonahmeggs","ownerMembers":[{"uId":153770,"email":"onlyfortestttt06@gmail.com","handleStr":"jonahmeggs","nameFirst":"Jonah","nameLast":"Meggs"}],"allMembers":[{"uId":6987207,"email":"kevins050324@gmail.com","handleStr":"aevinsutandi","nameFirst":"aevin","nameLast":"sutandi"},{"uId":153770,"email":"onlyfortestttt06@gmail.com","handleStr":"jonahmeggs","nameFirst":"Jonah","nameLast":"Meggs"}],"messages":[],"start":0,"end":-1}]}
