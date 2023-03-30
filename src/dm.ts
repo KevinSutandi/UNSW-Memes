@@ -22,7 +22,7 @@ export function isDmMember(dmId: number, userId: number): boolean {
   
 export function findDm(dmId: number): dmData | undefined {
     const data = getData();
-    return data.dms.find((a) => a.dmId === dmId);
+    return data.dm.find((a) => a.dmId === dmId);
 }
 
 export function getAllMemberIds(dm: dmData) {
