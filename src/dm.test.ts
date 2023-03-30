@@ -1,13 +1,11 @@
-import { authRegister, clearV1, dmCreate, dmList } from './httpHelper';
-import { AuthReturn } from './interfaces';
+import { authRegister, clearV1, dmList} from './httpHelper';
+import { AuthReturn, dmCreateReturn } from './interfaces';
 
- 
 const ERROR = { error: expect.any(String) };
 
-  
-
 describe('testing dmListV1', () => {
-    let user: AuthReturn;
+    let user: AuthReturn, user2: AuthReturn;
+    let dm: dmCreateReturn;
     beforeEach(() => {
       clearV1();
       user = authRegister(
@@ -16,6 +14,12 @@ describe('testing dmListV1', () => {
         'Jonah',
         'Meggs'
       );
+      user2 = authRegister(
+        'testing123445@gmail.com', 
+        'mina282', 
+        'Mina', 
+        'Kov'
+        );
     });
   
     afterEach(() => {
@@ -27,45 +31,26 @@ describe('testing dmListV1', () => {
         expect(dmList('alminaaaaascnj')).toStrictEqual(ERROR);
         }); 
 
-    test('dm is successful', () => {
-        expect(dmCreate(user.token, uIds)).toStrictEqual({
-            dms: expect.any(Array),
+    test('valid user but there are no dms in the list', () => {
+
+    });
+
+    test('valid user with only one dm in the list', () => {            
+        dm = dmCreate(user.token, user.dmId);
+
+        expect(dmList(user.token)).toStrictEqual({
+            dms: [
+                {
+                    dmId: dm.dmId,
+                    name: dm.name,
+                },
+            ],
         });
     });
 
-// test when there are no dms in the list
+    test('valid user with multiple dms in the list', () => {
 
-/* expect(
-    messageSend('alminaaaaascnj', user1.uId)
-  ).toStrictEqual(ERROR);
-}); 
-*/
+    });
 
-// test when there is only one dm in the list
-
-/* test('one valid dm', () => {
-    expect(
-        messageSend(user1.token)
-    ).toStrictEqual(
-        { dm }
-    )
-*/
-
-
-// test when there are multiple dms in the list
-
-/* test('one valid dm', () => {
-    expect(
-        messageSend(user1.token)
-    ).toStrictEqual(
-        { dms }
-    )
-*/
-
-
-
-
-
-
-
+    // tListAfterLeaveDm
 });

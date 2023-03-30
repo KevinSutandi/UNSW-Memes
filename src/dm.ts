@@ -5,21 +5,20 @@ import {
 } from './interfaces.js';
 
 export function dmListV1(
-    token: string
+  token: string
 ): dmListReturn | errorMessage {
-
-    const data = getData();
-    const user = getUserByToken(token);
+  const data = getData();
+  const user = getUserByToken(token);
 
     // errors
-    if (user === undefined) {
-        return { error: 'Invalid token' };
-    }
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+  
+  const authUserIdToFind = user.authUserId;
+  const userDms: dmListReturn = { dms: [] };
 
-    const userDms: dmListReturn = { dms: [] };
-
-
-    data.dms.forEach((dm) => {
+  data.dms.forEach((dm) => {
     const isUserInDm = dm.allMembers.some(
       (member) => member.uId === authUserIdToFind
     );
