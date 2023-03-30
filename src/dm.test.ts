@@ -3,8 +3,6 @@ import { AuthReturn } from './interfaces';
 
 const ERROR = { error: expect.any(String) };
 
-// error testing
-
 describe('testing dmCreateV1', () => {
   let user: AuthReturn;
   beforeEach(() => {
@@ -20,7 +18,7 @@ describe('testing dmCreateV1', () => {
   afterEach(() => {
     clearV1();
   });
-  // error testing
+
   test('any uId does not refer to a valid user', () => {
     const uIds = [2032];
     expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
@@ -31,8 +29,14 @@ describe('testing dmCreateV1', () => {
     expect(dmCreate('alminaaaaascnj', uIds)).toStrictEqual(ERROR);
   });
 
-  // test that dm is successful
-  test('dm is successful', () => {
+  test('dm is successful with one user', () => {
+    const uIds = [user.authUserId]
+    expect(dmCreate(user.token, uIds)).toStrictEqual({
+      dmId: expect.any(Number),
+    });
+  });
+
+  test('dm is successful with multiple users', () => {
     const user2 = authRegister(
       'kevins050324@gmail.com',
       'kevin1001',
@@ -45,7 +49,25 @@ describe('testing dmCreateV1', () => {
     });
   });
 
-  // test that if multiple are created that it is also successful
+  test('dm has one valid user and the second entry is invalid', () => {
+    const user2 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'aevin',
+      'sutandi'
+    );
+    const uIds = [7586];
+    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR)
+  });
 
-  // test if one user valid but second dm is invalid
+  test('dm has two duplicate users', () => {
+    const user2 = authRegister(
+      'onlyfortestttt06@gmail.com',
+      'testpw0005',
+      'Jonah',
+      'Meggs'
+    );
+    const uIds = [user2.authUserId];
+    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR)
+  });
 });
