@@ -4,7 +4,7 @@ import {
   channelsCreateReturn,
   channelsListReturn,
   errorMessage,
-} from './interfaces.js';
+} from './interfaces';
 
 /**
  * Creates a new channel with the given name,
