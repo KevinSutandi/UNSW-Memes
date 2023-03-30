@@ -363,7 +363,6 @@ describe('testing channelJoinV2', () => {
 // user is not the member of the channel
 // valid cases: the only user leaves the channel;
 //              leaving one by one
-
 // details to check if the user is not member anymore but teh information still will be in the channel
 describe('testing channelLeaveV1', () => {
   let user1: AuthReturn;
@@ -872,3 +871,61 @@ describe('testing channelInviteV1', () => {
   });
 });
 */
+// push test first
+// 6 errors
+describe('testing removing owner from channel', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let user3: AuthReturn;
+  let channel1: channelsCreateReturn;
+  let channel2: channelsCreateReturn;
+  let channel3: channelsCreateReturn;
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'someotheremail@gmail.com',
+      'someone2031',
+      'Jonah',
+      'Meggs'
+    );
+    user3 = authRegister(
+      'z5352065@ad.unsw.edu.au',
+      'big!password3',
+      'Zombie',
+      'Ibrahim'
+    );
+    channel1 = channelsCreate(user1.token, 'Ketoprak', true);
+    channel2 = channelsCreate(user2.token, 'Bakso', true);
+    channel3 = channelsCreate(user3.token, 'Batagor', false);
+  });
+
+  test('Invalid channelId test 1', () => {
+    expect(
+      channelLeave(user2.token, channel2.channelId + 10)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Invalid channelId test 2', () => {
+    expect(
+      channelLeave(user1.token, channel1.channelId + 3)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Invalid uId test 1', () => {
+    expect(
+      channelLeave(user2.token, channel2.channelId + 10)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Invalid uId test 2', () => {
+    expect(
+      channelLeave(user1.token, channel1.channelId + 3)
+    ).toStrictEqual(ERROR);
+  });
+});
