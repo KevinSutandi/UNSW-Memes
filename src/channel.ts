@@ -273,7 +273,11 @@ export function channelLeaveV1(token: string, channelId: number) {
   return {};
 }
 
-export function channelAddOwnerV1(token: string, channelId: number, uId: number) {
+export function channelAddOwnerV1(
+  token: string,
+  channelId: number,
+  uId: number
+) {
   const data = getData();
   const user = getUserByToken(token);
   const uIdfound = findUser(uId);
@@ -290,8 +294,8 @@ export function channelAddOwnerV1(token: string, channelId: number, uId: number)
     return { error: 'Invalid token' };
   }
   // If the user is not a member of the channel
-  if (!isChannelMember(channelId, uId) && (user.isGlobalOwner !== 1)) {
-    return { error:  ' is not a member of the channel' };
+  if (!isChannelMember(channelId, uId)) {
+    return { error: ' is not a member of the channel' };
   }
   // user with that uId is already owner of the channel
   if (isChannelOwner(uId, channelId)) {
@@ -299,12 +303,13 @@ export function channelAddOwnerV1(token: string, channelId: number, uId: number)
   }
   // user with token is neither channel owner nor the global owner
   // global owner if 1
-  if (!isChannelOwner(user.authUserId, channelId) && (user.isGlobalOwner !== 1)) {
+  if (!isChannelOwner(user.authUserId, channelId) && user.isGlobalOwner === 2) {
     return { error: user.authUserId + 'has no owner permission' };
   }
 
   // owner adds the user with uId to the ownermembers and allmembers of the channel
   const channelfound = data.channels.find((a) => a.channelId === channelId);
+  console.log(channelfound.allMembers);
   channelfound.ownerMembers.push({
     uId: uIdfound.authUserId,
     email: uIdfound.email,
@@ -316,7 +321,11 @@ export function channelAddOwnerV1(token: string, channelId: number, uId: number)
   return {};
 }
 
-export function channelRemoveOwnerV1(token: string, channelId: number, uId: number) {
+export function channelRemoveOwnerV1(
+  token: string,
+  channelId: number,
+  uId: number
+) {
   const data = getData();
   const user = getUserByToken(token);
   const uIdfound = findUser(uId);
@@ -333,6 +342,12 @@ export function channelRemoveOwnerV1(token: string, channelId: number, uId: numb
   if (user === undefined) {
     return { error: 'Invalid token' };
   }
+
+  // Check if user is in the channel
+  if (!isChannelMember(channelId, uId)) {
+    return { error: ' is not a member of the channel' };
+  }
+
   // uId user is not owner of the channel
   if (!isChannelOwner(uId, channelId)) {
     return { error: user.authUserId + ' is not owner of this channel' };
