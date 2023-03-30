@@ -83,6 +83,11 @@ export function channelsList(token: string) {
   return requestHelper('GET', '/channels/list/v2', { token });
 }
 
+export function dmLeave(token:string, dmId: number) {
+  return requestHelper('POST', '/dm/leave/v1', {  token, dmId });
+}
+
+
 export function messageSend(token: string, channelId: number, message: string) {
   return requestHelper('POST', '/message/send/v1', {
     token,

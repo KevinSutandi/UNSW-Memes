@@ -7,6 +7,7 @@ import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
 import { channelsCreateV1, channelsListV1 } from './channels';
 import { channelMessagesV1, channelDetailsV1 } from './channel';
 import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
+import { dmLeaveV1 } from './dm';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -77,6 +78,12 @@ app.get('/channel/details/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const channelId = parseInt(req.query.channelId as string);
   const result = channelDetailsV1(token, channelId);
+  return res.json(result);
+});
+
+app.post('/dm/leave/v1', (req: Request, res: Response, next) => {
+  const { token, dmId } = req.body;
+  const result = dmLeaveV1(token);
   return res.json(result);
 });
 
