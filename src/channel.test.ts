@@ -39,6 +39,11 @@ describe('testing channelMessage (ALL INVALID CASES)', () => {
     channel2 = channelsCreate(user2.token, 'lesgo', true);
     channel3 = channelsCreate(user3.token, 'yes', false);
   });
+
+  afterEach(() => {
+    clearV1();
+  });
+
   test('channelId does not exist test', () => {
     expect(
       channelMessage(user1.token, channel1.channelId + 100000, 0)
@@ -141,6 +146,10 @@ describe('/channel/details/v2', () => {
       'Meggs'
     );
     channel = channelsCreate(user.token, 'general', true);
+  });
+
+  afterEach(() => {
+    clearV1();
   });
 
   test('invalid token', () => {
