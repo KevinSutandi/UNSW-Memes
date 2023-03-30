@@ -5,9 +5,14 @@ import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
 import { channelsCreateV1, channelsListV1 } from './channels';
+<<<<<<< HEAD
 import { channelMessagesV1, channelDetailsV1, channelJoinV1 } from './channel';
 import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
 
+=======
+import { channelMessagesV1, channelDetailsV1 } from './channel';
+import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
+>>>>>>> f309890b4be3d4417e21a15f6126a72fa84ca6ae
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
