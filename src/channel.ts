@@ -240,18 +240,7 @@ export function channelLeaveV1(token: string, channelId: number) {
   if (!isChannelMember(channelId, user.authUserId)) {
     return { error: user.authUserId + ' is not a member of the channel' };
   }
-  /*
-  const memberId = user.authUserId;
-  const channelFound = findChannel(channelId);
-  const removing = findMember(memberId, channelId);
-  delete removing.uId;
 
-  // if user is the owner
-  if (isChannelOwner(memberId, channelId)) {
-    console.log(channelFound);
-    delete channelFound.ownerMembers.authUserId;
-  }
-  */
   const channelIndex = data.channels.findIndex(
     (item) => item.channelId === channelId
   );

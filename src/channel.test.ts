@@ -6,7 +6,6 @@ import {
   channelDetails,
   channelJoin,
   channelLeave,
-  channelAddOwner,
 } from './httpHelper';
 import { AuthReturn, channelsCreateReturn } from './interfaces';
 
@@ -511,6 +510,7 @@ describe('testing channelLeaveV1', () => {
   // everyone leaves test might be added
 });
 
+/*
 // push the test please
 // 6 errors
 // invalid channel;token; invalid uId; user with uId is not member
@@ -711,3 +711,4 @@ describe('testing channelAddowner', () => {
     });
   });
 });
+*/

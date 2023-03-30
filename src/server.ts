@@ -3,18 +3,11 @@ import { echo } from './echo';
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
-<<<<<<< HEAD
-import { authRegisterV1, authLoginV1 } from './auth';
+import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
 import { channelsCreateV1, channelsListV1, channelsListAllV1 } from './channels';
 import { channelMessagesV1, channelDetailsV1, channelJoinV1, channelLeaveV1 } from './channel';
-import { messageSendV1 } from './message';
-=======
-import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
-import { channelsCreateV1, channelsListV1 } from './channels';
-import { channelMessagesV1, channelDetailsV1 } from './channel';
 import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
 import { dmCreateV1 } from './dm';
->>>>>>> fdc4312b7765713958c357988991ad5887a2eede
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -85,7 +78,6 @@ app.get('/channel/messages/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-<<<<<<< HEAD
 app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
   const { token, channelId } = req.body;
   const result = channelLeaveV1(token, channelId);
@@ -97,13 +89,12 @@ app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
 //   const result = channelAddOwnerV1(token, channelId, uId);
 //   return res.json(result);
 // });
-=======
+
 app.post('/dm/create/v1', (req: Request, res: Response, next) => {
   const { token, uIds } = req.body;
   const result = dmCreateV1(token, uIds);
   return res.json(result);
 });
->>>>>>> fdc4312b7765713958c357988991ad5887a2eede
 /*
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
