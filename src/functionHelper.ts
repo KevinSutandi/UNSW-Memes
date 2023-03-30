@@ -137,3 +137,7 @@ export function getAllOwnerIds(channel: channelData) {
 export function findTokenIndex(user: userData, token: string) {
   return user.token.findIndex((item) => item.token === token);
 }
+
+export function findOnwerIndex(channel: channelData, uId: number) {
+  return channel.ownerMembers.findIndex((item) => item.uID === uId);
+}
