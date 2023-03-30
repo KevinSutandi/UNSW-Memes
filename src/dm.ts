@@ -3,9 +3,9 @@ import { findUser, getUserByToken } from './functionHelper';
 import {
   errorMessage,
   dmCreateReturn,
-  uId
+  userData,
+  userObject,
 } from './interfaces';
-
 
 export function dmCreateV1(
   token: string,

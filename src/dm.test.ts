@@ -30,7 +30,7 @@ describe('testing dmCreateV1', () => {
   });
 
   test('dm is successful with one user', () => {
-    const uIds = [user.authUserId]
+    const uIds = [user.authUserId];
     expect(dmCreate(user.token, uIds)).toStrictEqual({
       dmId: expect.any(Number),
     });
@@ -50,14 +50,8 @@ describe('testing dmCreateV1', () => {
   });
 
   test('dm has one valid user and the second entry is invalid', () => {
-    const user2 = authRegister(
-      'kevins050324@gmail.com',
-      'kevin1001',
-      'aevin',
-      'sutandi'
-    );
     const uIds = [7586];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR)
+    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
   });
 
   test('dm has two duplicate users', () => {
@@ -68,6 +62,6 @@ describe('testing dmCreateV1', () => {
       'Meggs'
     );
     const uIds = [user2.authUserId];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR)
+    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
   });
 });
