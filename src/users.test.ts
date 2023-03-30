@@ -1,12 +1,12 @@
-import { authRegister } from './httpHelper';
 import {
-  userProfileV2,
+  authRegister,
+  userProfile,
+  usersAll,
+  setName,
   setEmail,
   setHandle,
-  setName,
-  getAllUsers,
-} from './users';
-import { clearV1 } from './other';
+  clearV1,
+} from './httpHelper';
 import { AuthReturn } from './interfaces';
 
 const ERROR = { error: expect.any(String) };
@@ -30,7 +30,7 @@ describe('userProfileV1 iteration 2 testing', () => {
   });
 
   test('userProfileV2 invalid Token', () => {
-    expect(userProfileV2('wrong token', 1)).toStrictEqual(ERROR);
+    expect(userProfile('wrong token', 1)).toStrictEqual(ERROR);
   });
 
   test('setEmail invalid Token', () => {
@@ -48,6 +48,6 @@ describe('userProfileV1 iteration 2 testing', () => {
   });
 
   test('getAllUsers invalid Token', () => {
-    expect(getAllUsers('wrong token')).toStrictEqual(ERROR);
+    expect(usersAll('wrong token')).toStrictEqual(ERROR);
   });
 });
