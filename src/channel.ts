@@ -9,6 +9,7 @@ import {
   isChannelMember,
   getUserByToken,
   isChannelOwner,
+  findOwnerIndex
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
 
@@ -298,7 +299,7 @@ export function channelAddOwnerV1(token: string, channelId: number, uId: number)
   }
   // user with token is neither channel owner nor the global owner
   // global owner if 1
-  if (!isChannelOwner(user.uId, channelId) && (user.isGlobalOwner !== 1)) {
+  if (!isChannelOwner(user.authUserId, channelId) && (user.isGlobalOwner !== 1)) {
     return { error: user.authUserId + 'has no owner permission' };
   }
 
@@ -347,7 +348,7 @@ export function channelRemoveOwnerV1(token: string, channelId: number, uId: numb
   }
 
   // owner removes the other owner with uId from channel
-  const ownerIndex = findOnwerIndex(data.channel, uIdfound.uID);
+  const ownerIndex = findOwnerIndex(channelId, uIdfound.uID);
   // channelfound.ownerMembers.({
   //   uId: uIdfound.authUserId,
   //   email: uIdfound.email,
@@ -355,7 +356,9 @@ export function channelRemoveOwnerV1(token: string, channelId: number, uId: numb
   //   nameLast: uIdfound.nameLast,
   //   handleStr: uIdfound.handleStr,
   // });
-  data.channels.ownerMembers.splice(ownerIndex, 1);
+
+  channelfound
+  channelfound.ownerMembers.splice(ownerIndex, 1);
   setData(data);
   return {};
 }

@@ -784,6 +784,12 @@ describe('testing removing owner from channel', () => {
     ).toStrictEqual(ERROR);
   });
 
+  test('Global owner with uId is not owner test 2', () => {
+    expect(
+      channelRemoveOwner(user2.token, channel2.channelId, user1.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
   // global owner has the owner permission to remove other owner(who is not the only owner)
   // when if they are removed as global owner, not channel owner as well, then without owner permission
   test('User with token does not have owner permission test 1', () => {
@@ -860,7 +866,7 @@ describe('testing removing owner from channel', () => {
     channelRemoveOwner(user1.token, channel2.channelId, user3.authUserId);
     // user3 no longer the owner of channel2
     expect(
-      channelDetails(user3.token, channel2.channelId)
+      channelDetails(user2.token, channel2.channelId)
     ).toStrictEqual({
       name: 'Bakso',
       isPublic: true,
