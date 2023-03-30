@@ -140,6 +140,18 @@ export interface dmCreateReturn {
   dmId: number;
 }
 
+export interface dmObject {
+  dmId: number;
+  uId: number;
+  message: string;
+  timeSent: number;
+}
+
+// might need dms to link to array<dmObject>?
+export interface dmListReturn {
+  dms: dm[];
+}
+
 export interface uId {
   uId: number;
 }
