@@ -357,7 +357,6 @@ export function channelRemoveOwnerV1(token: string, channelId: number, uId: numb
   //   handleStr: uIdfound.handleStr,
   // });
 
-  channelfound
   channelfound.ownerMembers.splice(ownerIndex, 1);
   setData(data);
   return {};
