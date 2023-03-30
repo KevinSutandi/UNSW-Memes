@@ -1,32 +1,37 @@
-import {
-    authRegister,
-    clearV1,
-    messageSend,
-    dmCreate,
-    dmList,
-  } from './httpHelper';
-  import { AuthReturn } from './interfaces';
-  
-  const ERROR = { error: expect.any(String) };
+import { authRegister, clearV1, dmCreate, dmList } from './httpHelper';
+import { AuthReturn } from './interfaces';
+
+ 
+const ERROR = { error: expect.any(String) };
+
   
 
-describe('testing dm list', () => {
+describe('testing dmListV1', () => {
+    let user: AuthReturn;
+    beforeEach(() => {
+      clearV1();
+      user = authRegister(
+        'onlyfortestttt06@gmail.com',
+        'testpw0005',
+        'Jonah',
+        'Meggs'
+      );
+    });
   
-// test when token is invalid
+    afterEach(() => {
+      clearV1();
+    });
+  
+    // test when there are multiple dms in the list
+    test('the token taken is invalid', () => {
+        expect(dmList('alminaaaaascnj')).toStrictEqual(ERROR);
+        }); 
 
-test('the token taken is invalid', () => {
-    const user1 = authRegister(
-      'alminak1938@gmail.com',
-      'mina001',
-      'Almina',
-      'Kov',
-    );
-    expect(
-        messageSend('alminaaaaascnj', user1.uId)
-      ).toStrictEqual(ERROR);
-    }); 
-
-
+    test('dm is successful', () => {
+        expect(dmCreate(user.token, uIds)).toStrictEqual({
+            dms: expect.any(Array),
+        });
+    });
 
 // test when there are no dms in the list
 
