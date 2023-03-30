@@ -7,6 +7,7 @@ import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
 import { channelsCreateV1, channelsListV1 } from './channels';
 import { channelMessagesV1, channelDetailsV1 } from './channel';
 import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
+import { dmDetailsV1 } from './dm';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -104,6 +105,13 @@ app.delete('/message/remove/v1', (req: Request, res: Response, next) => {
 app.post('/auth/logout/v1', (req: Request, res: Response, next) => {
   const { token } = req.body;
   const result = authLogoutV1(token);
+  return res.json(result);
+});
+
+app.get('/dm/details/v1', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const dmId = parseInt(req.query.dmId as string);
+  const result = dmDetailsV1(token, dmId);
   return res.json(result);
 });
 

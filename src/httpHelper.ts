@@ -99,6 +99,14 @@ export function authLogout(token: string) {
   return requestHelper('POST', '/auth/logout/v1', { token });
 }
 
+
+export function dmDetails(token: string, dmId: number) {
+  return requestHelper('GET', '/dm/details/v1', { token, dmId });
+
+}
+
+
+
 export function messageEdit(token: string, messageId: number, message: string) {
   return requestHelper('PUT', '/message/edit/v1', {
     token,
