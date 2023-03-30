@@ -1,5 +1,5 @@
 import { getData } from './dataStore';
-import { channelData } from './interfaces';
+import { channelData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -110,4 +110,20 @@ export function findChannelByMessageId(messageId: number) {
     channel.messages.find((messages) => messages.messageId === messageId)
   );
   return channelFound;
+}
+
+export function getAllOwnerIds(channel: channelData) {
+  if (channel) {
+    return channel.ownerMembers.map((owner) => owner.uId);
+  } else {
+    return null;
+  }
+}
+
+export function findTokenIndex(user: userData, token: string) {
+  return user.token.findIndex((item) => item.token === token);
+}
+
+export function findMessageIndex(channel: channelData, messageId: number) {
+  return channel.messages.findIndex((item) => item.messageId === messageId);
 }
