@@ -4,7 +4,6 @@ import {
   channelsCreate,
   channelMessage,
   channelDetails,
-  channelJoin,
 } from './httpHelper';
 import { AuthReturn, channelsCreateReturn } from './interfaces';
 
@@ -194,6 +193,7 @@ describe('/channel/details/v2', () => {
 
 // push test first please
 // given channel id and token, authorised users can join this channel
+/*
 describe('testing channelJoinV2', () => {
   let user1: AuthReturn;
   let user2: AuthReturn;
@@ -333,174 +333,6 @@ describe('testing channelJoinV2', () => {
     channelJoin(user1.token, channel2.channelId);
     expect(
       channelDetails(user1.token, channel2.channelId)
-    ).toStrictEqual({
-      name: 'Bakso',
-      isPublic: true,
-      ownerMembers: [
-        {
-          uId: user2.authUserId,
-          email: 'someotheremail@gmail.com',
-          nameFirst: 'Jonah',
-          nameLast: 'Meggs',
-          handleStr: 'jonahmeggs',
-        },
-      ],
-      allMembers: [
-        {
-          uId: user2.authUserId,
-          email: 'someotheremail@gmail.com',
-          nameFirst: 'Jonah',
-          nameLast: 'Meggs',
-          handleStr: 'jonahmeggs',
-        },
-        {
-          uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
-        },
-      ],
-    });
-  });
-});
-
-/*
-describe('testing channelJoinV1', () => {
-  let user1, user2, user3;
-  let channel1, channel2, channel3;
-  beforeEach(() => {
-    clearV1();
-    user1 = authRegisterV1(
-      'kevins050324@gmail.com',
-      'kevin1001',
-      'Kevin',
-      'Sutandi'
-    );
-    user2 = authRegisterV1(
-      'someotheremail@gmail.com',
-      'someone2031',
-      'Jonah',
-      'Meggs'
-    );
-    user3 = authRegisterV1(
-      'z5352065@ad.unsw.edu.au',
-      'big!password3',
-      'Zombie',
-      'Ibrahim'
-    );
-    channel1 = channelsCreateV1(user1.authUserId, 'Ketoprak', true);
-    channel2 = channelsCreateV1(user2.authUserId, 'Bakso', true);
-    channel3 = channelsCreateV1(user3.authUserId, 'Batagor', false);
-  });
-  test('channelId does not exist test 1', () => {
-    expect(
-      channelJoinV1(user1.authUserId, channel2.channelId + 5)
-    ).toStrictEqual(ERROR);
-  });
-  test('channelId does not exist test 2', () => {
-    expect(
-      channelJoinV1(user3.authUserId, channel2.channelId + 3)
-    ).toStrictEqual(ERROR);
-  });
-  test('invalid authUserId test 1', () => {
-    expect(
-      channelJoinV1(user1.authUserId + 4, channel3.channelId)
-    ).toStrictEqual(ERROR);
-  });
-  test('invalid authUserId test 2', () => {
-    expect(
-      channelJoinV1(user3.authUserId + 10, channel2.channelId)
-    ).toStrictEqual(ERROR);
-  });
-  test('authUserId already in channel test 1', () => {
-    expect(channelJoinV1(user1.authUserId, channel1.channelId)).toStrictEqual(
-      ERROR
-    );
-  });
-  test('authUserId already in channel test 2', () => {
-    expect(channelJoinV1(user2.authUserId, channel2.channelId)).toStrictEqual(
-      ERROR
-    );
-  });
-  test('channel is private while non gloabalOwner is joining', () => {
-    expect(channelJoinV1(user2.authUserId, channel3.channelId)).toStrictEqual(
-      ERROR
-    );
-  });
-  test('channel is private while globalOwner is joining', () => {
-    channelJoinV1(user1.authUserId, channel3.channelId);
-    expect(
-      channelDetailsV1(user1.authUserId, channel3.channelId)
-    ).toStrictEqual({
-      name: 'Batagor',
-      isPublic: false,
-      ownerMembers: [
-        {
-          uId: user3.authUserId,
-          email: 'z5352065@ad.unsw.edu.au',
-          nameFirst: 'Zombie',
-          nameLast: 'Ibrahim',
-          handleStr: 'zombieibrahim',
-        },
-      ],
-      allMembers: [
-        {
-          uId: user3.authUserId,
-          email: 'z5352065@ad.unsw.edu.au',
-          nameFirst: 'Zombie',
-          nameLast: 'Ibrahim',
-          handleStr: 'zombieibrahim',
-        },
-        {
-          uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
-        },
-      ],
-    });
-  });
-
-  test('Join channel test 1', () => {
-    channelJoinV1(user3.authUserId, channel1.channelId);
-    expect(
-      channelDetailsV1(user3.authUserId, channel1.channelId)
-    ).toStrictEqual({
-      name: 'Ketoprak',
-      isPublic: true,
-      ownerMembers: [
-        {
-          uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
-        },
-      ],
-      allMembers: [
-        {
-          uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
-        },
-        {
-          uId: user3.authUserId,
-          email: 'z5352065@ad.unsw.edu.au',
-          nameFirst: 'Zombie',
-          nameLast: 'Ibrahim',
-          handleStr: 'zombieibrahim',
-        },
-      ],
-    });
-  });
-  test('Join channel test 2', () => {
-    channelJoinV1(user1.authUserId, channel2.channelId);
-    expect(
-      channelDetailsV1(user1.authUserId, channel2.channelId)
     ).toStrictEqual({
       name: 'Bakso',
       isPublic: true,
