@@ -8,7 +8,6 @@ import {
   getChannelIndex,
   isChannelMember,
   getUserByToken,
-  findMember,
   isChannelOwner,
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
@@ -193,6 +192,7 @@ export function channelInviteV1(
  *                                    | User is invalid
  */
 export function channelDetailsV1(token: string, channelId: number) {
+  // console.log(JSON.stringify(getData(), null, 4));
   // If channelId doesn't refer to a valid channel,
   // returns error
   const user = getUserByToken(token);
@@ -230,6 +230,7 @@ export function channelDetailsV1(token: string, channelId: number) {
  *                                    | User token is invalid
  */
 export function channelLeaveV1(token: string, channelId: number) {
+  const data = getData();
   const user = getUserByToken(token);
   if (!isChannel(channelId)) {
     return { error: 'channelId does not refer to a valid channel' };
@@ -241,7 +242,7 @@ export function channelLeaveV1(token: string, channelId: number) {
   if (!isChannelMember(channelId, user.authUserId)) {
     return { error: user.authUserId + ' is not a member of the channel' };
   }
-
+  /*
   const memberId = user.authUserId;
   const channelFound = findChannel(channelId);
   const removing = findMember(memberId, channelId);
@@ -249,7 +250,75 @@ export function channelLeaveV1(token: string, channelId: number) {
 
   // if user is the owner
   if (isChannelOwner(memberId, channelId)) {
-    delete channelFound.ownerMembers.uId;
+    console.log(channelFound);
+    delete channelFound.ownerMembers.authUserId;
   }
+  */
+  const channelIndex = data.channels.findIndex(
+    (item) => item.channelId === channelId
+  );
+  const userOwnerIndex = data.channels[channelIndex].ownerMembers.findIndex(
+    (item) => item.uId === user.authUserId
+  );
+  const userMemberIndex = data.channels[channelIndex].allMembers.findIndex(
+    (item) => item.uId === user.authUserId
+  );
+  if (userOwnerIndex !== -1) {
+    data.channels[channelIndex].ownerMembers.splice(userOwnerIndex, 1);
+  }
+  data.channels[channelIndex].allMembers.splice(userMemberIndex, 1);
+
+  setData(data);
+  return {};
+}
+
+// errors
+export function channelAddOwnerV1(token: string, channelId: number, uId: number) {
+  const data = getData();
+  const user = getUserByToken(token);
+  if (!isChannel(channelId)) {
+    return { error: 'channelId does not refer to a valid channel' };
+  }
+  // invalid uId
+  const uIdfound = findUser(uId);
+  if (uIdfound === undefined) {
+    return { error: 'Invalid uId' };
+  }
+  // invalid token
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+  // If the user is not a member of the channel
+  if (!isChannelMember(channelId, uId) && (user.isGlobalOwner !== 1)) {
+    return { error: user.authUserId + ' is not a member of the channel' };
+  }
+  // user with that uId is already owner of the channel
+  if (isChannelOwner(uId, channelId)) {
+    return { error: 'The user is already owner of this channel' };
+  }
+  // user with token is either channel owner or the global owner
+  // global owner if 1
+  if (!isChannelOwner(uId, channelId) && (user.isGlobalOwner !== 1)) {
+    return { error: 'You donot have the owner permission' };
+  }
+
+  // owner adds the user with uId to the ownermembers and allmembers of the channel
+  const channelfound = data.channels.find((a) => a.channelId === channelId);
+  channelfound.ownerMembers.push({
+    uId: uIdfound.authUserId,
+    email: uIdfound.email,
+    nameFirst: uIdfound.nameFirst,
+    nameLast: uIdfound.nameLast,
+    handleStr: uIdfound.handleStr,
+  });
+
+  channelfound.allMembers.push({
+    uId: uIdfound.authUserId,
+    email: uIdfound.email,
+    nameFirst: uIdfound.nameFirst,
+    nameLast: uIdfound.nameLast,
+    handleStr: uIdfound.handleStr,
+  });
+  setData(data);
   return {};
 }

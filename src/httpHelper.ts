@@ -106,3 +106,15 @@ export function messageSend(token: string, channelId: number, message: string) {
 export function messageRemove(token: string, messageId: number) {
   return requestHelper('DELETE', '/message/remove/v1', { token, messageId });
 }
+
+export function authLogout(token: string) {
+  return requestHelper('POST', '/auth/logout/v1', { token });
+}
+
+export function channelAddOwner(token: string, channelId: number, uId: number) {
+  return requestHelper('POST', '/channel/addowner/v1', { token, channelId, uId });
+}
+
+// export function channelRemoveOwner(token: string, channelId: number, uId: number ) {
+//   return requestHelper('POST', '/channel/removeowner/v1', { token, channelId, uId });
+// }

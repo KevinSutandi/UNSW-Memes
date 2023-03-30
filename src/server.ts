@@ -3,10 +3,21 @@ import { echo } from './echo';
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
-import { authRegisterV1, authLoginV1 } from './auth';
-import { channelsCreateV1, channelsListV1, channelsListAllV1 } from './channels';
-import { channelMessagesV1, channelDetailsV1, channelJoinV1, channelLeaveV1 } from './channel';
-import { messageSendV1 } from './message';
+import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
+import {
+  channelsCreateV1,
+  channelsListV1,
+  channelsListAllV1,
+} from './channels';
+import {
+  channelMessagesV1,
+  channelDetailsV1,
+  channelLeaveV1,
+  channelJoinV1,
+  channelAddOwnerV1,
+} from './channel';
+
+import { messageRemoveV1, messageSendV1 } from './message';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -83,13 +94,23 @@ app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-/*
+app.post('/channel/addowner/v1', (req: Request, res: Response, next) => {
+  const { token, channelId, uId } = req.body;
+  const result = channelAddOwnerV1(token, channelId, uId);
+  return res.json(result);
+});
+
+// app.post('/channel/removeowner/v1', (req: Request, res: Response, next) => {
+//   const { token, channelId, uId } = req.body;
+//   const result = channelRemoveOwnerV1(token, channelId, uId);
+//   return res.json(result);
+// });
+
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const result = channelsListV1(token);
   return res.json(result);
 });
-*/
 
 app.get('/channel/details/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
@@ -109,6 +130,19 @@ app.get('/channel/details/v2', (req: Request, res: Response, next) => {
 app.post('/message/send/v1', (req: Request, res: Response, next) => {
   const { token, channelId, message } = req.body;
   const result = messageSendV1(token, channelId, message);
+  return res.json(result);
+});
+
+app.delete('/message/remove/v1', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const messageId = parseInt(req.query.messageId as string);
+  const result = messageRemoveV1(token, messageId);
+  return res.json(result);
+});
+
+app.post('/auth/logout/v1', (req: Request, res: Response, next) => {
+  const { token } = req.body;
+  const result = authLogoutV1(token);
   return res.json(result);
 });
 
