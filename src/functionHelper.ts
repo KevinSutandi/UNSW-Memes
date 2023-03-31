@@ -148,6 +148,11 @@ export function findTokenIndex(user: userData, token: string) {
   return user.token.findIndex((item) => item.token === token);
 }
 
+export function findOwnerIndex(channelId: number, uId: number) {
+  const channelFound = findChannel(channelId);
+  return channelFound.ownerMembers.findIndex((item) => item.uId === uId);
+}
+
 export function findMessageIndexInChannel(
   channel: channelData,
   messageId: number
