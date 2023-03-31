@@ -1,4 +1,4 @@
-import { getData } from './dataStore';
+import { getData, setData } from './dataStore';
 import { userObject, errorMessage, allUsers } from './interfaces';
 import { isUser, getUserByToken } from './functionHelper';
 import validator from 'validator';
@@ -71,7 +71,7 @@ export function userProfileV2(
  * @param {string} email - The new email address to set for the user.
  * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
  */
-export function setEmail(token: string, email: string): {} | errorMessage {
+export function setEmail(token: string, email: string) {
   const user = getUserByToken(token);
   if (user === undefined) {
     return { error: 'Invalid token' };
@@ -82,7 +82,7 @@ export function setEmail(token: string, email: string): {} | errorMessage {
   }
 
   const data = getData();
-  let emailExist: boolean = false;
+  let emailExist = false;
   data?.users.forEach((user) => {
     if (user.email === email) {
       emailExist = true;
@@ -93,6 +93,7 @@ export function setEmail(token: string, email: string): {} | errorMessage {
   }
 
   user.email = email;
+  setData(data);
   return {};
 }
 
@@ -104,11 +105,8 @@ export function setEmail(token: string, email: string): {} | errorMessage {
  * @param {string} nameLast - The user's new last name.
  * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
  */
-export function setName(
-  token: string,
-  nameFirst: string,
-  nameLast: string
-): {} | errorMessage {
+export function setName(token: string, nameFirst: string, nameLast: string) {
+  const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
     return { error: 'Invalid token' };
@@ -125,7 +123,7 @@ export function setName(
 
   user.nameFirst = nameFirst;
   user.nameLast = nameLast;
-
+  setData(data);
   return {};
 }
 
@@ -136,19 +134,20 @@ export function setName(
  * @param {string} handleStr - The new handle for the user.
  * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
  */
-export function setHandle(token: string, handleStr: string): {} | errorMessage {
+export function setHandle(token: string, handleStr: string) {
+  const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
     return { error: 'Invalid token' };
   }
 
-  if (handleStr.length > 20 || handleStr.length < 3) {
-    return { error: 'handle length should in range of 3 to 20' };
+  if (handleStr.length > 3 && handleStr.length < 20) {
+    user.handleStr = handleStr;
+    setData(data);
+    return {};
   }
 
-  user.handleStr = handleStr;
-
-  return {};
+  return { error: 'handle length should in range of 3 to 20' };
 }
 
 /**
