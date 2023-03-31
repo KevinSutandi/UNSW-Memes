@@ -129,7 +129,20 @@ export function channelJoinV1(token: string, channelId: number) {
 
   return {};
 }
-
+/**
+ *
+ * Invites a user to a channel
+ * @param {string} token - The authenticated user token
+ * @param {number} channelId - The channel Id to join
+ * @param {number} uId - The user Id of the invited member
+ *
+ * @returns {error : 'error message'} - returns an error when
+ *                                    | channelId is invalid
+ *  *                                 | uId is invalid
+ *                                    | User is already in the channel
+ *  *                                 | Token refers to a member not in the channel
+ *                                    | token is invalid
+ */
 export function channelInviteV1(token: string, channelId: number, uId: number) {
   const data = getData();
 
@@ -178,8 +191,8 @@ export function channelInviteV1(token: string, channelId: number, uId: number) {
 
 /**
  *
- *
- * @param {number} authUserId - The authenticated user Id
+ * Shows the details of the given channel
+ * @param {string} token - The authenticated user token
  * @param {number} channelId - The channel Id to join
  *
  * @returns {
