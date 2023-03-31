@@ -139,6 +139,10 @@ export function dmCreate(token: string, uIds: Array<number>) {
   return requestHelper('POST', '/dm/create/v1', { token, uIds });
 }
 
+export function dmMessages(token: string, dmId: number, start: number) {
+  return requestHelper('GET', '/dm/messages/v1', { token, dmId, start });
+}
+
 export function dmDetails(token: string, dmId: number) {
   return requestHelper('GET', '/dm/details/v1', { token, dmId });
 }

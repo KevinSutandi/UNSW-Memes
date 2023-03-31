@@ -33,7 +33,13 @@ import {
   getAllUsers,
   userProfileV2,
 } from './users';
-import { dmCreateV1, dmDetailsV1, dmListV1, dmRemoveV1 } from './dm';
+import {
+  dmCreateV1,
+  dmDetailsV1,
+  dmListV1,
+  dmMessagesV1,
+  dmRemoveV1,
+} from './dm';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -141,6 +147,13 @@ app.get('/channel/details/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.get('/dm/messages/v1', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const dmId = parseInt(req.query.dmId as string);
+  const start = parseInt(req.query.start as string);
+  const result = dmMessagesV1(token, dmId, start);
+  return res.json(result);
+});
 app.get('/dm/list/v1', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const result = dmListV1(token);

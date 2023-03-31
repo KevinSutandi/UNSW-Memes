@@ -105,7 +105,6 @@ export function dmCreateV1(
 }
 
 /**
-<<<<<<< HEAD
  * Determines whether a dm is a valid dm
  * by checking through dms array in the
  * dataStore.js
@@ -133,9 +132,7 @@ export function isDm(dmId: number): boolean {
  */
 export function isDmMember(dmId: number, userId: number): boolean {
   const dm = findDm(dmId);
-  console.log(dmId);
   const allMemberIds = getAllMemberIds(dm);
-  console.log(allMemberIds);
   return allMemberIds.includes(userId);
 }
 
@@ -166,6 +163,64 @@ export function getAllMemberIds(dm: dmData) {
   }
 }
 
+/**
+ *
+ * Given a DM with a valid dmId, authorised members are able
+ * to send messages to other group members. This function
+ * returns the most recent messages up to the 50th message.
+ *
+ * @param {number} token - The authenticated user token
+ * @param {number} dmId - The dmId to join
+ * @param {number} start - The amount of messages in the dm
+ * ...
+ *
+ * @returns {
+ * messages: string,
+ * start: number,
+ * end: number} - returns dm chat information
+ * @returns {error : 'error message'} - returns an error when
+ *                                    | dmId does not refer to a valid DM
+ *                                    | start is greater than the total number of messages in the channel
+ *                                    | dmId is valid and the authorised user is not a member of the DM
+ *                                    | token is invalid
+ */
+export function dmMessagesV1(token: string, dmId: number, start: number) {
+  const data = getData();
+  const user = getUserByToken(token);
+
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+  if (!isDm(dmId)) {
+    return { error: 'dmId does not refer to a valid DM' };
+  }
+  if (!isDmMember(dmId, user.authUserId)) {
+    return { error: 'User is not a member of the DM' };
+  }
+  const dmIndex = data.dm.findIndex((a) => a.dmId === dmId);
+  const dmMessages = data.dm[dmIndex].messages.length;
+  if (start > data.dm[dmIndex].messages.length) {
+    return {
+      error:
+        'start is greater than the total number of messages in the channel',
+    };
+  }
+
+  const dm = findDm(dmId);
+  if (start + 50 > dmMessages) {
+    return {
+      messages: dm.messages.slice(start),
+      start: start,
+      end: -1,
+    };
+  } else {
+    return {
+      messages: dm.messages.slice(start, start + 50),
+      start: start,
+      end: start + 50,
+    };
+  }
+}
 /**
  * Given a DM with a valid dmId that an authorised user is a member
  * of, it provides basic information about the DM.
