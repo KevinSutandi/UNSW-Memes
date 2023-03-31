@@ -71,8 +71,6 @@ export function channelsCreateV1(
   };
 }
 
-<<<<<<< HEAD
-=======
 /**
  * Provides an array of all channels that an authorised
  * user is a member of by accessing the channel information
@@ -86,7 +84,6 @@ export function channelsCreateV1(
  * when successful
  *
  */
->>>>>>> ac32239a533266cf66ee5994d82963d0e33ab98c
 export function channelsListV1(
   token: string
 ): channelsListReturn | errorMessage {

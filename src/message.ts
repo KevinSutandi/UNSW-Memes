@@ -252,7 +252,6 @@ export function messageSendDmV1(
 ): newMessageReturn | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
-  console.log(user);
   const dm = findDMbyId(dmId);
   const allMemberIds = getAllMemberIds(dm);
 
