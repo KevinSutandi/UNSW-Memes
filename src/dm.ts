@@ -97,6 +97,19 @@ export function dmCreateV1(
   return { dmId: dmId };
 }
 
+/**
+ * Provides an array of all dms that an authorised
+ * user is a member of by accessing the dm information
+ * from data.channels. Then it returns information about
+ * the dms.
+ *
+ * @param {number} token - the authenticated user token
+ *
+ * @returns {error: 'error message'} - if the given token is invalid
+ * @returns {{channelId: number, name: string}} - returns the details of the dms
+ * when successful
+ *
+ */
 export function dmListV1(token: string): dmListReturn | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
