@@ -15,6 +15,7 @@ import {
   channelLeaveV1,
   channelJoinV1,
   channelInviteV1,
+  channelAddOwnerV1,
 } from './channel';
 import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
 import { dmCreateV1 } from './dm';
@@ -95,11 +96,11 @@ app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-// app.post('/channel/addowner/v1', (req: Request, res: Response, next) => {
-//   const { token, channelId, uId } = req.body;
-//   const result = channelAddOwnerV1(token, channelId, uId);
-//   return res.json(result);
-// });
+app.post('/channel/addowner/v1', (req: Request, res: Response, next) => {
+  const { token, channelId, uId } = req.body;
+  const result = channelAddOwnerV1(token, channelId, uId);
+  return res.json(result);
+});
 
 app.post('/dm/create/v1', (req: Request, res: Response, next) => {
   const { token, uIds } = req.body;

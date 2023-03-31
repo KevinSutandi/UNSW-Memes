@@ -7,7 +7,7 @@ import {
   channelInvite,
   channelJoin,
   channelLeave,
-  channelAddOwner
+  channelAddOwner,
 } from './httpHelper';
 import { AuthReturn, channelsCreateReturn } from './interfaces';
 
@@ -533,7 +533,11 @@ describe('testing channelAddowner', () => {
     );
     channel1 = channelsCreate(user1.token, 'Ketoprak', true);
     channel2 = channelsCreate(user2.token, 'Bakso', true);
-    channel3 = channelsCreate(user3.token, 'Batagor', false);
+    channel3 = channelsCreate(user3.token, 'Batagor', true);
+  });
+
+  afterEach(() => {
+    clearV1();
   });
 
   test('Invalid channelId test 1', () => {
@@ -574,7 +578,7 @@ describe('testing channelAddowner', () => {
 
   test('user not member test 1', () => {
     expect(
-      channelAddOwner(user1.token, channel1.channelId, user2.authUserId)
+      channelAddOwner(user3.token, channel1.channelId, user2.authUserId)
     ).toStrictEqual(ERROR);
   });
 
@@ -611,20 +615,19 @@ describe('testing channelAddowner', () => {
 
   test('testing user1 is global owner', () => {
     // user1 makes user2 the owner of the channel3
+    channelJoin(user1.token, channel3.channelId);
     channelJoin(user2.token, channel3.channelId);
     channelAddOwner(user1.token, channel3.channelId, user2.authUserId);
-    expect(
-      channelDetails(user2.token, channel3.channelId)
-    ).toStrictEqual({
+    expect(channelDetails(user2.token, channel3.channelId)).toStrictEqual({
       name: 'Batagor',
-      isPublic: false,
+      isPublic: true,
       ownerMembers: [
         {
-          uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
+          uId: user3.authUserId,
+          email: 'z5352065@ad.unsw.edu.au',
+          nameFirst: 'Zombie',
+          nameLast: 'Ibrahim',
+          handleStr: 'zombieibrahim',
         },
         {
           uId: user2.authUserId,
@@ -635,6 +638,13 @@ describe('testing channelAddowner', () => {
         },
       ],
       allMembers: [
+        {
+          uId: user3.authUserId,
+          email: 'z5352065@ad.unsw.edu.au',
+          nameFirst: 'Zombie',
+          nameLast: 'Ibrahim',
+          handleStr: 'zombieibrahim',
+        },
         {
           uId: user1.authUserId,
           email: 'kevins050324@gmail.com',
@@ -657,9 +667,7 @@ describe('testing channelAddowner', () => {
     // user2 makes user3 the owner of the channel2
     channelJoin(user3.token, channel2.channelId);
     channelAddOwner(user2.token, channel2.channelId, user3.authUserId);
-    expect(
-      channelDetails(user3.token, channel2.channelId)
-    ).toStrictEqual({
+    expect(channelDetails(user3.token, channel2.channelId)).toStrictEqual({
       name: 'Bakso',
       isPublic: true,
       ownerMembers: [
