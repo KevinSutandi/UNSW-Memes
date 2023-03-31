@@ -7,6 +7,7 @@ import {
   channelInvite,
   channelJoin,
   channelLeave,
+  channelAddOwner
 } from './httpHelper';
 import { AuthReturn, channelsCreateReturn } from './interfaces';
 
