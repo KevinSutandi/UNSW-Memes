@@ -159,4 +159,5 @@ export function dmRemoveV1(token: string, dmId: number) {
   }
   data.dm.splice(dmIndex, 1);
   setData(data);
+  return {};
 }
