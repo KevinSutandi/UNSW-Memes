@@ -2,10 +2,13 @@ import { getData, setData } from './dataStore';
 import {
   findChannel,
   findChannelByMessageId,
-  findMessageIndex,
+  findDMbyMessageId,
+  findMessageIndexInChannel,
+  findMessageIndexInDM,
   getAllMemberIds,
   getAllOwnerIds,
   getChannelIndex,
+  getDmIndex,
   getUserByToken,
 } from './functionHelper';
 
@@ -53,37 +56,69 @@ export function messageRemoveV1(token: string, messageId: number) {
   const data = getData();
   const user = getUserByToken(token);
   const channel = findChannelByMessageId(messageId);
-  const allOwnerIds = getAllOwnerIds(channel);
-  const allMemberIds = getAllMemberIds(channel);
+  const dm = findDMbyMessageId(messageId);
+  let messageIndex = -1;
+  let flags;
+
   if (user === undefined) {
     return { error: 'Token is invalid' };
   }
-  const isGlobalOwner = user.isGlobalOwner;
-  if (channel === undefined) {
+
+  if (channel === undefined && dm === undefined) {
     return { error: 'Channel Not Found' };
+  } else if (channel !== undefined) {
+    messageIndex = findMessageIndexInChannel(channel, messageId);
+    flags = channel;
+  } else if (dm !== undefined) {
+    messageIndex = findMessageIndexInDM(dm, messageId);
+    flags = dm;
   }
+
+  const allMemberIds = getAllMemberIds(flags);
+  const allOwnerIds = getAllOwnerIds(flags);
+
   if (allMemberIds.includes(user.authUserId) === false) {
     return { error: 'User is not registered in channel' };
   }
-  const channelIndex = getChannelIndex(channel.channelId);
-  const message = data.channels[channelIndex].messages.find(
-    (message) => message.messageId === messageId
-  );
 
-  if (message === undefined) {
+  if (messageIndex === -1) {
     return { error: 'Message Not Found' };
   }
-  if (
-    message.uId !== user.authUserId &&
-    allOwnerIds.includes(user.authUserId) === false &&
-    isGlobalOwner === 2
-  ) {
-    return { error: 'User is not the author of the message and not an owner' };
+
+  if (flags === channel) {
+    const channelIndex = getChannelIndex(channel.channelId);
+    const messageToEdit = data.channels[channelIndex].messages[messageIndex];
+
+    if (
+      messageToEdit.uId !== user.authUserId &&
+      allOwnerIds.includes(user.authUserId) === false &&
+      user.isGlobalOwner === 2
+    ) {
+      return {
+        error: 'User is not the author of the message and not an owner',
+      };
+    }
+
+    data.channels[channelIndex].messages.splice(messageIndex, 1);
+    setData(data);
+    return {};
+  } else {
+    const dmIndex = getDmIndex(dm.dmId);
+    const messageToEdit = data.dm[dmIndex].messages[messageIndex];
+
+    if (
+      messageToEdit.uId !== user.authUserId &&
+      allOwnerIds.includes(user.authUserId) === false
+    ) {
+      return {
+        error: 'User is not the author of the message and not an owner',
+      };
+    }
+
+    data.dm[dmIndex].messages.splice(messageIndex, 1);
+    setData(data);
+    return {};
   }
-  const messageIndex = data.channels[channelIndex].messages.indexOf(message);
-  data.channels[channelIndex].messages.splice(messageIndex, 1);
-  setData(data);
-  return {};
 }
 
 export function messageEditV1(
@@ -109,7 +144,7 @@ export function messageEditV1(
     return { error: 'User is not registered in channel' };
   }
   const channelIndex = getChannelIndex(channel.channelId);
-  const messageIndex = findMessageIndex(channel, messageId);
+  const messageIndex = findMessageIndexInChannel(channel, messageId);
 
   if (messageIndex === -1) {
     return { error: 'Message Not Found' };

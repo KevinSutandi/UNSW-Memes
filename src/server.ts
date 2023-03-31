@@ -21,6 +21,13 @@ import {
   channelRemoveOwnerV1,
 } from './channel';
 import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
+import {
+  setEmail,
+  setName,
+  setHandle,
+  getAllUsers,
+  userProfileV2,
+} from './users';
 import { dmCreateV1 } from './dm';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
@@ -165,6 +172,42 @@ app.post('/auth/logout/v1', (req: Request, res: Response, next) => {
 app.put('/message/edit/v1', (req: Request, res: Response, next) => {
   const { token, messageId, message } = req.body;
   const result = messageEditV1(token, messageId, message);
+  return res.json(result);
+});
+app.post('/message/send/v1', (req: Request, res: Response, next) => {
+  const { token, channelId, message } = req.body;
+  const result = messageSendV1(token, channelId, message);
+  return res.json(result);
+});
+
+app.put('/user/profile/sethandle/v1', (req: Request, res: Response, next) => {
+  const { token, handleStr } = req.body;
+  const result = setHandle(token, handleStr);
+  return res.json(result);
+});
+
+app.put('/user/profile/setemail/v1', (req: Request, res: Response, next) => {
+  const { token, email } = req.body;
+  const result = setEmail(token, email);
+  return res.json(result);
+});
+
+app.put('/user/profile/setname/v1', (req: Request, res: Response, next) => {
+  const { token, nameFirst, nameLast } = req.body;
+  const result = setName(token, nameFirst, nameLast);
+  return res.json(result);
+});
+
+app.get('/users/all/v1', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const result = getAllUsers(token);
+  return res.json(result);
+});
+
+app.get('/user/profile/v2', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const uId = parseInt(req.query.uId as string);
+  const result = userProfileV2(token, uId);
   return res.json(result);
 });
 
