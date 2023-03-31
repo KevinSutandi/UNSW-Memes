@@ -4,10 +4,21 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
-import { channelsCreateV1, channelsListV1 } from './channels';
-import { channelMessagesV1, channelDetailsV1, channelJoinV1 } from './channel';
+
+import {
+  channelsCreateV1,
+  channelsListV1,
+  channelsListAllV1,
+} from './channels';
+import {
+  channelMessagesV1,
+  channelDetailsV1,
+  channelLeaveV1,
+  channelJoinV1,
+} from './channel';
 import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
 import { dmCreateV1 } from './dm';
+
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -53,6 +64,12 @@ app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.get('/channels/listall/v2', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const result = channelsListAllV1(token);
+  return res.json(result);
+});
+
 app.post('/channel/join/v2', (req: Request, res: Response, next) => {
   const { token, channelId } = req.body;
   const result = channelJoinV1(token, channelId);
@@ -72,11 +89,24 @@ app.get('/channel/messages/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
+  const { token, channelId } = req.body;
+  const result = channelLeaveV1(token, channelId);
+  return res.json(result);
+});
+
+// app.post('/channel/addowner/v1', (req: Request, res: Response, next) => {
+//   const { token, channelId, uId } = req.body;
+//   const result = channelAddOwnerV1(token, channelId, uId);
+//   return res.json(result);
+// });
+
 app.post('/dm/create/v1', (req: Request, res: Response, next) => {
   const { token, uIds } = req.body;
   const result = dmCreateV1(token, uIds);
   return res.json(result);
 });
+
 /*
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;

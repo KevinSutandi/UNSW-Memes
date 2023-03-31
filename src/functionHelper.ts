@@ -112,6 +112,14 @@ export function findChannelByMessageId(messageId: number) {
   return channelFound;
 }
 
+export function findMember(userId: number, channelId: number) {
+  const channelFound = findChannel(channelId);
+  const memberfound = channelFound.allMembers.find(
+    (member) => member.uId === userId
+  );
+  return memberfound;
+}
+
 export function getAllOwnerIds(channel: channelData) {
   if (channel) {
     return channel.ownerMembers.map((owner) => owner.uId);

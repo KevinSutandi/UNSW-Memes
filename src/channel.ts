@@ -212,3 +212,49 @@ export function channelDetailsV1(token: string, channelId: number) {
     allMembers: channelObj.allMembers,
   };
 }
+
+/**
+ * Given a channelId of a channel and token, removing the membership of that member,
+ * but remain the information of the authorised user
+ *
+ * @param {string} token - The authenticated token
+ * @param {number} channelId - The channel Id to join
+ * ...
+ *
+ * @returns {} - returns {} when successful
+ * @returns {error : 'error message'} - returns an error when
+ *                                    | channelId is invalid
+ *                                    | user is not the channel member
+ *                                    | User token is invalid
+ */
+export function channelLeaveV1(token: string, channelId: number) {
+  const data = getData();
+  const user = getUserByToken(token);
+  if (!isChannel(channelId)) {
+    return { error: 'channelId does not refer to a valid channel' };
+  }
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+  // If the user is not a member of the channel
+  if (!isChannelMember(channelId, user.authUserId)) {
+    return { error: user.authUserId + ' is not a member of the channel' };
+  }
+
+  const channelIndex = data.channels.findIndex(
+    (item) => item.channelId === channelId
+  );
+  const userOwnerIndex = data.channels[channelIndex].ownerMembers.findIndex(
+    (item) => item.uId === user.authUserId
+  );
+  const userMemberIndex = data.channels[channelIndex].allMembers.findIndex(
+    (item) => item.uId === user.authUserId
+  );
+  if (userOwnerIndex !== -1) {
+    data.channels[channelIndex].ownerMembers.splice(userOwnerIndex, 1);
+  }
+
+  data.channels[channelIndex].allMembers.splice(userMemberIndex, 1);
+  setData(data);
+  return {};
+}
