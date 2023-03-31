@@ -4,7 +4,6 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
-<<<<<<< HEAD
 
 import {
   channelsCreateV1,
@@ -20,11 +19,6 @@ import {
   channelAddOwnerV1,
   channelRemoveOwnerV1,
 } from './channel';
-
-=======
-import { channelsCreateV1, channelsListV1 } from './channels';
-import { channelMessagesV1, channelDetailsV1, channelJoinV1 } from './channel';
->>>>>>> 70f2b11c913b88be355a04740d7e34b7c9c46291
 import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
 import { dmCreateV1 } from './dm';
 // import { userProfileV1 } from './users';
