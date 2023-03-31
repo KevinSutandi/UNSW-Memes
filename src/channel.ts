@@ -7,6 +7,7 @@ import {
   getAllMemberIds,
   getChannelIndex,
   isChannelMember,
+  isChannelOwner,
   getUserByToken,
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
@@ -256,6 +257,54 @@ export function channelLeaveV1(token: string, channelId: number) {
   }
 
   data.channels[channelIndex].allMembers.splice(userMemberIndex, 1);
+  setData(data);
+  return {};
+}
+
+export function channelAddOwnerV1(
+  token: string,
+  channelId: number,
+  uId: number
+) {
+  const data = getData();
+  const user = getUserByToken(token);
+  const uIdfound = findUser(uId);
+
+  if (!isChannel(channelId)) {
+    return { error: 'channelId does not refer to a valid channel' };
+  }
+  // invalid uId
+  if (uIdfound === undefined) {
+    return { error: 'Invalid uId' };
+  }
+  // invalid token
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+  // If the user is not a member of the channel
+  if (!isChannelMember(channelId, uId)) {
+    return { error: ' is not a member of the channel' };
+  }
+  // user with that uId is already owner of the channel
+  if (isChannelOwner(uId, channelId)) {
+    return { error: user.authUserId + ' is already owner of this channel' };
+  }
+  // user with token is neither channel owner nor the global owner
+  // global owner if 1
+  if (!isChannelOwner(user.authUserId, channelId) && user.isGlobalOwner === 2) {
+    return { error: user.authUserId + 'has no owner permission' };
+  }
+
+  // owner adds the user with uId to the ownermembers and allmembers of the channel
+  const channelfound = data.channels.find((a) => a.channelId === channelId);
+  console.log(channelfound.allMembers);
+  channelfound.ownerMembers.push({
+    uId: uIdfound.authUserId,
+    email: uIdfound.email,
+    nameFirst: uIdfound.nameFirst,
+    nameLast: uIdfound.nameLast,
+    handleStr: uIdfound.handleStr,
+  });
   setData(data);
   return {};
 }

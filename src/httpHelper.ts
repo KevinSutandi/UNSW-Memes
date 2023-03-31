@@ -95,7 +95,6 @@ export function channelLeave(token: string, channelId: number) {
   return requestHelper('POST', '/channel/leave/v1', { token, channelId });
 }
 
-// uid type?
 export function channelAddOwner(token: string, channelId: number, uId: number) {
   return requestHelper('POST', '/channel/addowner/v1', { token, channelId, uId });
 }
@@ -133,5 +132,35 @@ export function messageEdit(token: string, messageId: number, message: string) {
     token,
     messageId,
     message,
+  });
+}
+
+export function userProfile(token: string, uId: number) {
+  return requestHelper('GET', '/user/profile/v2', {
+    token,
+    uId,
+  });
+}
+
+export function usersAll(token: string) {
+  return requestHelper('GET', '/users/all/v1', { token });
+}
+
+export function setName(token: string, nameFirst: string, nameLast: string) {
+  return requestHelper('PUT', '/user/profile/setname/v1', {
+    token,
+    nameFirst,
+    nameLast,
+  });
+}
+
+export function setEmail(token: string, email: string) {
+  return requestHelper('PUT', '/user/profile/setemail/v1', { token, email });
+}
+
+export function setHandle(token: string, handleStr: string) {
+  return requestHelper('PUT', '/user/profile/sethandle/v1', {
+    token,
+    handleStr,
   });
 }
