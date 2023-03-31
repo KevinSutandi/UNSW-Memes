@@ -28,6 +28,9 @@ describe('userProfile iteration 2 testing', () => {
       'Kova'
     );
   });
+  afterEach(() => {
+    clearV1();
+  });
 
   test('userProfile invalid Token', () => {
     expect(userProfile('wrong token', 1)).toStrictEqual(ERROR);
@@ -79,6 +82,7 @@ describe('userProfile iteration 2 testing', () => {
   });
 
   test('setEmail run success', () => {
+    setEmail(user2.token, 'testing1234@gmail.com');
     expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
       uId: user2.authUserId,
       email: 'testing1234@gmail.com',
@@ -100,7 +104,7 @@ describe('userProfile iteration 2 testing', () => {
     setHandle(user.token, 'Hello Kitty');
     expect(userProfile(user.token, user.authUserId)).toStrictEqual({
       uId: user.authUserId,
-      email: 'onlyfortestttt9@gmail.com',
+      email: 'onlyfortestttt06@gmail.com',
       nameFirst: 'Jonah',
       nameLast: 'Meggs',
       handleStr: 'Hello Kitty',
@@ -111,7 +115,7 @@ describe('userProfile iteration 2 testing', () => {
     setHandle(user2.token, 'Batman');
     expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
       uId: user2.authUserId,
-      email: 'testing1234@gmail.com',
+      email: 'testing12347@gmail.com',
       nameFirst: 'Almina',
       nameLast: 'Kova',
       handleStr: 'Batman',
@@ -129,10 +133,10 @@ describe('userProfile iteration 2 testing', () => {
   });
 
   test('setName run success', () => {
-    setName(user2.token, 'Almina', 'Kova');
+    setName(user.token, 'Almina', 'Kova');
     expect(userProfile(user.token, user.authUserId)).toStrictEqual({
       uId: user.authUserId,
-      email: 'onlyfortestttt9@gmail.com',
+      email: 'onlyfortestttt06@gmail.com',
       nameFirst: 'Almina',
       nameLast: 'Kova',
       handleStr: expect.any(String),
