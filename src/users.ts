@@ -91,8 +91,10 @@ export function setEmail(token: string, email: string) {
   if (emailExist) {
     return { error: 'email address is already being used by another user' };
   }
-
-  user.email = email;
+  const userIndex = data.users.findIndex(
+    (item) => item.authUserId === user.authUserId
+  );
+  data.users[userIndex].email = email;
   setData(data);
   return {};
 }
@@ -120,9 +122,11 @@ export function setName(token: string, nameFirst: string, nameLast: string) {
   ) {
     return { error: 'name length should in range of 1 to 50' };
   }
-
-  user.nameFirst = nameFirst;
-  user.nameLast = nameLast;
+  const userIndex = data.users.findIndex(
+    (item) => item.authUserId === user.authUserId
+  );
+  data.users[userIndex].nameFirst = nameFirst;
+  data.users[userIndex].nameLast = nameLast;
   setData(data);
   return {};
 }
@@ -142,7 +146,10 @@ export function setHandle(token: string, handleStr: string) {
   }
 
   if (handleStr.length > 3 && handleStr.length < 20) {
-    user.handleStr = handleStr;
+    const userIndex = data.users.findIndex(
+      (item) => item.authUserId === user.authUserId
+    );
+    data.users[userIndex].handleStr = handleStr;
     setData(data);
     return {};
   }
