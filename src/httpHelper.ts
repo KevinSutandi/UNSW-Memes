@@ -180,3 +180,7 @@ export function setHandle(token: string, handleStr: string) {
     handleStr,
   });
 }
+
+export function dmRemove(token: string, dmId: number) {
+  return requestHelper('DELETE', '/dm/remove/v1', { token, dmId });
+}
