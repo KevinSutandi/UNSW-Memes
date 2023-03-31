@@ -1,5 +1,5 @@
 import { getData } from './dataStore';
-import { channelData, userData } from './interfaces';
+import { channelData, dmData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -64,7 +64,7 @@ export function findUser(userId: number) {
  * @param {object} channel - The channel object to retrieve member IDs from.
  * @returns {(Array.<uId>|null)} - An array of member IDs, or null if the channel does not contain any.
  */
-export function getAllMemberIds(channel: channelData) {
+export function getAllMemberIds(channel: channelData | dmData) {
   if (channel) {
     return channel.allMembers.map((member) => member.uId);
   } else {
@@ -83,11 +83,14 @@ export function getChannelIndex(channelId: number) {
   return data.channels.findIndex((channel) => channel.channelId === channelId);
 }
 
+export function getDmIndex(dmId: number) {
+  const data = getData();
+  return data.dm.findIndex((dm) => dm.dmId === dmId);
+}
+
 export function isChannelMember(channelId: number, userId: number): boolean {
   const channel = findChannel(channelId);
-  console.log(channelId);
   const allMemberIds = getAllMemberIds(channel);
-  console.log(allMemberIds);
   return allMemberIds.includes(userId);
 }
 
@@ -112,7 +115,28 @@ export function findChannelByMessageId(messageId: number) {
   return channelFound;
 }
 
-export function getAllOwnerIds(channel: channelData) {
+export function findDMbyMessageId(messageId: number) {
+  const data = getData();
+  const dmFound = data.dm.find((dm) =>
+    dm.messages.find((messages) => messages.messageId === messageId)
+  );
+  return dmFound;
+}
+export function findMember(userId: number, channelId: number) {
+  const channelFound = findChannel(channelId);
+  const memberfound = channelFound.allMembers.find(
+    (member) => member.uId === userId
+  );
+  return memberfound;
+}
+
+export function isChannelOwner(userId: number, channelId: number): boolean {
+  const channelFound = findChannel(channelId);
+  const ownerMembersIds = channelFound.ownerMembers.map((member) => member.uId);
+  return ownerMembersIds.includes(userId);
+}
+
+export function getAllOwnerIds(channel: channelData | dmData) {
   if (channel) {
     return channel.ownerMembers.map((owner) => owner.uId);
   } else {
@@ -124,6 +148,13 @@ export function findTokenIndex(user: userData, token: string) {
   return user.token.findIndex((item) => item.token === token);
 }
 
-export function findMessageIndex(channel: channelData, messageId: number) {
+export function findMessageIndexInChannel(
+  channel: channelData,
+  messageId: number
+) {
   return channel.messages.findIndex((item) => item.messageId === messageId);
+}
+
+export function findMessageIndexInDM(dm: dmData, messageId: number) {
+  return dm.messages.findIndex((item) => item.messageId === messageId);
 }
