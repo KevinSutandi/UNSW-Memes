@@ -132,12 +132,30 @@ export function channelJoinV1(
 
   return {};
 }
+<<<<<<< HEAD
 
 export function channelInviteV1(
   token: string,
   channelId: number,
   uId: number
 ): object | errorMessage {
+=======
+/**
+ *
+ * Invites a user to a channel
+ * @param {string} token - The authenticated user token
+ * @param {number} channelId - The channel Id to join
+ * @param {number} uId - The user Id of the invited member
+ *
+ * @returns {error : 'error message'} - returns an error when
+ *                                    | channelId is invalid
+ *  *                                 | uId is invalid
+ *                                    | User is already in the channel
+ *  *                                 | Token refers to a member not in the channel
+ *                                    | token is invalid
+ */
+export function channelInviteV1(token: string, channelId: number, uId: number) {
+>>>>>>> ac32239a533266cf66ee5994d82963d0e33ab98c
   const data = getData();
 
   // Error cases
@@ -183,6 +201,26 @@ export function channelInviteV1(
   return {};
 }
 
+<<<<<<< HEAD
+=======
+/**
+ *
+ * Shows the details of the given channel
+ * @param {string} token - The authenticated user token
+ * @param {number} channelId - The channel Id to join
+ *
+ * @returns {
+ *  name: string,
+ *  isPublic: boolean,
+ *  ownerMembers: string,
+ *  allMembers: string} - returns the details of the channel when successful
+ *
+ * @returns {error : 'error message'} - returns an error when
+ *                                    | channelId is invalid
+ *                                    | User is not a member of the channel
+ *                                    | User is invalid
+ */
+>>>>>>> ac32239a533266cf66ee5994d82963d0e33ab98c
 export function channelDetailsV1(token: string, channelId: number) {
   // If channelId doesn't refer to a valid channel,
   // returns error

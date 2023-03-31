@@ -71,6 +71,22 @@ export function channelsCreateV1(
   };
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * Provides an array of all channels that an authorised
+ * user is a member of by accessing the channel information
+ * from data.channels. Then it returns the channelId
+ * and name.
+ *
+ * @param {string} token - the authenticated user token
+ *
+ * @returns {error: 'error message'} - if the given authUserId is invalid
+ * @returns {{channelId: number, name: string}} - returns the details of the channel
+ * when successful
+ *
+ */
+>>>>>>> ac32239a533266cf66ee5994d82963d0e33ab98c
 export function channelsListV1(
   token: string
 ): channelsListReturn | errorMessage {
