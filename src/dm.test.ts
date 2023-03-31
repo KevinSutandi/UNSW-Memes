@@ -135,6 +135,4 @@ describe('testing dmListV1', () => {
       ],
     });
   });
-
-  // tListAfterLeaveDm
 });
