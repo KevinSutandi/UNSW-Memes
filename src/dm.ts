@@ -1,10 +1,11 @@
 import { getData, setData } from './dataStore';
-import { isUser, findUser, getUserByToken } from './functionHelper';
+import { findUser, getUserByToken } from './functionHelper';
 import {
   errorMessage,
   dmCreateReturn,
   userData,
   userObject,
+  dmListReturn,
 } from './interfaces';
 
 export function dmCreateV1(
@@ -89,29 +90,25 @@ export function dmCreateV1(
   return { dmId: dmId };
 }
 
-
-export function dmListV1(
-  token: string
-): dmListReturn | errorMessage {
+export function dmListV1(token: string): dmListReturn | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
 
-    // errors
   if (user === undefined) {
     return { error: 'Invalid token' };
   }
-  
+
   const authUserIdToFind = user.authUserId;
   const userDms: dmListReturn = { dms: [] };
 
-  data.dms.forEach((dm) => {
+  data.dm.forEach((dm) => {
     const isUserInDm = dm.allMembers.some(
-      (member) => member.dmId === authUserIdToFind
+      (member) => member.uId === authUserIdToFind
     );
     if (isUserInDm === true) {
       userDms.dms.push({
         dmId: dm.dmId,
-        name: dm.dmName,
+        name: dm.name,
       });
     }
   });

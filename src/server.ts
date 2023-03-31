@@ -123,7 +123,7 @@ app.get('/dm/list/v1', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const result = dmListV1(token);
   return res.json(result);
-})
+});
 
 // Will Reenable once user profile is working
 // app.get('/user/profile/v2', (req: Request, res: Response, next) => {
