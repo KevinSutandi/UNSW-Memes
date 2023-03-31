@@ -79,12 +79,25 @@ export function channelDetails(token: string, channelId: number) {
   return requestHelper('GET', '/channel/details/v2', { token, channelId });
 }
 
+export function channelJoin(token: string, channelId: number) {
+  return requestHelper('POST', '/channel/join/v2', { token, channelId });
+}
+
 export function channelsList(token: string) {
   return requestHelper('GET', '/channels/list/v2', { token });
 }
 
-export function dmList(token: string) {
-  return requestHelper('GET', '/dm/list/v1', { token });
+export function channelsListAll(token: string) {
+  return requestHelper('GET', '/channels/listall/v2', { token });
+}
+
+export function channelLeave(token: string, channelId: number) {
+  return requestHelper('POST', '/channel/leave/v1', { token, channelId });
+}
+
+// uid type?
+export function channelAddOwner(token: string, channelId: number, uId: number) {
+  return requestHelper('POST', '/channel/addowner/v1', { token, channelId, uId });
 }
 
 export function messageSend(token: string, channelId: number, message: string) {
@@ -95,12 +108,24 @@ export function messageSend(token: string, channelId: number, message: string) {
   });
 }
 
+export function channelInvite(token: string, channelId: number, uId: number) {
+  return requestHelper('POST', '/channel/invite/v2', { token, channelId, uId });
+}
+
 export function messageRemove(token: string, messageId: number) {
   return requestHelper('DELETE', '/message/remove/v1', { token, messageId });
 }
 
 export function authLogout(token: string) {
   return requestHelper('POST', '/auth/logout/v1', { token });
+}
+
+export function dmCreate(token: string, uIds: Array<number>) {
+  return requestHelper('POST', '/dm/create/v1', { token, uIds });
+}
+
+export function dmList(token: string) {
+  return requestHelper('GET', '/dm/list/v1', { token });
 }
 
 export function messageEdit(token: string, messageId: number, message: string) {

@@ -85,9 +85,7 @@ export function getChannelIndex(channelId: number) {
 
 export function isChannelMember(channelId: number, userId: number): boolean {
   const channel = findChannel(channelId);
-  console.log(channelId);
   const allMemberIds = getAllMemberIds(channel);
-  console.log(allMemberIds);
   return allMemberIds.includes(userId);
 }
 
@@ -110,6 +108,14 @@ export function findChannelByMessageId(messageId: number) {
     channel.messages.find((messages) => messages.messageId === messageId)
   );
   return channelFound;
+}
+
+export function findMember(userId: number, channelId: number) {
+  const channelFound = findChannel(channelId);
+  const memberfound = channelFound.allMembers.find(
+    (member) => member.uId === userId
+  );
+  return memberfound;
 }
 
 export function getAllOwnerIds(channel: channelData) {
