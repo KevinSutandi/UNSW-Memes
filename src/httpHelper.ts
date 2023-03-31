@@ -95,7 +95,6 @@ export function channelLeave(token: string, channelId: number) {
   return requestHelper('POST', '/channel/leave/v1', { token, channelId });
 }
 
-// uid type?
 export function channelAddOwner(token: string, channelId: number, uId: number) {
   return requestHelper('POST', '/channel/addowner/v1', { token, channelId, uId });
 }

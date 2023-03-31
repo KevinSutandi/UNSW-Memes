@@ -130,6 +130,12 @@ export function findMember(userId: number, channelId: number) {
   return memberfound;
 }
 
+export function isChannelOwner(userId: number, channelId: number): boolean {
+  const channelFound = findChannel(channelId);
+  const ownerMembersIds = channelFound.ownerMembers.map((member) => member.uId);
+  return ownerMembersIds.includes(userId);
+}
+
 export function getAllOwnerIds(channel: channelData | dmData) {
   if (channel) {
     return channel.ownerMembers.map((owner) => owner.uId);
