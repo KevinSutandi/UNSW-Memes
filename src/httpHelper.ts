@@ -125,7 +125,6 @@ export function dmCreate(token: string, uIds: Array<number>) {
 
 export function dmDetails(token: string, dmId: number) {
   return requestHelper('GET', '/dm/details/v1', { token, dmId });
-
 }
 
 export function messageEdit(token: string, messageId: number, message: string) {

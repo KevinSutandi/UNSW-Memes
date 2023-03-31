@@ -1,13 +1,10 @@
 import { getData, setData } from './dataStore';
-import { isUser, findUser, getUserByToken } from './functionHelper';
+import { findUser, getUserByToken } from './functionHelper';
 import {
   errorMessage,
   dmCreateReturn,
   userData,
   userObject,
-  isUser,
-  findUser,
-  getUserByToken,
   dmData,
 } from './interfaces';
 
@@ -144,7 +141,7 @@ export function isDmMember(dmId: number, userId: number): boolean {
  */
 export function findDm(dmId: number): dmData | undefined {
   const data = getData();
-  return data.dms.find((a) => a.dmId === dmId);
+  return data.dm.find((a) => a.dmId === dmId);
 }
 
 /**
@@ -178,25 +175,22 @@ export function getAllMemberIds(dm: dmData) {
  *                                    | the authUser is not a part of the DM
  *                                    | user token is invalid
  */
-export function dmDetailsV1 (token: string, dmId: number) {
-  const data = getData();
+export function dmDetailsV1(token: string, dmId: number) {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-      return { error: 'Invalid token' };
+    return { error: 'Invalid token' };
   }
   if (!isDm(dmId)) {
-      return { error: 'dmId does not refer to a valid DM' };
+    return { error: 'dmId does not refer to a valid DM' };
   }
   if (!isDmMember(dmId, user.authUserId)) {
-      return { error: user.authUserId + ' is not a member of the DM'}
+    return { error: user.authUserId + ' is not a member of the DM' };
   }
 
   const dmObject = findDm(dmId);
   return {
-      name: dmObject.name,
-      ownerMembers: dmObject.ownerMembers,
-      getAllMembers: dmObject.allMembers,
+    name: dmObject.name,
+    members: dmObject.allMembers,
   };
-
 }
