@@ -91,6 +91,15 @@ export function channelsListAll(token: string) {
   return requestHelper('GET', '/channels/listall/v2', { token });
 }
 
+export function channelLeave(token: string, channelId: number) {
+  return requestHelper('POST', '/channel/leave/v1', { token, channelId });
+}
+
+// uid type?
+export function channelAddOwner(token: string, channelId: number, uId: number) {
+  return requestHelper('POST', '/channel/addowner/v1', { token, channelId, uId });
+}
+
 export function messageSend(token: string, channelId: number, message: string) {
   return requestHelper('POST', '/message/send/v1', {
     token,
