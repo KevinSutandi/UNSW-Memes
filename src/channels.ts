@@ -111,6 +111,12 @@ export function channelsListV1(
   return userChannels;
 }
 
+/**
+ *
+ * @param {string} token - The authentication token of the user making the request.
+ * @returns {channelsListReturn | errorMessage} Returns an object containing an array
+ *                                              of channel objects with their IDs and names, or an error message if the token is invalid.
+ */
 export function channelsListAllV1(
   token: string
 ): channelsListReturn | errorMessage {

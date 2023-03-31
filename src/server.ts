@@ -20,7 +20,12 @@ import {
   channelAddOwnerV1,
   channelRemoveOwnerV1,
 } from './channel';
-import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
+import {
+  messageRemoveV1,
+  messageSendV1,
+  messageEditV1,
+  messageSendDmV1,
+} from './message';
 import {
   setEmail,
   setName,
@@ -221,6 +226,12 @@ app.delete('/dm/remove/v1', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const dmId = parseInt(req.query.dmId as string);
   const result = dmRemoveV1(token, dmId);
+  return res.json(result);
+});
+
+app.post('/message/senddm/v1', (req: Request, res: Response, next) => {
+  const { token, dmId, message } = req.body;
+  const result = messageSendDmV1(token, dmId, message);
   return res.json(result);
 });
 
