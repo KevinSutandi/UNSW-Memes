@@ -71,7 +71,10 @@ export function userProfileV2(
  * @param {string} email - The new email address to set for the user.
  * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
  */
-export function setEmail(token: string, email: string): {} | errorMessage {
+export function setEmail(
+  token: string,
+  email: string
+): {} | errorMessage {
   const user = getUserByToken(token);
   if (user === undefined) {
     return { error: 'Invalid token' };
@@ -83,11 +86,11 @@ export function setEmail(token: string, email: string): {} | errorMessage {
 
   const data = getData();
   let emailExist: boolean = false;
-  data?.users.forEach((user) => {
+  data?.users.forEach(user => {
     if (user.email === email) {
       emailExist = true;
     }
-  });
+  })
   if (emailExist) {
     return { error: 'email address is already being used by another user' };
   }
@@ -114,12 +117,7 @@ export function setName(
     return { error: 'Invalid token' };
   }
 
-  if (
-    nameFirst.length < 1 ||
-    nameFirst.length > 50 ||
-    nameLast.length < 1 ||
-    nameLast.length > 50
-  ) {
+  if (nameFirst.length < 1 || nameFirst.length > 50 || nameLast.length < 1 || nameLast.length > 50) {
     return { error: 'name length should in range of 1 to 50' };
   }
 
@@ -136,7 +134,10 @@ export function setName(
  * @param {string} handleStr - The new handle for the user.
  * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
  */
-export function setHandle(token: string, handleStr: string): {} | errorMessage {
+export function setHandle(
+  token: string,
+  handleStr: string
+): {} | errorMessage {
   const user = getUserByToken(token);
   if (user === undefined) {
     return { error: 'Invalid token' };
@@ -157,7 +158,9 @@ export function setHandle(token: string, handleStr: string): {} | errorMessage {
  * @param {string} token - The user's access token.
  * @return {Array<Object> | errorMessage} Returns an array of user objects if successful, or an error message if unsuccessful.
  */
-export function getAllUsers(token: string): Array<Object> | errorMessage {
+export function getAllUsers(
+  token: string,
+): Array<Object> | errorMessage {
   const user = getUserByToken(token);
   if (user === undefined) {
     return { error: 'Invalid token' };
