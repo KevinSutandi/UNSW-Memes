@@ -161,3 +161,76 @@ export interface allUsers {
 export interface newMessageReturn {
   messageId: number;
 }
+
+export interface users {
+  authUserId: number;
+  handleStr: string;
+  email: string;
+  password: string;
+  nameFirst: string;
+  nameLast: string;
+  isGlobalOwner: number;
+  token: Array<{
+    token: string;
+  }>;
+}
+
+export interface Channel {
+  channelId: number;
+  name: string;
+  isPublic: boolean;
+  ownerMembers: Array<{
+    uId: number;
+    email: string;
+    nameFirst: string;
+    nameLast: string;
+    handleStr: string;
+  }>;
+  allMembers: Array<{
+    uId: number;
+    email: string;
+    nameFirst: string;
+    nameLast: string;
+    handleStr: string;
+  }>;
+  messages: Array<{
+    messageId: number;
+    uId: number;
+    message: string;
+    timeSent: number;
+  }>;
+  start: number;
+  end: number;
+}
+
+export interface Dm {
+  dmId: number;
+  name: string;
+  ownerMembers: Array<{
+    uId: number;
+    email: string;
+    nameFirst: string;
+    nameLast: string;
+    handleStr: string;
+  }>;
+  allMembers: Array<{
+    uId: number;
+    email: string;
+    nameFirst: string;
+    nameLast: string;
+    handleStr: string;
+  }>;
+  messages: Array<{
+    messageId: number;
+    uId: number;
+    message: string;
+    timeSent: number;
+  }>;
+  start: number;
+  end: number;
+}
+export interface newData {
+  users: Array<users>;
+  channels: Array<Channel>;
+  dm: Array<Dm>;
+}

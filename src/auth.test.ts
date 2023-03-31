@@ -5,6 +5,7 @@ import {
   channelsList,
   clearV1,
   authLogout,
+  userProfile,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 const ERROR = { error: expect.any(String) };
@@ -30,13 +31,13 @@ describe('testing authRegisterV2', () => {
       'YIU'
     );
     expect(result).toStrictEqual(IDPASS);
-    // expect(userProfileV1(result.authUserId, result.authUserId)).toStrictEqual({
-    //   uId: result.authUserId,
-    //   email: 'onlyfortest00@gmail.com',
-    //   nameFirst: 'EL_001',
-    //   nameLast: 'YIU',
-    //   handleStr: 'el001yiu',
-    // });
+    expect(userProfile(result.token, result.authUserId)).toStrictEqual({
+      uId: result.authUserId,
+      email: 'onlyfortest00@gmail.com',
+      nameFirst: 'EL_001',
+      nameLast: 'YIU',
+      handleStr: 'el001yiu',
+    });
   });
 
   // for too long user handle- cut at 20th character; convert to lower cases as well
@@ -48,13 +49,13 @@ describe('testing authRegisterV2', () => {
       'YIUopqrst'
     );
     expect(result).toStrictEqual(IDPASS);
-    // expect(userProfileV1(result.authUserId, result.authUserId)).toStrictEqual({
-    //   uId: result.authUserId,
-    //   email: 'onlyfortest01@gmail.com',
-    //   nameFirst: 'abcdefghijklm',
-    //   nameLast: 'YIUopqrst',
-    //   handleStr: 'abcdefghijklmyiuopqr',
-    // });
+    expect(userProfile(result.token, result.authUserId)).toStrictEqual({
+      uId: result.authUserId,
+      email: 'onlyfortest01@gmail.com',
+      nameFirst: 'abcdefghijklm',
+      nameLast: 'YIUopqrst',
+      handleStr: 'abcdefghijklmyiuopqr',
+    });
   });
 
   // one userid has already been taken, append the smallest number after
@@ -73,22 +74,20 @@ describe('testing authRegisterV2', () => {
     );
     expect(result).toStrictEqual(IDPASS);
     expect(result2).toStrictEqual(IDPASS);
-    // expect(userProfileV1(result.authUserId, result.authUserId)).toStrictEqual({
-    //   uId: result.authUserId,
-    //   email: 'onlyfortest02@gmail.com',
-    //   nameFirst: 'kevin',
-    //   nameLast: 'sutandi',
-    //   handleStr: 'kevinsutandi',
-    // });
-    // expect(userProfileV1(result2.authUserId, result2.authUserId)).toStrictEqual(
-    //   {
-    //     uId: result2.authUserId,
-    //     email: 'onlyfortest01@gmail.com',
-    //     nameFirst: 'kevin',
-    //     nameLast: 'sutandi',
-    //     handleStr: 'kevinsutandi0',
-    //   }
-    // );
+    expect(userProfile(result.token, result.authUserId)).toStrictEqual({
+      uId: result.authUserId,
+      email: 'onlyfortest02@gmail.com',
+      nameFirst: 'kevin',
+      nameLast: 'sutandi',
+      handleStr: 'kevinsutandi',
+    });
+    expect(userProfile(result2.token, result2.authUserId)).toStrictEqual({
+      uId: result2.authUserId,
+      email: 'onlyfortest01@gmail.com',
+      nameFirst: 'kevin',
+      nameLast: 'sutandi',
+      handleStr: 'kevinsutandi0',
+    });
   });
 
   // one userid has already been taken, append the smallest number after again
@@ -114,31 +113,27 @@ describe('testing authRegisterV2', () => {
     expect(result).toStrictEqual(IDPASS);
     expect(result2).toStrictEqual(IDPASS);
     expect(result3).toStrictEqual(IDPASS);
-    // expect(userProfileV1(result.authUserId, result.authUserId)).toStrictEqual({
-    //   uId: result.authUserId,
-    //   email: 'onlyfortest03@gmail.com',
-    //   nameFirst: 'abcdefghijklm',
-    //   nameLast: 'YIUopqrst',
-    //   handleStr: 'abcdefghijklmyiuopqr',
-    // });
-    // expect(userProfileV1(result2.authUserId, result2.authUserId)).toStrictEqual(
-    //   {
-    //     uId: result2.authUserId,
-    //     email: 'onlyfortest02@gmail.com',
-    //     nameFirst: 'abcdefghijklm',
-    //     nameLast: 'YIUopqrst',
-    //     handleStr: 'abcdefghijklmyiuopqr0',
-    //   }
-    // );
-    // expect(userProfileV1(result3.authUserId, result3.authUserId)).toStrictEqual(
-    //   {
-    //     uId: result3.authUserId,
-    //     email: 'onlyfortest06@gmail.com',
-    //     nameFirst: 'abcdefghijklm',
-    //     nameLast: 'YIUopqrst',
-    //     handleStr: 'abcdefghijklmyiuopqr1',
-    //   }
-    // );
+    expect(userProfile(result.token, result.authUserId)).toStrictEqual({
+      uId: result.authUserId,
+      email: 'onlyfortest03@gmail.com',
+      nameFirst: 'abcdefghijklm',
+      nameLast: 'YIUopqrst',
+      handleStr: 'abcdefghijklmyiuopqr',
+    });
+    expect(userProfile(result2.token, result2.authUserId)).toStrictEqual({
+      uId: result2.authUserId,
+      email: 'onlyfortest02@gmail.com',
+      nameFirst: 'abcdefghijklm',
+      nameLast: 'YIUopqrst',
+      handleStr: 'abcdefghijklmyiuopqr0',
+    });
+    expect(userProfile(result3.token, result3.authUserId)).toStrictEqual({
+      uId: result3.authUserId,
+      email: 'onlyfortest06@gmail.com',
+      nameFirst: 'abcdefghijklm',
+      nameLast: 'YIUopqrst',
+      handleStr: 'abcdefghijklmyiuopqr1',
+    });
   });
 
   test('Test invalid email', () => {

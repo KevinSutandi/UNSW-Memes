@@ -2,23 +2,30 @@ import { getData, setData } from './dataStore';
 import {
   findChannel,
   findChannelByMessageId,
+  findDMbyId,
   findDMbyMessageId,
   findMessageIndexInChannel,
   findMessageIndexInDM,
   getAllMemberIds,
   getAllOwnerIds,
   getChannelIndex,
-  getDmById,
   getDmIndex,
   getUserByToken,
 } from './functionHelper';
 import { errorMessage, newMessageReturn } from './interfaces';
-
+// import { errorMessage, newMessageReturn } from './interfaces';
+/**
+ *
+ * @param {string} token - The token of the user sending the message.
+ * @param {number} channelId - The ID of the channel to send the message to.
+ * @param {string} message - The message to be sent.
+ * @returns {} - An object containing either an error message or the ID of the sent message.
+ */
 export function messageSendV1(
   token: string,
   channelId: number,
   message: string
-) {
+): newMessageReturn | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
   const channel = findChannel(channelId);
@@ -53,8 +60,16 @@ export function messageSendV1(
   setData(data);
   return { messageId: messageId };
 }
-
-export function messageRemoveV1(token: string, messageId: number) {
+/**
+ *
+ * @param {string} token - The token of the user removing the message.
+ * @param {number} messageId - The ID of the message to be removed.
+ * @returns {} - An object containing either an error message or nothing.
+ */
+export function messageRemoveV1(
+  token: string,
+  messageId: number
+): Record<string, never> | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
   const channel = findChannelByMessageId(messageId);
@@ -123,11 +138,18 @@ export function messageRemoveV1(token: string, messageId: number) {
   }
 }
 
+/**
+ *
+ * @param {string} token - The token of the user editing the message.
+ * @param {number} messageId - The ID of the message to be edited.
+ * @param {string} message - The new message.
+ * @returns {} - An object containing either an error message or nothing.
+ */
 export function messageEditV1(
   token: string,
   messageId: number,
   message: string
-) {
+): Record<string, never> | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
   const channel = findChannelByMessageId(messageId);
@@ -216,14 +238,22 @@ export function messageEditV1(
   }
 }
 
+/**
+ *
+ * @param {string} token - The token of the user sending the message.
+ * @param {number} dmId - The ID of the DM to send the message to.
+ * @param {string} message - The message to be sent.
+ * @returns {messageId : number} - An object containing the ID of the message sent.
+ */
 export function messageSendDmV1(
   token: string,
   dmId: number,
   message: string
-): errorMessage | newMessageReturn {
+): newMessageReturn | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
-  const dm = getDmById(dmId);
+  console.log(user);
+  const dm = findDMbyId(dmId);
   const allMemberIds = getAllMemberIds(dm);
 
   if (user === undefined) {
@@ -232,7 +262,7 @@ export function messageSendDmV1(
   if (dm === undefined) {
     return { error: 'DM Not Found' };
   }
-  if (!allMemberIds.includes(user.authUserId)) {
+  if (allMemberIds.includes(user.authUserId) === false) {
     return { error: 'User is not registered in DM' };
   }
   if (message.length < 1) {

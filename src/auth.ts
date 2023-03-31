@@ -38,7 +38,6 @@ export function authLoginV1(
  * @returns { token: string, authUserId : number } token - the token for the user, authUserId - the authUserId for the user
  *
  */
-
 export function authRegisterV1(
   email: string,
   password: string,
