@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { isUser, getUserByToken } from './functionHelper';
+import { getUserByToken } from './functionHelper';
 import {
   channelsCreateReturn,
   channelsListReturn,
@@ -112,12 +112,13 @@ export function channelsListV1(
 }
 
 export function channelsListAllV1(
-  authUserId: number
+  token: string
 ): channelsListReturn | errorMessage {
   const data = getData();
-  // If the given userId is invalid
-  if (!isUser(authUserId)) {
-    return { error: 'Invalid authUserId' };
+  // invalid token
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    return { error: 'Invalid token' };
   }
   return {
     channels: data.channels.map((a) => ({

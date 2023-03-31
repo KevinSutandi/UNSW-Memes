@@ -4,24 +4,28 @@ import {
   channelsCreate,
   channelDetails,
   channelsList,
+  channelsListAll,
   clearV1,
 } from './httpHelper';
 
 const ERROR = { error: expect.any(String) };
 
-/*
-describe('channelsListAllV1 Iteration 1 tests', () => {
-  let user: AuthReturn | errorMessage, user2: AuthReturn | errorMessage;
-  let channel, channel2, channel3;
+// push the test first please
+describe('testing channelsListAllV2', () => {
+  let user: AuthReturn;
+  let user2: AuthReturn;
+  let channel: channelsCreateReturn;
+  let channel2: channelsCreateReturn;
+  let channel3: channelsCreateReturn;
   beforeEach(() => {
     clearV1();
-    user = authRegisterV1(
+    user = authRegister(
       'kevins050324@gmail.com',
       'kevin1001',
       'Kevin',
       'Sutandi'
     );
-    user2 = authRegisterV1(
+    user2 = authRegister(
       'someotheremail@gmail.com',
       'someone2031',
       'Jonah',
@@ -29,21 +33,21 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
     );
   });
 
-  test('invalid authUserID', () => {
-    expect(requestChannelsListAll(user.authUserId + 1)).toStrictEqual(ERROR);
+  test('invalid token', () => {
+    expect(channelsListAll(user.token + 1)).toStrictEqual(ERROR);
   });
 
-  test('valid authUserId, no channels were created', () => {
-    expect(requestChannelsListAll(user2.authUserId)).toStrictEqual({
+  test('valid token, no channels were created', () => {
+    expect(channelsListAll(user2.token)).toStrictEqual({
       channels: [],
     });
   });
 
-  test('valid authUserId, channels were created', () => {
-    channel = requestChannelsCreate(user.authUserId, 'general', false);
-    channel2 = requestChannelsCreate(user.authUserId, 'memes', false);
-    channel3 = requestChannelsCreate(user.authUserId, "Jonah's personal", true);
-    expect(requestChannelsListAll(user.authUserId)).toStrictEqual({
+  test('valid token, channels were created', () => {
+    channel = channelsCreate(user.token, 'general', false);
+    channel2 = channelsCreate(user.token, 'memes', false);
+    channel3 = channelsCreate(user2.token, "Jonah's personal", true);
+    expect(channelsListAll(user.token)).toStrictEqual({
       channels: [
         {
           channelId: channel.channelId,
@@ -61,7 +65,6 @@ describe('channelsListAllV1 Iteration 1 tests', () => {
     });
   });
 });
-*/
 
 describe('/channels/create/v2', () => {
   let user: AuthReturn;
@@ -74,6 +77,10 @@ describe('/channels/create/v2', () => {
       'Jonah',
       'Meggs'
     );
+  });
+
+  afterEach(() => {
+    clearV1();
   });
 
   test('valid input', () => {
@@ -145,6 +152,10 @@ describe('/channels/list/v2', () => {
     channel3 = channelsCreate(user2.token, "Jonah's personal", true);
   });
 
+  afterEach(() => {
+    clearV1();
+  });
+
   test('Token is invalid', () => {
     expect(channelsList('asade')).toStrictEqual(ERROR);
   });
@@ -186,6 +197,10 @@ describe('/channels/list/v2 no channels', () => {
       'Kevin',
       'Sutandi'
     );
+  });
+
+  afterEach(() => {
+    clearV1();
   });
 
   test('no channels', () => {
