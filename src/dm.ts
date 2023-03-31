@@ -153,7 +153,7 @@ export function dmRemoveV1(token: string, dmId: number) {
     return { error: 'dmId does not refer to a valid DM' };
   }
   if (
-    data.dm[dmIndex].ownerMembers.some((item) => item.uId === user.authUserId)
+    !data.dm[dmIndex].ownerMembers.some((item) => item.uId === user.authUserId)
   ) {
     return { error: 'User is not the original creator' };
   }

@@ -164,7 +164,7 @@ describe('testing dmListV1', () => {
 
 describe('testing dm remove', () => {
   // test when token is invalid
-  let user: AuthReturn, user2: AuthReturn;
+  let user: AuthReturn, user2: AuthReturn, user3: AuthReturn;
   let dm: dmCreateReturn, dm2: dmCreateReturn;
   beforeEach(() => {
     clearV1();
@@ -180,7 +180,8 @@ describe('testing dm remove', () => {
       'Ben',
       'Affleck'
     );
-    const uIds = [user.authUserId, user2.authUserId];
+    user3 = authRegister('superman@gmail.com', 'wonderwoman', 'Gal', 'Gadot');
+    const uIds = [user2.authUserId, user3.authUserId];
     dm = dmCreate(user.token, uIds);
     dm2 = dmCreate(user2.token, uIds);
   });
@@ -199,8 +200,8 @@ describe('testing dm remove', () => {
 
   test('valid input', () => {
     dmRemove(user.token, dm.dmId);
-    expect(dmList(user.token)).toStrictEqual({
-      dm: [
+    expect(dmList(user2.token)).toStrictEqual({
+      dms: [
         {
           dmId: dm2.dmId,
           name: expect.any(String),
