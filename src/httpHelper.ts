@@ -185,6 +185,10 @@ export function setHandle(token: string, handleStr: string) {
   });
 }
 
+export function dmRemove(token: string, dmId: number) {
+  return requestHelper('DELETE', '/dm/remove/v1', { token, dmId });
+}
+
 export function messageSendDm(token: string, dmId: number, message: string) {
   return requestHelper('POST', '/message/senddm/v1', {
     token,
