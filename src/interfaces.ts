@@ -150,6 +150,15 @@ export interface dmCreateReturn {
   dmId: number;
 }
 
+export interface dms {
+  dmId?: number;
+  name?: string;
+}
+
+export interface dmListReturn {
+  dms: dms[];
+}
+
 export interface uId {
   uId: number;
 }

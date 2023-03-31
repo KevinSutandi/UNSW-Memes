@@ -5,6 +5,7 @@ import {
   dmCreateReturn,
   userData,
   userObject,
+  dmListReturn,
 } from './interfaces';
 
 export function dmCreateV1(
@@ -94,4 +95,42 @@ export function dmCreateV1(
   // set data
   setData(data);
   return { dmId: dmId };
+}
+
+/**
+ * Provides an array of all dms that an authorised
+ * user is a member of by accessing the dm information
+ * from data.channels. Then it returns information about
+ * the dms.
+ *
+ * @param {number} token - the authenticated user token
+ *
+ * @returns {error: 'error message'} - if the given token is invalid
+ * @returns {{channelId: number, name: string}} - returns the details of the dms
+ * when successful
+ *
+ */
+export function dmListV1(token: string): dmListReturn | errorMessage {
+  const data = getData();
+  const user = getUserByToken(token);
+
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+
+  const authUserIdToFind = user.authUserId;
+  const userDms: dmListReturn = { dms: [] };
+
+  data.dm.forEach((dm) => {
+    const isUserInDm = dm.allMembers.some(
+      (member) => member.uId === authUserIdToFind
+    );
+    if (isUserInDm === true) {
+      userDms.dms.push({
+        dmId: dm.dmId,
+        name: dm.name,
+      });
+    }
+  });
+  return userDms;
 }

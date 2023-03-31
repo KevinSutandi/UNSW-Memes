@@ -28,7 +28,7 @@ import {
   getAllUsers,
   userProfileV2,
 } from './users';
-import { dmCreateV1 } from './dm';
+import { dmCreateV1, dmListV1 } from './dm';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -133,6 +133,12 @@ app.get('/channel/details/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const channelId = parseInt(req.query.channelId as string);
   const result = channelDetailsV1(token, channelId);
+  return res.json(result);
+});
+
+app.get('/dm/list/v1', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const result = dmListV1(token);
   return res.json(result);
 });
 
