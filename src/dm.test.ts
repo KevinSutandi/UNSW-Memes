@@ -2,10 +2,11 @@ import {
   authRegister,
   clearV1,
   dmCreate,
-  dmDetails,
   dmList,
   dmMessages,
   messageSendDm,
+  dmRemove,
+  dmDetails,
 } from './httpHelper';
 import { AuthReturn, dmCreateReturn } from './interfaces';
 
@@ -100,9 +101,7 @@ describe('testing dmCreateV1', () => {
 
 describe('testing dmDetailsV1', () => {
   let user: AuthReturn, user2: AuthReturn, user3: AuthReturn;
-
   let dm1: dmCreateReturn, dm2: dmCreateReturn, dm3: dmCreateReturn;
-
   beforeEach(() => {
     clearV1();
     user = authRegister(
@@ -234,6 +233,59 @@ describe('testing dmListV1', () => {
         {
           dmId: dm2.dmId,
           name: 'jonahmeggs, minakov',
+        },
+      ],
+    });
+  });
+});
+
+// Remove an existing DM, so all members are no longer in the DM. This can only be done by the original creator of the DM.
+
+describe('testing dm remove', () => {
+  // test when token is invalid
+  let user: AuthReturn, user2: AuthReturn, user3: AuthReturn;
+  let dm: dmCreateReturn, dm2: dmCreateReturn;
+  let uIds1: number[], uIds2: number[];
+  beforeEach(() => {
+    clearV1();
+    user = authRegister(
+      'onlyfortestttt06@gmail.com',
+      'testpw0005',
+      'Jonah',
+      'Meggs'
+    );
+    user2 = authRegister(
+      'batmanrobin@gmail.com',
+      'batmobile',
+      'Ben',
+      'Affleck'
+    );
+    user3 = authRegister('superman@gmail.com', 'wonderwoman', 'Gal', 'Gadot');
+    uIds1 = [user2.authUserId, user3.authUserId];
+    uIds2 = [user.authUserId, user3.authUserId];
+    dm = dmCreate(user.token, uIds1);
+    dm2 = dmCreate(user2.token, uIds2);
+  });
+  test('token is invalid', () => {
+    expect(dmRemove('asasd', dm.dmId)).toStrictEqual(ERROR);
+  });
+
+  // test when dmId isnt a valid DM
+  test('invalid dmId', () => {
+    expect(dmRemove(user.token, dm.dmId + 1)).toStrictEqual(ERROR);
+  });
+
+  test('valid dmId but user is not the creator', () => {
+    expect(dmRemove(user2.token, dm.dmId)).toStrictEqual(ERROR);
+  });
+
+  test('valid input', () => {
+    dmRemove(user.token, dm.dmId);
+    expect(dmList(user3.token)).toStrictEqual({
+      dms: [
+        {
+          dmId: dm2.dmId,
+          name: expect.any(String),
         },
       ],
     });
