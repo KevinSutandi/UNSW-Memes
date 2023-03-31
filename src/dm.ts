@@ -106,12 +106,12 @@ export function dmListV1(
 
   data.dms.forEach((dm) => {
     const isUserInDm = dm.allMembers.some(
-      (member) => member.uId === authUserIdToFind
+      (member) => member.dmId === authUserIdToFind
     );
     if (isUserInDm === true) {
-      userDm.dm.push({
+      userDms.dms.push({
         dmId: dm.dmId,
-        name: dm.name,
+        name: dm.dmName,
       });
     }
   });

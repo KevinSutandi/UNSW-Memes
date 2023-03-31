@@ -69,7 +69,7 @@ describe('testing dmCreateV1', () => {
 
 describe('testing dmListV1', () => {
   let user: AuthReturn, user2: AuthReturn;
-  let dm: dmCreateReturn;
+  let dm1: dmCreateReturn;
   beforeEach(() => {
     clearV1();
     user = authRegister(
@@ -99,17 +99,18 @@ describe('testing dmListV1', () => {
 
   });
 
-  test('valid user with only one dm in the list', () => {            
-      dm = dmCreate(user.token, user.dmId);
+  test('valid user with only one dm in the list', () => {   
+    const uIds = [user.authUserId];
+    dm1 = dmCreate(user.token, uIds);
 
-      expect(dmList(user.token)).toStrictEqual({
-          dms: [
-              {
-                  dmId: dm.dmId,
-                  name: dm.name,
-              },
-          ],
-      });
+    expect(dmList(user.token)).toStrictEqual({
+      dms: [
+        {
+          dmId: dm1.dmId,
+          name: user.authUserId,
+        },
+      ],
+    });
   });
 
   test('valid user with multiple dms in the list', () => {
