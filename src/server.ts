@@ -4,11 +4,13 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
+
 import {
   channelsCreateV1,
   channelsListV1,
   channelsListAllV1,
 } from './channels';
+
 import {
   channelMessagesV1,
   channelDetailsV1,
@@ -16,6 +18,7 @@ import {
   channelJoinV1,
   channelInviteV1,
   channelAddOwnerV1,
+  channelRemoveOwnerV1,
 } from './channel';
 import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
 import {
@@ -105,6 +108,12 @@ app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
 app.post('/channel/addowner/v1', (req: Request, res: Response, next) => {
   const { token, channelId, uId } = req.body;
   const result = channelAddOwnerV1(token, channelId, uId);
+  return res.json(result);
+});
+
+app.post('/channel/removeowner/v1', (req: Request, res: Response, next) => {
+  const { token, channelId, uId } = req.body;
+  const result = channelRemoveOwnerV1(token, channelId, uId);
   return res.json(result);
 });
 

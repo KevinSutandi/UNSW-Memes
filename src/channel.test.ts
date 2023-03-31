@@ -8,6 +8,7 @@ import {
   channelJoin,
   channelLeave,
   channelAddOwner,
+  channelRemoveOwner,
 } from './httpHelper';
 import { AuthReturn, channelsCreateReturn } from './interfaces';
 
@@ -229,6 +230,11 @@ describe('testing channelJoinV2', () => {
     channel2 = channelsCreate(user2.token, 'Bakso', true);
     channel3 = channelsCreate(user3.token, 'Batagor', false);
   });
+
+  afterEach(() => {
+    clearV1();
+  });
+
   test('channelId does not exist test 1', () => {
     expect(channelJoin(user1.token, channel2.channelId + 5)).toStrictEqual(
       ERROR
@@ -363,7 +369,6 @@ describe('testing channelJoinV2', () => {
 // user is not the member of the channel
 // valid cases: the only user leaves the channel;
 //              leaving one by one
-
 // details to check if the user is not member anymore but teh information still will be in the channel
 describe('testing channelLeaveV1', () => {
   let user1: AuthReturn;
@@ -393,6 +398,10 @@ describe('testing channelLeaveV1', () => {
     );
     channel1 = channelsCreate(user1.token, 'Ketoprak', true);
     channel2 = channelsCreate(user2.token, 'Bakso', true);
+  });
+
+  afterEach(() => {
+    clearV1();
   });
 
   test('Invalid channelId test 1', () => {
@@ -853,6 +862,203 @@ describe('/channel/invite/v2', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+        },
+      ],
+    });
+  });
+});
+
+// push test first
+// 6 errors
+describe('testing removing owner from channel', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let user3: AuthReturn;
+  let channel1: channelsCreateReturn;
+  let channel2: channelsCreateReturn;
+  let channel3: channelsCreateReturn;
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'someotheremail@gmail.com',
+      'someone2031',
+      'Jonah',
+      'Meggs'
+    );
+    user3 = authRegister(
+      'z5352065@ad.unsw.edu.au',
+      'big!password3',
+      'Zombie',
+      'Ibrahim'
+    );
+    channel1 = channelsCreate(user1.token, 'Ketoprak', true);
+    channel2 = channelsCreate(user2.token, 'Bakso', true);
+    channel3 = channelsCreate(user3.token, 'Batagor', false);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('Invalid channelId test 1', () => {
+    expect(
+      channelRemoveOwner(user2.token, channel2.channelId + 10, user2.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Invalid channelId test 2', () => {
+    expect(
+      channelRemoveOwner(user1.token, channel1.channelId + 3, user2.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Invalid uId test 1', () => {
+    expect(
+      channelRemoveOwner(user2.token, channel2.channelId, user2.authUserId + 2)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Invalid uId test 2', () => {
+    expect(
+      channelRemoveOwner(user1.token, channel1.channelId, user2.authUserId + 8)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Invalid token test 1', () => {
+    expect(
+      channelRemoveOwner(user2.token + 1, channel2.channelId, user2.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Invalid token test 2', () => {
+    expect(
+      channelRemoveOwner(user1.token + 2, channel1.channelId, user2.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('User with uId is not owner test 1', () => {
+    expect(
+      channelRemoveOwner(user3.token, channel3.channelId, user2.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('User with uId is not owner test 2', () => {
+    expect(
+      channelRemoveOwner(user1.token, channel2.channelId, user3.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Global owner with uId is not owner test 2', () => {
+    expect(
+      channelRemoveOwner(user2.token, channel2.channelId, user1.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  // global owner has the owner permission to remove other owner(who is not the only owner)
+  // when if they are removed as global owner, not channel owner as well, then without owner permission
+  test('User with token does not have owner permission test 1', () => {
+    expect(
+      channelRemoveOwner(user2.token, channel3.channelId, user3.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('User with token does not have owner permission test 2', () => {
+    expect(
+      channelRemoveOwner(user2.token, channel3.channelId, user3.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('User with uId is the only owner test 1', () => {
+    expect(
+      channelRemoveOwner(user2.token, channel2.channelId, user2.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('User with uId is the only owner test 2', () => {
+    expect(
+      channelRemoveOwner(user3.token, channel3.channelId, user3.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('Global owner removes the only owner test 3', () => {
+    expect(
+      channelRemoveOwner(user1.token, channel2.channelId, user2.authUserId)
+    ).toStrictEqual(ERROR);
+  });
+
+  test('channel owner removes the other owner test 1', () => {
+    channelJoin(user3.token, channel2.channelId);
+    channelAddOwner(user2.token, channel2.channelId, user3.authUserId);
+    channelRemoveOwner(user3.token, channel2.channelId, user2.authUserId);
+    // user2 no longer the owner of channel2
+    expect(channelDetails(user3.token, channel2.channelId)).toStrictEqual({
+      name: 'Bakso',
+      isPublic: true,
+      ownerMembers: [
+        {
+          uId: user3.authUserId,
+          email: 'z5352065@ad.unsw.edu.au',
+          nameFirst: 'Zombie',
+          nameLast: 'Ibrahim',
+          handleStr: 'zombieibrahim',
+        },
+      ],
+      allMembers: [
+        {
+          uId: user2.authUserId,
+          email: 'someotheremail@gmail.com',
+          nameFirst: 'Jonah',
+          nameLast: 'Meggs',
+          handleStr: 'jonahmeggs',
+        },
+        {
+          uId: user3.authUserId,
+          email: 'z5352065@ad.unsw.edu.au',
+          nameFirst: 'Zombie',
+          nameLast: 'Ibrahim',
+          handleStr: 'zombieibrahim',
+        },
+      ],
+    });
+  });
+
+  test('global owner removes the other owner test', () => {
+    channelJoin(user3.token, channel2.channelId);
+    channelAddOwner(user2.token, channel2.channelId, user3.authUserId);
+    channelRemoveOwner(user1.token, channel2.channelId, user3.authUserId);
+    // user3 no longer the owner of channel2
+    expect(channelDetails(user2.token, channel2.channelId)).toStrictEqual({
+      name: 'Bakso',
+      isPublic: true,
+      ownerMembers: [
+        {
+          uId: user2.authUserId,
+          email: 'someotheremail@gmail.com',
+          nameFirst: 'Jonah',
+          nameLast: 'Meggs',
+          handleStr: 'jonahmeggs',
+        },
+      ],
+      allMembers: [
+        {
+          uId: user2.authUserId,
+          email: 'someotheremail@gmail.com',
+          nameFirst: 'Jonah',
+          nameLast: 'Meggs',
+          handleStr: 'jonahmeggs',
+        },
+        {
+          uId: user3.authUserId,
+          email: 'z5352065@ad.unsw.edu.au',
+          nameFirst: 'Zombie',
+          nameLast: 'Ibrahim',
+          handleStr: 'zombieibrahim',
         },
       ],
     });
