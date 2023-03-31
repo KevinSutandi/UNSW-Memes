@@ -7,6 +7,7 @@ import {
   messageSendDm,
   dmRemove,
   dmDetails,
+  dmLeave,
 } from './httpHelper';
 import { AuthReturn, dmCreateReturn } from './interfaces';
 
@@ -391,5 +392,57 @@ describe('testing dmMessagesV1 error cases', () => {
       end: -1,
     });
     expect(dmMessages(user.token, dm1.dmId, 50).messages.length).toBe(10);
+  });
+});
+
+describe('testing dmLeaveV1', () => {
+  let user: AuthReturn, user2: AuthReturn, user3: AuthReturn;
+
+  let dm1: dmCreateReturn, dm2: dmCreateReturn, dm3: dmCreateReturn;
+
+  beforeEach(() => {
+    clearV1();
+    user = authRegister(
+      'onlyfortestttt06@gmail.com',
+      'testpw0005',
+      'Jonah',
+      'Meggs'
+    );
+    user2 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user3 = authRegister(
+      'z5352065@ad.unsw.edu.au',
+      'big!password3',
+      'Zombie',
+      'Ibrahim'
+    );
+    const uIds = [user.authUserId, user2.authUserId];
+    dm1 = dmCreate(user.token, uIds);
+    dm2 = dmCreate(user2.token, uIds);
+    dm3 = dmCreate(user3.token, uIds);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('dmId doesnt refer to a valid user', () => {
+    expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(ERROR);
+  });
+
+  test('dmId is valid but authUser is not member of DM', () => {
+    expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(ERROR);
+  });
+
+  test('user token is not valid', () => {
+    expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
+  });
+
+  test('One user leaves the DM, not the owner', () => {
+    expect(dmLeave(user.token, dm3.dmId)).toStrictEqual({});
   });
 });

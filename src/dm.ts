@@ -315,3 +315,51 @@ export function dmRemoveV1(token: string, dmId: number) {
   setData(data);
   return {};
 }
+
+/**
+ * Given a dmId of a dm and token, it will remove that member from the dm.
+ * If the user is the owner, the chat will still exist if this happens.
+ * A user leaving does not update the name of the DM.
+ *
+ * @param {string} token - The authenticated token
+ * @param {number} dmId - The dmId to join
+ * ...
+ *
+ * @returns {} - returns {} when successful
+ * @returns {error : 'error message'} - returns an error when
+ *                                    | dmId does not refer to a valid DM
+ *                                    | dmId is valid and the authorised user is not a member of the DM
+ *                                    | user token is invalid
+ */
+export function dmLeaveV1(token: string, dmId: number) {
+  const data = getData();
+  const user = getUserByToken(token);
+
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+  if (!isDm(dmId)) {
+    return { error: 'dmId does not refer to a valid DM' };
+  }
+  if (!isDmMember(dmId, user.authUserId)) {
+    return { error: user.authUserId + ' is not a member of the DM' };
+  }
+
+  const dmIndex = data.dm.findIndex((item) => item.dmId === dmId);
+
+  const userOwnerIndex = data.dm[dmIndex].ownerMembers.findIndex(
+    (item) => item.uId === user.authUserId
+  );
+
+  const userMemberIndex = data.dm[dmIndex].allMembers.findIndex(
+    (item) => item.uId === user.authUserId
+  );
+
+  if (userOwnerIndex !== -1) {
+    data.dm[dmIndex].ownerMembers.splice(userOwnerIndex, 1);
+  }
+
+  data.dm[dmIndex].allMembers.splice(userMemberIndex, 1);
+  setData(data);
+  return {};
+}
