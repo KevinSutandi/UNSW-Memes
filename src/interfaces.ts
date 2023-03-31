@@ -107,16 +107,6 @@ export interface channelObject {
   allMembers: Array<userObject>;
 }
 
-export interface dmData {
-  dmId: number;
-  name: string;
-  ownerMembers: Array<userObject>;
-  allMembers: Array<userObject>;
-  messages: Array<messagesObject>;
-  start: number;
-  end: number;
-}
-
 /**
  * Represents a set of channels.
  *
