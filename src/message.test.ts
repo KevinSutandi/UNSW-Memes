@@ -7,6 +7,8 @@ import {
   messageRemove,
   messageEdit,
   channelJoin,
+  dmCreate,
+  messageSendDm,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -557,3 +559,68 @@ describe('testing messageEdit DM', () => {
   });
 });
 */
+
+describe('testing messageSendDM', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let dm1: { dmId: number };
+  beforeEach(() => {
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+
+    user2 = authRegister('levin@gmail.com', 'levin1001', 'asu', 'kayang');
+
+    const uIds = [user2.authUserId];
+    dm1 = dmCreate(user1.token, uIds);
+  });
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('dm does not exist', () => {
+    expect(messageSendDm(user1.token, 100000, 'hello world')).toStrictEqual(
+      ERROR
+    );
+  });
+
+  test('invalid token', () => {
+    expect(
+      messageSendDm('abnomrklasdjflk', dm1.dmId, 'hello world')
+    ).toStrictEqual(ERROR);
+  });
+
+  test('invalid message', () => {
+    expect(messageSendDm(user1.token, dm1.dmId, '')).toStrictEqual(ERROR);
+    expect(
+      messageSendDm(user1.token, dm1.dmId, 'a'.repeat(1001))
+    ).toStrictEqual(ERROR);
+  });
+
+  test('non dm member send message', () => {
+    const user3 = authRegister(
+      'Hindie@gmail.com',
+      'welovecows',
+      'Hindie',
+      'Suputra'
+    );
+    expect(messageSendDm(user3.token, dm1.dmId, 'hello world')).toStrictEqual(
+      ERROR
+    );
+  });
+
+  test('send valid message', () => {
+    expect(messageSendDm(user1.token, dm1.dmId, 'hello world')).toStrictEqual({
+      messageId: expect.any(Number),
+    });
+  });
+
+  test('send valid message 2', () => {
+    expect(messageSendDm(user2.token, dm1.dmId, 'hello world')).toStrictEqual({
+      messageId: expect.any(Number),
+    });
+  });
+});
