@@ -77,7 +77,7 @@ export function channelsCreateV1(
  * from data.channels. Then it returns the channelId
  * and name.
  *
- * @param {number} authUserId - the authenticated user Id
+ * @param {string} token - the authenticated user token
  *
  * @returns {error: 'error message'} - if the given authUserId is invalid
  * @returns {{channelId: number, name: string}} - returns the details of the channel
