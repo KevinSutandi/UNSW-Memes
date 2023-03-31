@@ -119,6 +119,16 @@ export interface channels {
   name?: string;
 }
 
+export interface dmData {
+  dmId: number;
+  name: string;
+  ownerMembers: Array<userObject>;
+  allMembers: Array<userObject>;
+  messages: Array<messagesObject>;
+  start: number;
+  end: number;
+}
+
 export interface errorMessage {
   error: string;
 }
