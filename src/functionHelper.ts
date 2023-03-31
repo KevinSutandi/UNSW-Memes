@@ -140,3 +140,7 @@ export function getAllOwnerIds(channel: channelData) {
 export function findTokenIndex(user: userData, token: string) {
   return user.token.findIndex((item) => item.token === token);
 }
+
+export function findMessageIndex(channel: channelData, messageId: number) {
+  return channel.messages.findIndex((item) => item.messageId === messageId);
+}

@@ -8,8 +8,6 @@ import {
   getChannelIndex,
   isChannelMember,
   getUserByToken,
-  findMember,
-  isChannelOwner,
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
 

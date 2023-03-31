@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
+
 import {
   channelsCreateV1,
   channelsListV1,
@@ -15,7 +16,9 @@ import {
   channelLeaveV1,
   channelJoinV1,
 } from './channel';
-import { messageRemoveV1, messageSendV1 } from './message';
+import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
+import { dmCreateV1 } from './dm';
+
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -92,9 +95,9 @@ app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.get('/channels/list/v2', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
-  const result = channelsListV1(token);
+app.post('/dm/create/v1', (req: Request, res: Response, next) => {
+  const { token, uIds } = req.body;
+  const result = dmCreateV1(token, uIds);
   return res.json(result);
 });
 
@@ -129,6 +132,12 @@ app.delete('/message/remove/v1', (req: Request, res: Response, next) => {
 app.post('/auth/logout/v1', (req: Request, res: Response, next) => {
   const { token } = req.body;
   const result = authLogoutV1(token);
+  return res.json(result);
+});
+
+app.put('/message/edit/v1', (req: Request, res: Response, next) => {
+  const { token, messageId, message } = req.body;
+  const result = messageEditV1(token, messageId, message);
   return res.json(result);
 });
 
