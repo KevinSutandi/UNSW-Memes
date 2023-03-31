@@ -72,7 +72,7 @@ export function channelMessagesV1(
  * Given a channelId of a channel that the authorised user
  * can join, adds them to the channel.
  *
- * @param {number} authUserId - The authenticated user Id
+ * @param {string} token - The authenticated token
  * @param {number} channelId - The channel Id to join
  * ...
  *
@@ -81,13 +81,13 @@ export function channelMessagesV1(
  *                                    | channelId is invalid
  *                                    | Member is already in channel
  *                                    | Channel is private and not a global owner
- *                                    | User is invalid
+ *                                    | User token is invalid
  */
 
-export function channelJoinV1(authUserId: number, channelId: number) {
+export function channelJoinV1(token: string, channelId: number) {
   const data = getData();
-  // Get the particular user index in data store
-  const user = findUser(authUserId);
+  // Get the particular user in data store
+  const user = getUserByToken(token);
 
   // Get the particular channel index from data store
   const channel = findChannel(channelId);
@@ -95,7 +95,7 @@ export function channelJoinV1(authUserId: number, channelId: number) {
   const allMemberIds = getAllMemberIds(channel);
 
   if (user === undefined) {
-    return { error: 'User Not Found' };
+    return { error: 'Invalid user token' };
   }
 
   if (channel === undefined) {
@@ -117,7 +117,7 @@ export function channelJoinV1(authUserId: number, channelId: number) {
   const channelNum = getChannelIndex(channelId);
 
   data.channels[channelNum].allMembers.push({
-    uId: authUserId,
+    uId: user.authUserId,
     email: user.email,
     nameFirst: user.nameFirst,
     nameLast: user.nameLast,
@@ -128,16 +128,13 @@ export function channelJoinV1(authUserId: number, channelId: number) {
   return {};
 }
 
-export function channelInviteV1(
-  authUserId: number,
-  channelId: number,
-  uId: number
-) {
+export function channelInviteV1(token: string, channelId: number, uId: number) {
   const data = getData();
 
   // Error cases
-  if (!isUser(authUserId)) {
-    return { error: 'Invalid authUserId' };
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    return { error: 'Invalid token' };
   }
   if (!isChannel(channelId)) {
     return { error: 'channelId does not refer to a valid channel' };
@@ -154,23 +151,27 @@ export function channelInviteV1(
     return { error: 'User already in the channel' };
   }
 
-  if (isChannel(channelId) && allMemberIds.includes(authUserId) === false) {
+  if (
+    isChannel(channelId) &&
+    allMemberIds.includes(user.authUserId) === false
+  ) {
     return { error: 'You are not a channel member' };
   }
   // Finds the user based on uId
-  const user = findUser(uId);
+  const invitedUser = findUser(uId);
   const channelNum = getChannelIndex(channelId);
 
   // Adds the user to the channel
   data.channels[channelNum].allMembers.push({
-    uId: user.authUserId,
-    email: user.email,
-    nameFirst: user.nameFirst,
-    nameLast: user.nameLast,
-    handleStr: user.handleStr,
+    uId: invitedUser.authUserId,
+    email: invitedUser.email,
+    nameFirst: invitedUser.nameFirst,
+    nameLast: invitedUser.nameLast,
+    handleStr: invitedUser.handleStr,
   });
 
   setData(data);
+  return {};
 }
 
 /**
@@ -211,4 +212,50 @@ export function channelDetailsV1(token: string, channelId: number) {
     ownerMembers: channelObj.ownerMembers,
     allMembers: channelObj.allMembers,
   };
+}
+
+/**
+ * Given a channelId of a channel and token, removing the membership of that member,
+ * but remain the information of the authorised user
+ *
+ * @param {string} token - The authenticated token
+ * @param {number} channelId - The channel Id to join
+ * ...
+ *
+ * @returns {} - returns {} when successful
+ * @returns {error : 'error message'} - returns an error when
+ *                                    | channelId is invalid
+ *                                    | user is not the channel member
+ *                                    | User token is invalid
+ */
+export function channelLeaveV1(token: string, channelId: number) {
+  const data = getData();
+  const user = getUserByToken(token);
+  if (!isChannel(channelId)) {
+    return { error: 'channelId does not refer to a valid channel' };
+  }
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+  // If the user is not a member of the channel
+  if (!isChannelMember(channelId, user.authUserId)) {
+    return { error: user.authUserId + ' is not a member of the channel' };
+  }
+
+  const channelIndex = data.channels.findIndex(
+    (item) => item.channelId === channelId
+  );
+  const userOwnerIndex = data.channels[channelIndex].ownerMembers.findIndex(
+    (item) => item.uId === user.authUserId
+  );
+  const userMemberIndex = data.channels[channelIndex].allMembers.findIndex(
+    (item) => item.uId === user.authUserId
+  );
+  if (userOwnerIndex !== -1) {
+    data.channels[channelIndex].ownerMembers.splice(userOwnerIndex, 1);
+  }
+
+  data.channels[channelIndex].allMembers.splice(userMemberIndex, 1);
+  setData(data);
+  return {};
 }

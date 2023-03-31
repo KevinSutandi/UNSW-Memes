@@ -12,6 +12,7 @@ export function clearV1() {
   const data = getData();
   data.users = [];
   data.channels = [];
+  data.dm = [];
   setData(data);
 
   return {};

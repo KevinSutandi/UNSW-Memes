@@ -135,3 +135,11 @@ export interface AuthReturn {
   authUserId: number;
   token: string;
 }
+
+export interface dmCreateReturn {
+  dmId: number;
+}
+
+export interface uId {
+  uId: number;
+}
