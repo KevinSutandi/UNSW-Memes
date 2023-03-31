@@ -1,5 +1,5 @@
 import { authRegister, clearV1, dmCreate, dmLeave } from './httpHelper';
-import { AuthReturn } from './interfaces';
+import { AuthReturn, dmCreateReturn } from './interfaces';
 
 const ERROR = { error: expect.any(String) };
 
@@ -93,7 +93,14 @@ describe('testing dmCreateV1', () => {
 
 describe('testing dmLeaveV1', () => {
 
-  let user: AuthReturn;
+  let user: AuthReturn,
+      user2: AuthReturn,
+      user3: AuthReturn;
+
+  let dm1: dmCreateReturn,
+      dm2: dmCreateReturn,
+      dm3: dmCreateReturn;
+
   beforeEach(() => {
     clearV1();
     user = authRegister(
@@ -102,34 +109,44 @@ describe('testing dmLeaveV1', () => {
       'Jonah',
       'Meggs'
     );
+    user2 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user3 = authRegister(
+      'z5352065@ad.unsw.edu.au',
+      'big!password3',
+      'Zombie',
+      'Ibrahim'
+    );
+    const uIds = [user2.authUserId];
+    dm1 = dmCreate(user.token, uIds);
+    dm2 = dmCreate(user3.token, uIds);
+    dm3 = dmCreate(user2.token, uIds);
   });
 
   afterEach(() => {
     clearV1();
   });
-
-    // test when dmId doesnt refer to a valid user
+    // working
     test('dmId doesnt refer to a valid user', () => {
-      const dmId = 2034
-      expect(dmLeave(user1.token, dmId)).toStrictEqual(ERROR);
+      expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(ERROR);
     }); 
-  
-    // dmId is valid but authUser is not member of DM
+
+    // maybe working
     test('dmId is valid but authUser is not member of DM', () => {
-      expect(
-        dmLeave(user1.token, user1.dmId)
-      ).toStrictEqual(ERROR);
+      expect(dmLeave(user.token, dm2.dmId)).toStrictEqual(ERROR);
     }); 
   
-    // invalid token
+    // working
     test('user token is not valid', () => {
-      expect(dmLeave('alminaaaaascnj', user.dmId)).toStrictEqual(ERROR);
+      expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
     });
-  
-  
-  
-    // test when successful
-    test('successfully leave DM', () => {
-      expect(dmLeave(user1.token, user1.dmId)).toStrictEqual({ });
-    }); 
-  });  
+
+    test('One user leaves the DM, not the owner', () => {
+      expect(dmLeave(user.token, dm1.dmId)).toStrictEqual({});
+    });
+
+});  

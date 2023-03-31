@@ -96,6 +96,11 @@ export function dmCreateV1(
   return { dmId: dmId };
 }
 
+
+
+
+
+
 export function isDm(dmId: number): boolean {
   const data = getData();
   return data.dm.some((a) => a.dmId === dmId);
@@ -104,7 +109,7 @@ export function isDm(dmId: number): boolean {
 export function isDmMember(dmId: number, userId: number): boolean {
   const dm = findDm(dmId);
   console.log(dmId);
-  const allMemberIds = getAllMemberIds(dm);
+  const allMemberIds = getAllDmMemberIds(dm);
   console.log(allMemberIds);
   return allMemberIds.includes(userId);
 }
@@ -114,17 +119,12 @@ export function findDm(dmId: number): dmData | undefined {
   return data.dm.find((a) => a.dmId === dmId);
 }
 
-export function getAllMemberIds(dm: dmData) {
+export function getAllDmMemberIds(dm: dmData) {
   if (dm) {
     return dm.allMembers.map((member) => member.uId);
   } else {
     return null;
   }
-}
-
-export function findDm(dmId: number): dmData | undefined {
-  const data = getData();
-  return data.dm.find((a) => a.dmId === dmId);
 }
 
 
@@ -143,12 +143,23 @@ export function dmLeaveV1 (
       return { error: user.authUserId + ' is not a member of the DM'}
   }
 
+  const dmIndex = data.dm.findIndex(
+    (item) => item.dmId === dmId
+  );
 
+  const userOwnerIndex = data.dm[dmIndex].ownerMembers.findIndex(
+    (item) => item.uId === user.authUserId
+  );
 
-  // whatever the given dmId is, we remove it from our member list,
-  // but we dont touch the name
+  const userMemberIndex = data.dm[dmIndex].allMembers.findIndex(
+    (item) => item.uId === user.authUserId
+  );
 
-  // so smth like data.dm.delete((a) => a.dmId === dmId);
+  if (userOwnerIndex !== -1) {
+    data.dm[dmIndex].ownerMembers.splice(userOwnerIndex, 1);
+  }
 
-  return { }
+  data.dm[dmIndex].allMembers.splice(userMemberIndex, 1);
+  setData(data);
+  return {};
 }

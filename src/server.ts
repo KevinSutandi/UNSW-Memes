@@ -100,12 +100,6 @@ app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
 //   return res.json(result);
 // });
 
-app.post('/dm/create/v1', (req: Request, res: Response, next) => {
-  const { token, uIds } = req.body;
-  const result = dmCreateV1(token, uIds);
-  return res.json(result);
-});
-
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const result = channelsListV1(token);
@@ -116,6 +110,12 @@ app.get('/channel/details/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const channelId = parseInt(req.query.channelId as string);
   const result = channelDetailsV1(token, channelId);
+  return res.json(result);
+});
+
+app.post('/dm/create/v1', (req: Request, res: Response, next) => {
+  const { token, uIds } = req.body;
+  const result = dmCreateV1(token, uIds);
   return res.json(result);
 });
 

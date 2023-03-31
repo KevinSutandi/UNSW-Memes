@@ -92,7 +92,7 @@ export function dmCreate(token: string, uIds: Array<number>) {
 }
 
 export function dmLeave(token:string, dmId: number) {
-  return requestHelper('POST', '/dm/leave/v1', {  token, dmId });
+  return requestHelper('POST', '/dm/leave/v1', { token, dmId });
 }
 
 export function channelsListAll(token: string) {
