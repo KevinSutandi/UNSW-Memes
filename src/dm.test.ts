@@ -199,7 +199,7 @@ describe('testing dm remove', () => {
 
   test('valid input', () => {
     dmRemove(user.token, dm.dmId);
-    expect(dmList(user2.token)).toStrictEqual({
+    expect(dmList(user.token)).toStrictEqual({
       dm: [
         {
           dmId: dm2.dmId,
