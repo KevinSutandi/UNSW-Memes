@@ -240,32 +240,6 @@ export function channelLeaveV1(token: string, channelId: number) {
   if (!isChannelMember(channelId, user.authUserId)) {
     return { error: user.authUserId + ' is not a member of the channel' };
   }
-<<<<<<< HEAD
-  /*
-  const memberId = user.authUserId;
-  const channelFound = findChannel(channelId);
-  const removing = findMember(memberId, channelId);
-  delete removing.uId;
-
-  // if user is the owner
-  if (isChannelOwner(memberId, channelId)) {
-    console.log(channelFound);
-    delete channelFound.ownerMembers.authUserId;
-  }
-  */
-  const channelIndex = data.channels.findIndex(
-    (item) => item.channelId === channelId
-  );
-  const userOwnerIndex = data.channels[channelIndex].ownerMembers.findIndex(
-    (item) => item.uId === user.authUserId
-  );
-  const userMemberIndex = data.channels[channelIndex].allMembers.findIndex(
-    (item) => item.uId === user.authUserId
-  );
-  if (userOwnerIndex !== undefined) {
-    data.channels[channelIndex].ownerMembers.splice(userOwnerIndex, 1);
-  }
-=======
 
   const channelIndex = data.channels.findIndex(
     (item) => item.channelId === channelId
@@ -279,7 +253,7 @@ export function channelLeaveV1(token: string, channelId: number) {
   if (userOwnerIndex !== -1) {
     data.channels[channelIndex].ownerMembers.splice(userOwnerIndex, 1);
   }
->>>>>>> 7da0245b0b9b8b43b2741444a3cb84935ff6125f
+
   data.channels[channelIndex].allMembers.splice(userMemberIndex, 1);
   setData(data);
   return {};
