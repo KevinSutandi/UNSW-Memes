@@ -16,6 +16,7 @@ import {
   channelDetailsV1,
   channelLeaveV1,
   channelJoinV1,
+  channelInviteV1,
   channelAddOwnerV1,
   channelRemoveOwnerV1,
 } from './channel';
@@ -139,6 +140,12 @@ app.get('/channel/details/v2', (req: Request, res: Response, next) => {
 app.post('/message/send/v1', (req: Request, res: Response, next) => {
   const { token, channelId, message } = req.body;
   const result = messageSendV1(token, channelId, message);
+  return res.json(result);
+});
+
+app.post('/channel/invite/v2', (req: Request, res: Response, next) => {
+  const { token, channelId, uId } = req.body;
+  const result = channelInviteV1(token, channelId, uId);
   return res.json(result);
 });
 

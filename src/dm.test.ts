@@ -29,11 +29,16 @@ describe('testing dmCreateV1', () => {
     expect(dmCreate('alminaaaaascnj', uIds)).toStrictEqual(ERROR);
   });
 
-  test('dm is successful with one user', () => {
-    const uIds = [user.authUserId];
+  test('dm is successful with just owner', () => {
+    const uIds: number[] = [];
     expect(dmCreate(user.token, uIds)).toStrictEqual({
       dmId: expect.any(Number),
     });
+  });
+
+  test('owner invites owner to dm result error', () => {
+    const uIds: number[] = [user.authUserId];
+    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
   });
 
   test('dm is successful with multiple users', () => {
@@ -61,7 +66,26 @@ describe('testing dmCreateV1', () => {
       'Jonah',
       'Meggs'
     );
-    const uIds = [user2.authUserId];
+    const uIds = [user2.authUserId, user2.authUserId];
     expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
+  });
+
+  test('dm is successful with multiple users 2', () => {
+    const user2 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'aevin',
+      'sutandi'
+    );
+    const user3 = authRegister(
+      'lams@gmail.com',
+      'asdfasdfasdfasdf',
+      'harry',
+      'styles'
+    );
+    const uIds = [user2.authUserId, user3.authUserId];
+    expect(dmCreate(user.token, uIds)).toStrictEqual({
+      dmId: expect.any(Number),
+    });
   });
 });
