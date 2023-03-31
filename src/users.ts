@@ -21,7 +21,7 @@ import validator from 'validator';
 export function userProfileV1(
   authUserId: number,
   uId: number
-): userObject | errorMessage {
+): { user: userObject } | errorMessage {
   // Gets user from the dataStore
   const data = getData();
   // Check that authUserId is valid
@@ -36,11 +36,13 @@ export function userProfileV1(
   const userNum = data.users.findIndex((a) => a.authUserId === uId);
   // If both conditions are met, return the userNum object information
   return {
-    uId: data.users[userNum].authUserId,
-    email: data.users[userNum].email,
-    nameFirst: data.users[userNum].nameFirst,
-    nameLast: data.users[userNum].nameLast,
-    handleStr: data.users[userNum].handleStr,
+    user: {
+      uId: data.users[userNum].authUserId,
+      email: data.users[userNum].email,
+      nameFirst: data.users[userNum].nameFirst,
+      nameLast: data.users[userNum].nameLast,
+      handleStr: data.users[userNum].handleStr,
+    },
   };
 }
 
@@ -54,7 +56,7 @@ export function userProfileV1(
 export function userProfileV2(
   token: string,
   uId: number
-): userObject | errorMessage {
+): { user: userObject } | errorMessage {
   const user = getUserByToken(token);
   if (user === undefined) {
     return { error: 'Invalid token' };
