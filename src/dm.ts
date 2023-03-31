@@ -13,7 +13,7 @@ export function dmCreateV1(
 ): dmCreateReturn | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
-  if (!user) {
+  if (user === undefined) {
     return {
       error: 'Invalid token',
     };
@@ -23,23 +23,31 @@ export function dmCreateV1(
   // make an array to check for duplicates
   const userArray: Array<userData> = [];
 
-  for (const uId of uIds) {
-    const user = findUser(uId);
-    if (!user) {
-      return {
-        error: 'Invalid uId',
-      };
-    }
-    if (userArray.includes(user)) {
-      return {
-        error: 'Duplicate uId',
-      };
-    }
-    userArray.push(user);
+  // Make sure that owner does not invite owner
+  if (uIds.includes(user.authUserId)) {
+    return {
+      error: 'Duplicate uId',
+    };
   }
 
   // add owner to userArray
   userArray.push(user);
+
+  for (const uId of uIds) {
+    const userUId = findUser(uId);
+    if (userUId === undefined) {
+      return {
+        error: 'Invalid uId',
+      };
+    }
+
+    if (userArray.includes(userUId)) {
+      return {
+        error: 'Duplicate uId',
+      };
+    }
+    userArray.push(userUId);
+  }
 
   // make name with all the user's handleStr that is inside the set
   // and sort it alphabetically
@@ -83,7 +91,6 @@ export function dmCreateV1(
   });
 
   console.log(data.dm);
-
   // set data
   setData(data);
   return { dmId: dmId };
