@@ -72,7 +72,7 @@ export function channelMessagesV1(
  * Given a channelId of a channel that the authorised user
  * can join, adds them to the channel.
  *
- * @param {number} authUserId - The authenticated user Id
+ * @param {string} token - The authenticated token
  * @param {number} channelId - The channel Id to join
  * ...
  *
@@ -81,13 +81,13 @@ export function channelMessagesV1(
  *                                    | channelId is invalid
  *                                    | Member is already in channel
  *                                    | Channel is private and not a global owner
- *                                    | User is invalid
+ *                                    | User token is invalid
  */
 
-export function channelJoinV1(authUserId: number, channelId: number) {
+export function channelJoinV1(token: string, channelId: number) {
   const data = getData();
-  // Get the particular user index in data store
-  const user = findUser(authUserId);
+  // Get the particular user in data store
+  const user = getUserByToken(token);
 
   // Get the particular channel index from data store
   const channel = findChannel(channelId);
@@ -95,7 +95,7 @@ export function channelJoinV1(authUserId: number, channelId: number) {
   const allMemberIds = getAllMemberIds(channel);
 
   if (user === undefined) {
-    return { error: 'User Not Found' };
+    return { error: 'Invalid user token' };
   }
 
   if (channel === undefined) {
@@ -117,7 +117,7 @@ export function channelJoinV1(authUserId: number, channelId: number) {
   const channelNum = getChannelIndex(channelId);
 
   data.channels[channelNum].allMembers.push({
-    uId: authUserId,
+    uId: user.authUserId,
     email: user.email,
     nameFirst: user.nameFirst,
     nameLast: user.nameLast,
