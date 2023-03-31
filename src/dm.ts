@@ -8,18 +8,26 @@ import {
   dmListReturn,
 } from './interfaces';
 
+/**
+ *
+ * @param {string} token - The user's token making the request
+ * @param {Array<number>} uIds - Array of user IDs to add to the DM channel.
+ * @returns {dmCreateReturn | errorMessage} - Object containing the newly
+ *                                            created DM channel ID and name if successful,
+ *                                            or an error message if unsuccessful.
+ */
 export function dmCreateV1(
   token: string,
   uIds: Array<number>
 ): dmCreateReturn | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
+
   if (user === undefined) {
     return {
       error: 'Invalid token',
     };
   }
-
   // Find the user information using findUser
   // make an array to check for duplicates
   const userArray: Array<userData> = [];
@@ -91,8 +99,6 @@ export function dmCreateV1(
     end: -1,
   });
 
-  console.log(data.dm);
-  // set data
   setData(data);
   return { dmId: dmId };
 }
