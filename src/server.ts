@@ -28,7 +28,7 @@ import {
   getAllUsers,
   userProfileV2,
 } from './users';
-import { dmCreateV1, dmListV1 } from './dm';
+import { dmCreateV1, dmListV1, dmRemoveV1 } from './dm';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -214,6 +214,13 @@ app.get('/user/profile/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const uId = parseInt(req.query.uId as string);
   const result = userProfileV2(token, uId);
+  return res.json(result);
+});
+
+app.delete('/dm/remove/v1', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const dmId = parseInt(req.query.dmId as string);
+  const result = dmRemoveV1(token, dmId);
   return res.json(result);
 });
 
