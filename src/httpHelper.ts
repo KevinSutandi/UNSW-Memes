@@ -96,7 +96,11 @@ export function channelLeave(token: string, channelId: number) {
 }
 
 export function channelAddOwner(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/addowner/v1', { token, channelId, uId });
+  return requestHelper('POST', '/channel/addowner/v1', {
+    token,
+    channelId,
+    uId,
+  });
 }
 
 export function messageSend(token: string, channelId: number, message: string) {
@@ -119,13 +123,28 @@ export function authLogout(token: string) {
   return requestHelper('POST', '/auth/logout/v1', { token });
 }
 
+export function channelRemoveOwner(
+  token: string,
+  channelId: number,
+  uId: number
+) {
+  return requestHelper('POST', '/channel/removeowner/v1', {
+    token,
+    channelId,
+    uId,
+  });
+}
+
 export function dmCreate(token: string, uIds: Array<number>) {
   return requestHelper('POST', '/dm/create/v1', { token, uIds });
 }
 
 export function dmDetails(token: string, dmId: number) {
   return requestHelper('GET', '/dm/details/v1', { token, dmId });
+}
 
+export function dmList(token: string) {
+  return requestHelper('GET', '/dm/list/v1', { token });
 }
 
 export function messageEdit(token: string, messageId: number, message: string) {
@@ -163,5 +182,13 @@ export function setHandle(token: string, handleStr: string) {
   return requestHelper('PUT', '/user/profile/sethandle/v1', {
     token,
     handleStr,
+  });
+}
+
+export function messageSendDm(token: string, dmId: number, message: string) {
+  return requestHelper('POST', '/message/senddm/v1', {
+    token,
+    dmId,
+    message,
   });
 }

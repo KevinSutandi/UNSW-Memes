@@ -1,28 +1,34 @@
 import { getData, setData } from './dataStore';
-import { isUser, findUser, getUserByToken } from './functionHelper';
+import { findUser, getUserByToken } from './functionHelper';
 import {
   errorMessage,
   dmCreateReturn,
   userData,
   userObject,
-  isUser,
-  findUser,
-  getUserByToken,
   dmData,
+  dmListReturn,
 } from './interfaces';
 
+/**
+ *
+ * @param {string} token - The user's token making the request
+ * @param {Array<number>} uIds - Array of user IDs to add to the DM channel.
+ * @returns {dmCreateReturn | errorMessage} - Object containing the newly
+ *                                            created DM channel ID and name if successful,
+ *                                            or an error message if unsuccessful.
+ */
 export function dmCreateV1(
   token: string,
   uIds: Array<number>
 ): dmCreateReturn | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
+
   if (user === undefined) {
     return {
       error: 'Invalid token',
     };
   }
-
   // Find the user information using findUser
   // make an array to check for duplicates
   const userArray: Array<userData> = [];
@@ -94,13 +100,12 @@ export function dmCreateV1(
     end: -1,
   });
 
-  console.log(data.dm);
-  // set data
   setData(data);
   return { dmId: dmId };
 }
 
 /**
+<<<<<<< HEAD
  * Determines whether a dm is a valid dm
  * by checking through dms array in the
  * dataStore.js
@@ -144,7 +149,7 @@ export function isDmMember(dmId: number, userId: number): boolean {
  */
 export function findDm(dmId: number): dmData | undefined {
   const data = getData();
-  return data.dms.find((a) => a.dmId === dmId);
+  return data.dm.find((a) => a.dmId === dmId);
 }
 
 /**
@@ -178,25 +183,59 @@ export function getAllMemberIds(dm: dmData) {
  *                                    | the authUser is not a part of the DM
  *                                    | user token is invalid
  */
-export function dmDetailsV1 (token: string, dmId: number) {
-  const data = getData();
+export function dmDetailsV1(token: string, dmId: number) {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-      return { error: 'Invalid token' };
+    return { error: 'Invalid token' };
   }
   if (!isDm(dmId)) {
-      return { error: 'dmId does not refer to a valid DM' };
+    return { error: 'dmId does not refer to a valid DM' };
   }
   if (!isDmMember(dmId, user.authUserId)) {
-      return { error: user.authUserId + ' is not a member of the DM'}
+    return { error: user.authUserId + ' is not a member of the DM' };
   }
 
   const dmObject = findDm(dmId);
   return {
-      name: dmObject.name,
-      ownerMembers: dmObject.ownerMembers,
-      getAllMembers: dmObject.allMembers,
+    name: dmObject.name,
+    members: dmObject.allMembers,
   };
+}
+/**
+ * Provides an array of all dms that an authorised
+ * user is a member of by accessing the dm information
+ * from data.channels. Then it returns information about
+ * the dms.
+ *
+ * @param {number} token - the authenticated user token
+ *
+ * @returns {error: 'error message'} - if the given token is invalid
+ * @returns {{channelId: number, name: string}} - returns the details of the dms
+ * when successful
+ *
+ */
+export function dmListV1(token: string): dmListReturn | errorMessage {
+  const data = getData();
+  const user = getUserByToken(token);
 
+  if (user === undefined) {
+    return { error: 'Invalid token' };
+  }
+
+  const authUserIdToFind = user.authUserId;
+  const userDms: dmListReturn = { dms: [] };
+
+  data.dm.forEach((dm) => {
+    const isUserInDm = dm.allMembers.some(
+      (member) => member.uId === authUserIdToFind
+    );
+    if (isUserInDm === true) {
+      userDms.dms.push({
+        dmId: dm.dmId,
+        name: dm.name,
+      });
+    }
+  });
+  return userDms;
 }
