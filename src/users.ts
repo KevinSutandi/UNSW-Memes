@@ -1,5 +1,5 @@
 import { getData } from './dataStore';
-import { userObject, errorMessage } from './interfaces';
+import { userObject, errorMessage, allUsers } from './interfaces';
 import { isUser, getUserByToken } from './functionHelper';
 import validator from 'validator';
 
@@ -71,10 +71,7 @@ export function userProfileV2(
  * @param {string} email - The new email address to set for the user.
  * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
  */
-export function setEmail(
-  token: string,
-  email: string
-): {} | errorMessage {
+export function setEmail(token: string, email: string): {} | errorMessage {
   const user = getUserByToken(token);
   if (user === undefined) {
     return { error: 'Invalid token' };
@@ -86,11 +83,11 @@ export function setEmail(
 
   const data = getData();
   let emailExist: boolean = false;
-  data?.users.forEach(user => {
+  data?.users.forEach((user) => {
     if (user.email === email) {
       emailExist = true;
     }
-  })
+  });
   if (emailExist) {
     return { error: 'email address is already being used by another user' };
   }
@@ -117,7 +114,12 @@ export function setName(
     return { error: 'Invalid token' };
   }
 
-  if (nameFirst.length < 1 || nameFirst.length > 50 || nameLast.length < 1 || nameLast.length > 50) {
+  if (
+    nameFirst.length < 1 ||
+    nameFirst.length > 50 ||
+    nameLast.length < 1 ||
+    nameLast.length > 50
+  ) {
     return { error: 'name length should in range of 1 to 50' };
   }
 
@@ -134,10 +136,7 @@ export function setName(
  * @param {string} handleStr - The new handle for the user.
  * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
  */
-export function setHandle(
-  token: string,
-  handleStr: string
-): {} | errorMessage {
+export function setHandle(token: string, handleStr: string): {} | errorMessage {
   const user = getUserByToken(token);
   if (user === undefined) {
     return { error: 'Invalid token' };
@@ -158,15 +157,19 @@ export function setHandle(
  * @param {string} token - The user's access token.
  * @return {Array<Object> | errorMessage} Returns an array of user objects if successful, or an error message if unsuccessful.
  */
-export function getAllUsers(
-  token: string,
-): Array<Object> | errorMessage {
+export function getAllUsers(token: string): allUsers | errorMessage {
+  const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
     return { error: 'Invalid token' };
   }
-
-  const users = getData().users;
-
-  return users;
+  return {
+    users: data.users.map((a) => ({
+      uId: a.authUserId,
+      email: a.email,
+      nameFirst: a.nameFirst,
+      nameLast: a.nameLast,
+      handleStr: a.handleStr,
+    })),
+  };
 }
