@@ -130,11 +130,6 @@ describe('testing dmLeaveV1', () => {
   afterEach(() => {
     clearV1();
   });
-
-
-  test('One user leaves the DM, not the owner', () => {
-    expect(dmLeave(user.token, dm3.dmId)).toStrictEqual({});
-  });
     // working
     test('dmId doesnt refer to a valid user', () => {
       expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(ERROR);
@@ -150,4 +145,7 @@ describe('testing dmLeaveV1', () => {
       expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
     });
 
-});  
+    test('One user leaves the DM, not the owner', () => {
+      expect(dmLeave(user.token, dm3.dmId)).toStrictEqual({});
+    });
+});

@@ -116,7 +116,7 @@ export function isDmMember(dmId: number, userId: number): boolean {
 
 export function findDm(dmId: number): dmData | undefined {
   const data = getData();
-  return data.dms.find((a) => a.dmId === dmId);
+  return data.dm.find((a) => a.dmId === dmId);
 }
 
 export function getAllMemberIds(dm: dmData) {
@@ -126,7 +126,6 @@ export function getAllMemberIds(dm: dmData) {
     return null;
   }
 }
-
 
 export function dmLeaveV1 (
   token: string,
@@ -139,10 +138,10 @@ export function dmLeaveV1 (
     return { error: 'Invalid token' };
   }
   if (!isDm(dmId)) {
-      return { error: 'dmId does not refer to a valid DM' };
+    return { error: 'dmId does not refer to a valid DM' };
   }
   if (!isDmMember(dmId, user.authUserId)) {
-      return { error: user.authUserId + ' is not a member of the DM'}
+    return { error: user.authUserId + ' is not a member of the DM' };
   }
 
   const dmIndex = data.dm.findIndex(
