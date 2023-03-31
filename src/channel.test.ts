@@ -496,7 +496,6 @@ describe('testing channelLeaveV1', () => {
   // everyone leaves test might be added
 });
 
-/*
 // push the test please
 // 6 errors
 // invalid channel;token; invalid uId; user with uId is not member
@@ -697,7 +696,7 @@ describe('testing channelAddowner', () => {
     });
   });
 });
-*/
+
 describe('/channel/invite/v2', () => {
   let user1: AuthReturn, user2: AuthReturn, user3: AuthReturn;
   let channel1: channelsCreateReturn,
