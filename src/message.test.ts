@@ -6,6 +6,7 @@ import {
   messageSend,
   messageRemove,
   messageEdit,
+  channelJoin,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -121,7 +122,7 @@ describe('testing sendMessages', () => {
   });
 });
 
-describe('testing removeMessages', () => {
+describe('testing removeMessages Error Cases and Channels', () => {
   let user1: AuthReturn;
   let channel1: { channelId: number };
   let message1: { messageId: number };
@@ -168,11 +169,6 @@ describe('testing removeMessages', () => {
       end: -1,
     });
   });
-  /**
-   *   Will add more tests when channelJoin is available to test multiple user in channel
-   *   for now it is commented out
-   */
-  /*
   test('remove other user message when user is globalOwner', () => {
     const user2 = authRegister(
       'kevinesutandi@gmail.com',
@@ -182,7 +178,11 @@ describe('testing removeMessages', () => {
     );
     const channel2 = channelsCreate(user2.token, 'wego', true);
     channelJoin(user1.token, channel2.channelId);
-    const message2 = messageSend(user2.token, channel2.channelId, 'test moments');
+    const message2 = messageSend(
+      user2.token,
+      channel2.channelId,
+      'test moments'
+    );
     expect(messageRemove(user1.token, message2.messageId)).toStrictEqual({});
   });
   test('remove other user message when user is channelOwner', () => {
@@ -193,14 +193,18 @@ describe('testing removeMessages', () => {
       'Bongo'
     );
     const user3 = authRegister(
-      'welovedogs@gmail.com'
+      'welovedogs@gmail.com',
       'doglover1001',
       'Dog',
       'Lomer'
     );
     const channel2 = channelsCreate(user2.token, 'wego', true);
     channelJoin(user3.token, channel2.channelId);
-    const message3 = messageSend(user3.token, channel2.channelId, 'dogs are bad');
+    const message3 = messageSend(
+      user3.token,
+      channel2.channelId,
+      'dogs are bad'
+    );
     expect(messageRemove(user2.token, message3.messageId)).toStrictEqual({});
   });
   test('remove other user message when user is channelMember', () => {
@@ -221,11 +225,62 @@ describe('testing removeMessages', () => {
       'Bongo'
     );
     channelJoin(user2.token, channel1.channelId);
-    const message2 = messageSend(user2.token, channel1.channelId, 'test moments');
+    const message2 = messageSend(
+      user2.token,
+      channel1.channelId,
+      'test moments'
+    );
     expect(messageRemove(user2.token, message2.messageId)).toStrictEqual({});
   });
-   */
 });
+
+/*
+describe('testing removeMessages DM', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let dm1: { dmId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    const uIds = [user2.authUserId];
+    dm1 = dmCreate(user1.token, uIds);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('dm does not exist', () => {
+    expect(messageRemove(user1.token, 100000)).toStrictEqual(ERROR);
+  });
+
+  // test('remove own message', () => {
+  //   const message1 = messageSendDM(user1.token, dm1.dmId, 'test moments');
+  //   expect(messageRemove(user1.token, message1.messageId)).toStrictEqual({});
+  // }
+
+  // test('owner remove other message', () => {
+  //   const message2 = messageSendDM(user2.token, dm1.dmId, 'test moments');
+  //   expect(messageRemove(user1.token, message2.messageId)).toStrictEqual({});
+  // });
+
+  // test('member remove other message', () => {
+  //   const message1 = messageSendDM(user1.token, dm1.dmId, 'test moments');
+  //   expect(messageRemove(user2.token, message1.messageId)).toStrictEqual(ERROR);
+  // });
+});
+*/
 
 describe('testing messageEdit', () => {
   let user1: AuthReturn;
