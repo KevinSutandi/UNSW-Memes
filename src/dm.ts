@@ -109,17 +109,17 @@ export function isDm(dmId: number): boolean {
 export function isDmMember(dmId: number, userId: number): boolean {
   const dm = findDm(dmId);
   console.log(dmId);
-  const allMemberIds = getAllDmMemberIds(dm);
+  const allMemberIds = getAllMemberIds(dm);
   console.log(allMemberIds);
   return allMemberIds.includes(userId);
 }
 
 export function findDm(dmId: number): dmData | undefined {
   const data = getData();
-  return data.dm.find((a) => a.dmId === dmId);
+  return data.dms.find((a) => a.dmId === dmId);
 }
 
-export function getAllDmMemberIds(dm: dmData) {
+export function getAllMemberIds(dm: dmData) {
   if (dm) {
     return dm.allMembers.map((member) => member.uId);
   } else {
@@ -132,9 +132,11 @@ export function dmLeaveV1 (
   token: string,
   dmId: number,
 ) {
+  const data = getData();
   const user = getUserByToken(token);
+
   if (user === undefined) {
-      return { error: 'Invalid token'}
+    return { error: 'Invalid token' };
   }
   if (!isDm(dmId)) {
       return { error: 'dmId does not refer to a valid DM' };

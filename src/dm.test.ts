@@ -121,14 +121,19 @@ describe('testing dmLeaveV1', () => {
       'Zombie',
       'Ibrahim'
     );
-    const uIds = [user2.authUserId];
+    const uIds = [user.authUserId, user2.authUserId];
     dm1 = dmCreate(user.token, uIds);
-    dm2 = dmCreate(user3.token, uIds);
-    dm3 = dmCreate(user2.token, uIds);
+    dm2 = dmCreate(user2.token, uIds);
+    dm3 = dmCreate(user3.token, uIds);
   });
 
   afterEach(() => {
     clearV1();
+  });
+
+
+  test('One user leaves the DM, not the owner', () => {
+    expect(dmLeave(user.token, dm3.dmId)).toStrictEqual({});
   });
     // working
     test('dmId doesnt refer to a valid user', () => {
@@ -137,16 +142,12 @@ describe('testing dmLeaveV1', () => {
 
     // maybe working
     test('dmId is valid but authUser is not member of DM', () => {
-      expect(dmLeave(user.token, dm2.dmId)).toStrictEqual(ERROR);
+      expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(ERROR);
     }); 
   
     // working
     test('user token is not valid', () => {
       expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
-    });
-
-    test('One user leaves the DM, not the owner', () => {
-      expect(dmLeave(user.token, dm1.dmId)).toStrictEqual({});
     });
 
 });  
