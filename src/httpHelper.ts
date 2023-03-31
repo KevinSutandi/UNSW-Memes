@@ -143,6 +143,14 @@ export function dmMessages(token: string, dmId: number, start: number) {
   return requestHelper('GET', '/dm/messages/v1', { token, dmId, start });
 }
 
+export function dmDetails(token: string, dmId: number) {
+  return requestHelper('GET', '/dm/details/v1', { token, dmId });
+}
+
+export function dmList(token: string) {
+  return requestHelper('GET', '/dm/list/v1', { token });
+}
+
 export function messageEdit(token: string, messageId: number, message: string) {
   return requestHelper('PUT', '/message/edit/v1', {
     token,
@@ -178,5 +186,13 @@ export function setHandle(token: string, handleStr: string) {
   return requestHelper('PUT', '/user/profile/sethandle/v1', {
     token,
     handleStr,
+  });
+}
+
+export function messageSendDm(token: string, dmId: number, message: string) {
+  return requestHelper('POST', '/message/senddm/v1', {
+    token,
+    dmId,
+    message,
   });
 }

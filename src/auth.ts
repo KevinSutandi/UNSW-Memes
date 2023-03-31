@@ -3,6 +3,13 @@ import { findTokenIndex, getUserByToken, makeToken } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
 
+/**
+ * Logs the user and then assigns a token to the user
+ * @param {string} email - the email address
+ * @param {string} password - the password
+ * @returns { error : string } error - different error strings for different situations
+ * @returns { token: string, authUserId : number } token - the token for the user, authUserId - the authUserId for the user
+ */
 export function authLoginV1(
   email: string,
   password: string
@@ -38,7 +45,6 @@ export function authLoginV1(
  * @returns { token: string, authUserId : number } token - the token for the user, authUserId - the authUserId for the user
  *
  */
-
 export function authRegisterV1(
   email: string,
   password: string,
@@ -113,7 +119,11 @@ export function authRegisterV1(
 
   return { token: token, authUserId: authId };
 }
-
+/**
+ * Logs out the user and then removes the token from the user
+ * @param {string} token - the user's token
+ * @returns { error : string } error - different error strings for different situations
+ */
 export function authLogoutV1(token: string) {
   const data = getData();
   const user = getUserByToken(token);

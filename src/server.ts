@@ -20,7 +20,12 @@ import {
   channelAddOwnerV1,
   channelRemoveOwnerV1,
 } from './channel';
-import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
+import {
+  messageRemoveV1,
+  messageSendV1,
+  messageEditV1,
+  messageSendDmV1,
+} from './message';
 import {
   setEmail,
   setName,
@@ -28,7 +33,7 @@ import {
   getAllUsers,
   userProfileV2,
 } from './users';
-import { dmCreateV1, dmMessagesV1 } from './dm';
+import { dmCreateV1, dmDetailsV1, dmListV1, dmMessagesV1 } from './dm';
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 
@@ -143,6 +148,12 @@ app.get('/dm/messages/v1', (req: Request, res: Response, next) => {
   const result = dmMessagesV1(token, dmId, start);
   return res.json(result);
 });
+app.get('/dm/list/v1', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const result = dmListV1(token);
+  return res.json(result);
+});
+
 // Will Reenable once user profile is working
 // app.get('/user/profile/v2', (req: Request, res: Response, next) => {
 //   const token = req.query.token as string;
@@ -173,6 +184,13 @@ app.delete('/message/remove/v1', (req: Request, res: Response, next) => {
 app.post('/auth/logout/v1', (req: Request, res: Response, next) => {
   const { token } = req.body;
   const result = authLogoutV1(token);
+  return res.json(result);
+});
+
+app.get('/dm/details/v1', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const dmId = parseInt(req.query.dmId as string);
+  const result = dmDetailsV1(token, dmId);
   return res.json(result);
 });
 
@@ -215,6 +233,12 @@ app.get('/user/profile/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const uId = parseInt(req.query.uId as string);
   const result = userProfileV2(token, uId);
+  return res.json(result);
+});
+
+app.post('/message/senddm/v1', (req: Request, res: Response, next) => {
+  const { token, dmId, message } = req.body;
+  const result = messageSendDmV1(token, dmId, message);
   return res.json(result);
 });
 
