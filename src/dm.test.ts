@@ -1,5 +1,5 @@
 import { authRegister, clearV1, dmCreate, dmMessages } from './httpHelper';
-import { AuthReturn } from './interfaces';
+import { AuthReturn, dmCreateReturn } from './interfaces';
 
 const ERROR = { error: expect.any(String) };
 
@@ -90,8 +90,15 @@ describe('testing dmCreateV1', () => {
   });
 });
 
-describe('testing dmMessagesV1', () => {
-  let user: AuthReturn;
+describe('testing dmMessagesV1 error cases', () => {
+  let user: AuthReturn,
+    user2: AuthReturn,
+    user3: AuthReturn;
+
+  let dm1: dmCreateReturn,
+    dm2: dmCreateReturn,
+    dm3: dmCreateReturn;
+
   beforeEach(() => {
     clearV1();
     user = authRegister(
@@ -100,39 +107,53 @@ describe('testing dmMessagesV1', () => {
       'Jonah',
       'Meggs'
     );
+    user2 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user3 = authRegister(
+      'z5352065@ad.unsw.edu.au',
+      'big!password3',
+      'Zombie',
+      'Ibrahim'
+    );
+    const uIds = [user.authUserId, user2.authUserId];
+    dm1 = dmCreate(user.token, uIds);
+    dm2 = dmCreate(user2.token, uIds);
+    dm3 = dmCreate(user3.token, uIds);
   });
 
   afterEach(() => {
     clearV1();
   });
+
   // test when dmId does not refer to a valid DM
   test('dmId does not refer to a valid DM', () => {
-    expect(dmMessagesV1(user1.token, user1.dmId + 1, start)).toStrictEqual(ERROR);
-  }); 
+    expect(dmMessages(user.token, dm1.dmId + 1, 0)).toStrictEqual(ERROR);
+  });
 
   // test when start > total number of messages in the channel
   test('start > total number of messages in the channel', () => {
-    expect(dmMessagesV1(user1.token, user1.dmId, start + 50)).toStrictEqual(ERROR);
-  }); 
+    expect(dmMessages(user.token, dm1.dmId, 999999)).toStrictEqual(ERROR);
+  });
 
   // test when dmId is valid but authuser is not member of DM
   test('dmId is valid but authuser is not member of DM', () => {
-    expect(dmMessagesV1(user1.token + 1, user1.dmId, start)).toStrictEqual(ERROR);
-  }); 
-    
+    expect(dmMessages(user3.token, dm1.dmId, 0)).toStrictEqual(ERROR);
+  });
+
   // token is invalid
   test('token is invalid', () => {
-    expect(dmMessagesV1(user1.token + 1, user1.dmId, start)).toStrictEqual(ERROR);
-  }); 
+    expect(dmMessages(user2.token + 999, dm2.dmId, 0)).toStrictEqual(ERROR);
+  });
 
-  // test when successful
-  test('successfully send message', () => {
-    expect(messageSend(user1.token, user1.dmId, start)).toStrictEqual(
-      {
-        messages, 
-        start, 
-        end,
-      }
-    );
-  }); 
+  test('No Messages in channel (expect empty array)', () => {
+    expect(dmMessages(user.token, dm3.dmId, 0)).toStrictEqual({
+      messages: [],
+      start: 0,
+      end: -1,
+    });
+  });
 });

@@ -1,10 +1,11 @@
 import { getData, setData } from './dataStore';
-import { isUser, findUser, getUserByToken } from './functionHelper';
+import { findUser, getUserByToken } from './functionHelper';
 import {
   errorMessage,
   dmCreateReturn,
   userData,
   userObject,
+  dmData,
 } from './interfaces';
 
 export function dmCreateV1(
@@ -124,13 +125,12 @@ export function getAllMemberIds(dm: dmData) {
   }
 }
 
-
 /**
  *
  * Given a DM with a valid dmId, authorised members are able
  * to send messages to other group members. This function
  * returns the most recent messages up to the 50th message.
- * 
+ *
  * @param {number} token - The authenticated user token
  * @param {number} dmId - The dmId to join
  * @param {number} start - The amount of messages in the dm
@@ -149,37 +149,37 @@ export function getAllMemberIds(dm: dmData) {
 export function dmMessagesV1(
   token: string,
   dmId: number,
-  start: number,
+  start: number
 ) {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-      return { error: 'Invalid token' };
+    return { error: 'Invalid token' };
   }
   if (!isDm(dmId)) {
-      return { error: 'dmId does not refer to a valid DM' };
+    return { error: 'dmId does not refer to a valid DM' };
   }
   if (!isDmMember(dmId, user.authUserId)) {
-      return { error: user.authUserId + ' is not a member of the DM'}
+    return { error: user.authUserId + ' is not a member of the DM' };
   }
-  
+
   const dmMessages = dm.messages.length;
   const uId = user.authUserId;
 
   if (start > dmMessages) {
-      return { error: "'start' is greater than the amount of messages"}
+    return { error: "'start' is greater than the amount of messages" };
   }
   if (start + 50 > dmMessages) {
-      return {
-          messages: dm.messages.slice(start),
-          start: start,
-          end: -1,
-      };
+    return {
+      messages: dm.messages.slice(start),
+      start: start,
+      end: -1,
+    };
   } else {
-      return {
-          messages: dm.messages.slice(start, start + 50),
-          start: start,
-          end: start + 50,
-      };
+    return {
+      messages: dm.messages.slice(start, start + 50),
+      start: start,
+      end: start + 50,
+    };
   }
 }
