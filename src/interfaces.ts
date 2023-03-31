@@ -143,3 +143,7 @@ export interface dmCreateReturn {
 export interface uId {
   uId: number;
 }
+
+export interface allUsers {
+  users: Array<userObject>;
+}
