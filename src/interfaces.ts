@@ -157,3 +157,7 @@ export interface uId {
 export interface allUsers {
   users: Array<userObject>;
 }
+
+export interface newMessageReturn {
+  messageId: number;
+}

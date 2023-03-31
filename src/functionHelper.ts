@@ -163,3 +163,8 @@ export function findMessageIndexInChannel(
 export function findMessageIndexInDM(dm: dmData, messageId: number) {
   return dm.messages.findIndex((item) => item.messageId === messageId);
 }
+
+export function getDmById(dmId: number) {
+  const data = getData();
+  return data.dm.find((dm) => dm.dmId === dmId);
+}

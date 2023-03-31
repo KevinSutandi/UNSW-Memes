@@ -176,3 +176,11 @@ export function setHandle(token: string, handleStr: string) {
     handleStr,
   });
 }
+
+export function messageSendDm(token: string, dmId: number, message: string) {
+  return requestHelper('POST', '/message/senddm/v1', {
+    token,
+    dmId,
+    message,
+  });
+}

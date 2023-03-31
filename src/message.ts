@@ -8,9 +8,11 @@ import {
   getAllMemberIds,
   getAllOwnerIds,
   getChannelIndex,
+  getDmById,
   getDmIndex,
   getUserByToken,
 } from './functionHelper';
+import { errorMessage, newMessageReturn } from './interfaces';
 
 export function messageSendV1(
   token: string,
@@ -212,4 +214,43 @@ export function messageEditV1(
     setData(data);
     return {};
   }
+}
+
+export function messageSendDmV1(
+  token: string,
+  dmId: number,
+  message: string
+): errorMessage | newMessageReturn {
+  const data = getData();
+  const user = getUserByToken(token);
+  const dm = getDmById(dmId);
+  const allMemberIds = getAllMemberIds(dm);
+
+  if (user === undefined) {
+    return { error: 'Token is invalid' };
+  }
+  if (dm === undefined) {
+    return { error: 'DM Not Found' };
+  }
+  if (!allMemberIds.includes(user.authUserId)) {
+    return { error: 'User is not registered in DM' };
+  }
+  if (message.length < 1) {
+    return { error: 'Message is too short' };
+  }
+  if (message.length > 1000) {
+    return { error: 'Message is too long' };
+  }
+
+  const dmIndex = getDmIndex(dmId);
+  const messageId = Math.floor(Math.random() * 1000000);
+  const newMessage = {
+    messageId: messageId,
+    uId: user.authUserId,
+    message: message,
+    timeSent: Math.floor(Date.now() / 1000),
+  };
+  data.dm[dmIndex].messages.push(newMessage);
+  setData(data);
+  return { messageId: messageId };
 }

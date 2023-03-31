@@ -20,7 +20,12 @@ import {
   channelAddOwnerV1,
   channelRemoveOwnerV1,
 } from './channel';
-import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
+import {
+  messageRemoveV1,
+  messageSendV1,
+  messageEditV1,
+  messageSendDmV1,
+} from './message';
 import {
   setEmail,
   setName,
@@ -208,6 +213,12 @@ app.get('/user/profile/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const uId = parseInt(req.query.uId as string);
   const result = userProfileV2(token, uId);
+  return res.json(result);
+});
+
+app.post('/message/senddm/v1', (req: Request, res: Response, next) => {
+  const { token, dmId, message } = req.body;
+  const result = messageSendDmV1(token, dmId, message);
   return res.json(result);
 });
 
