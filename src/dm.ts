@@ -1,10 +1,11 @@
 import { getData, setData } from './dataStore';
-import { findUser, isUser, getUserByToken } from './functionHelper';
+import { findUser, getUserByToken } from './functionHelper';
 import {
   errorMessage,
   dmCreateReturn,
   userData,
-  userObject
+  userObject,
+  dmData,
 } from './interfaces';
 
 export function dmCreateV1(
@@ -96,11 +97,6 @@ export function dmCreateV1(
   return { dmId: dmId };
 }
 
-
-
-
-
-
 export function isDm(dmId: number): boolean {
   const data = getData();
   return data.dm.some((a) => a.dmId === dmId);
@@ -127,9 +123,24 @@ export function getAllMemberIds(dm: dmData) {
   }
 }
 
+/**
+ * Given a dmId of a dm and token, it will remove that member from the dm.
+ * If the user is the owner, the chat will still exist if this happens.
+ * A user leaving does not update the name of the DM.
+ *
+ * @param {string} token - The authenticated token
+ * @param {number} dmId - The dmId to join
+ * ...
+ *
+ * @returns {} - returns {} when successful
+ * @returns {error : 'error message'} - returns an error when
+ *                                    | dmId does not refer to a valid DM
+ *                                    | dmId is valid and the authorised user is not a member of the DM
+ *                                    | user token is invalid
+ */
 export function dmLeaveV1 (
   token: string,
-  dmId: number,
+  dmId: number
 ) {
   const data = getData();
   const user = getUserByToken(token);

@@ -108,7 +108,6 @@ export function channelAddOwner(token: string, channelId: number, uId: number) {
   return requestHelper('POST', '/channel/addowner/v1', { token, channelId, uId });
 }
 
-
 export function messageSend(token: string, channelId: number, message: string) {
   return requestHelper('POST', '/message/send/v1', {
     token,

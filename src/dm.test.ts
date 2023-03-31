@@ -90,16 +90,14 @@ describe('testing dmCreateV1', () => {
   });
 });
 
-
 describe('testing dmLeaveV1', () => {
-
   let user: AuthReturn,
-      user2: AuthReturn,
-      user3: AuthReturn;
+    user2: AuthReturn,
+    user3: AuthReturn;
 
   let dm1: dmCreateReturn,
-      dm2: dmCreateReturn,
-      dm3: dmCreateReturn;
+    dm2: dmCreateReturn,
+    dm3: dmCreateReturn;
 
   beforeEach(() => {
     clearV1();
@@ -130,22 +128,20 @@ describe('testing dmLeaveV1', () => {
   afterEach(() => {
     clearV1();
   });
-    // working
-    test('dmId doesnt refer to a valid user', () => {
-      expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(ERROR);
-    }); 
 
-    // maybe working
-    test('dmId is valid but authUser is not member of DM', () => {
-      expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(ERROR);
-    }); 
-  
-    // working
-    test('user token is not valid', () => {
-      expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
-    });
+  test('dmId doesnt refer to a valid user', () => {
+    expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(ERROR);
+  });
 
-    test('One user leaves the DM, not the owner', () => {
-      expect(dmLeave(user.token, dm3.dmId)).toStrictEqual({});
-    });
+  test('dmId is valid but authUser is not member of DM', () => {
+    expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(ERROR);
+  });
+
+  test('user token is not valid', () => {
+    expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
+  });
+
+  test('One user leaves the DM, not the owner', () => {
+    expect(dmLeave(user.token, dm3.dmId)).toStrictEqual({});
+  });
 });
