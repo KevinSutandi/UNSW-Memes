@@ -124,14 +124,28 @@ export function getAllMemberIds(dm: dmData) {
   }
 }
 
-export function findDm(dmId: number): dmData | undefined {
-  const data = getData();
-  return data.dm.find((a) => a.dmId === dmId);
-}
 
-
-// main function
-
+/**
+ *
+ * Given a DM with a valid dmId, authorised members are able
+ * to send messages to other group members. This function
+ * returns the most recent messages up to the 50th message.
+ * 
+ * @param {number} token - The authenticated user token
+ * @param {number} dmId - The dmId to join
+ * @param {number} start - The amount of messages in the dm
+ * ...
+ *
+ * @returns {
+ * messages: string,
+ * start: number,
+ * end: number} - returns dm chat information
+ * @returns {error : 'error message'} - returns an error when
+ *                                    | dmId does not refer to a valid DM
+ *                                    | start is greater than the total number of messages in the channel
+ *                                    | dmId is valid and the authorised user is not a member of the DM
+ *                                    | token is invalid
+ */
 export function dmMessagesV1(
   token: string,
   dmId: number,
