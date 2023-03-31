@@ -10,13 +10,6 @@ import {
 import { AuthReturn } from './interfaces';
 
 const ERROR = { error: expect.any(String) };
-const USER_OBJECT = {
-  uId: expect.any(Number),
-  handleStr: expect.any(String),
-  email: expect.any(String),
-  nameFirst: expect.any(String),
-  nameLast: expect.any(String),
-};
 
 describe('userProfile iteration 2 testing', () => {
   let user: AuthReturn, user2: AuthReturn;
@@ -41,13 +34,23 @@ describe('userProfile iteration 2 testing', () => {
   });
 
   test('userProfile run success', () => {
-    expect(userProfile(user.token, user.authUserId)).toStrictEqual(USER_OBJECT);
+    expect(userProfile(user.token, user.authUserId)).toStrictEqual({
+      uId: user.authUserId,
+      email: 'onlyfortestttt06@gmail.com',
+      nameFirst: 'Jonah',
+      nameLast: 'Meggs',
+      handleStr: expect.any(String),
+    });
   });
 
   test('userProfile run success', () => {
-    expect(userProfile(user2.token, user2.authUserId)).toStrictEqual(
-      USER_OBJECT
-    );
+    expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
+      uId: user2.authUserId,
+      email: 'testing12347@gmail.com',
+      nameFirst: 'Almina',
+      nameLast: 'Kova',
+      handleStr: expect.any(String),
+    });
   });
 
   test('setEmail invalid Token', () => {
@@ -65,11 +68,24 @@ describe('userProfile iteration 2 testing', () => {
   });
 
   test('setEmail run success', () => {
-    expect(setEmail(user.token, 'onlyfortestttt6@gmail.com')).toStrictEqual({});
+    setEmail(user.token, 'onlyfortestttt9@gmail.com');
+    expect(userProfile(user.token, user.authUserId)).toStrictEqual({
+      uId: user.authUserId,
+      email: 'onlyfortestttt9@gmail.com',
+      nameFirst: 'Jonah',
+      nameLast: 'Meggs',
+      handleStr: expect.any(String),
+    });
   });
 
   test('setEmail run success', () => {
-    expect(setEmail(user2.token, 'testing1234@gmail.com')).toStrictEqual({});
+    expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
+      uId: user2.authUserId,
+      email: 'testing1234@gmail.com',
+      nameFirst: 'Almina',
+      nameLast: 'Kova',
+      handleStr: expect.any(String),
+    });
   });
 
   test('setHandle invalid Token', () => {
@@ -81,11 +97,25 @@ describe('userProfile iteration 2 testing', () => {
   });
 
   test('setHandle run success', () => {
-    expect(setHandle(user.token, 'testpw0005')).toStrictEqual({});
+    setHandle(user.token, 'Hello Kitty');
+    expect(userProfile(user.token, user.authUserId)).toStrictEqual({
+      uId: user.authUserId,
+      email: 'onlyfortestttt9@gmail.com',
+      nameFirst: 'Jonah',
+      nameLast: 'Meggs',
+      handleStr: 'Hello Kitty',
+    });
   });
 
   test('setHandle  run success', () => {
-    expect(setHandle(user2.token, 'hello2883')).toStrictEqual({});
+    setHandle(user2.token, 'Batman');
+    expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
+      uId: user2.authUserId,
+      email: 'testing1234@gmail.com',
+      nameFirst: 'Almina',
+      nameLast: 'Kova',
+      handleStr: 'Batman',
+    });
   });
 
   test('setName invalid Token', () => {
@@ -98,12 +128,26 @@ describe('userProfile iteration 2 testing', () => {
     expect(setName(user.token, '', '')).toStrictEqual(ERROR);
   });
 
-  test('setHandle  run success', () => {
-    expect(setName(user.token, 'Jonah', 'Meggs')).toStrictEqual({});
+  test('setName run success', () => {
+    setName(user2.token, 'Almina', 'Kova');
+    expect(userProfile(user.token, user.authUserId)).toStrictEqual({
+      uId: user.authUserId,
+      email: 'onlyfortestttt9@gmail.com',
+      nameFirst: 'Almina',
+      nameLast: 'Kova',
+      handleStr: expect.any(String),
+    });
   });
 
-  test('setHandle  run success', () => {
-    expect(setName(user2.token, 'Almina', 'Kova')).toStrictEqual({});
+  test('setName  run success', () => {
+    setName(user2.token, 'Jonah', 'Meggs');
+    expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
+      uId: user2.authUserId,
+      email: 'testing12347@gmail.com',
+      nameFirst: 'Jonah',
+      nameLast: 'Meggs',
+      handleStr: expect.any(String),
+    });
   });
 
   test('getAllUsers invalid Token', () => {
