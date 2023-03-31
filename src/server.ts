@@ -70,11 +70,11 @@ app.get('/channels/listall/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-// app.post('/channel/join/v2', (req: Request, res: Response, next) => {
-//   const { token, channelId } = req.body;
-//   const result = channelJoinV1(token, channelId);
-//   return res.json(result);
-// });
+app.post('/channel/join/v2', (req: Request, res: Response, next) => {
+  const { token, channelId } = req.body;
+  const result = channelJoinV1(token, channelId);
+  return res.json(result);
+});
 
 app.delete('/clear/v1', (req: Request, res: Response, next) => {
   const result = clearV1();
@@ -107,13 +107,11 @@ app.post('/dm/create/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-/*
 app.get('/channels/list/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const result = channelsListV1(token);
   return res.json(result);
 });
-*/
 
 app.get('/channel/details/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
