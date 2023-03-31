@@ -38,21 +38,25 @@ describe('userProfile iteration 2 testing', () => {
 
   test('userProfile run success', () => {
     expect(userProfile(user.token, user.authUserId)).toStrictEqual({
-      uId: user.authUserId,
-      email: 'onlyfortestttt06@gmail.com',
-      nameFirst: 'Jonah',
-      nameLast: 'Meggs',
-      handleStr: expect.any(String),
+      user: {
+        uId: user.authUserId,
+        email: 'onlyfortestttt06@gmail.com',
+        nameFirst: 'Jonah',
+        nameLast: 'Meggs',
+        handleStr: expect.any(String),
+      },
     });
   });
 
   test('userProfile run success', () => {
     expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
-      uId: user2.authUserId,
-      email: 'testing12347@gmail.com',
-      nameFirst: 'Almina',
-      nameLast: 'Kova',
-      handleStr: expect.any(String),
+      user: {
+        uId: user2.authUserId,
+        email: 'testing12347@gmail.com',
+        nameFirst: 'Almina',
+        nameLast: 'Kova',
+        handleStr: expect.any(String),
+      },
     });
   });
 
@@ -73,22 +77,26 @@ describe('userProfile iteration 2 testing', () => {
   test('setEmail run success', () => {
     setEmail(user.token, 'onlyfortestttt9@gmail.com');
     expect(userProfile(user.token, user.authUserId)).toStrictEqual({
-      uId: user.authUserId,
-      email: 'onlyfortestttt9@gmail.com',
-      nameFirst: 'Jonah',
-      nameLast: 'Meggs',
-      handleStr: expect.any(String),
+      user: {
+        uId: user.authUserId,
+        email: 'onlyfortestttt9@gmail.com',
+        nameFirst: 'Jonah',
+        nameLast: 'Meggs',
+        handleStr: expect.any(String),
+      },
     });
   });
 
   test('setEmail run success', () => {
     setEmail(user2.token, 'testing1234@gmail.com');
     expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
-      uId: user2.authUserId,
-      email: 'testing1234@gmail.com',
-      nameFirst: 'Almina',
-      nameLast: 'Kova',
-      handleStr: expect.any(String),
+      user: {
+        uId: user2.authUserId,
+        email: 'testing1234@gmail.com',
+        nameFirst: 'Almina',
+        nameLast: 'Kova',
+        handleStr: expect.any(String),
+      },
     });
   });
 
@@ -103,22 +111,26 @@ describe('userProfile iteration 2 testing', () => {
   test('setHandle run success', () => {
     setHandle(user.token, 'Hello Kitty');
     expect(userProfile(user.token, user.authUserId)).toStrictEqual({
-      uId: user.authUserId,
-      email: 'onlyfortestttt06@gmail.com',
-      nameFirst: 'Jonah',
-      nameLast: 'Meggs',
-      handleStr: 'Hello Kitty',
+      user: {
+        uId: user.authUserId,
+        email: 'onlyfortestttt06@gmail.com',
+        nameFirst: 'Jonah',
+        nameLast: 'Meggs',
+        handleStr: 'Hello Kitty',
+      },
     });
   });
 
   test('setHandle  run success', () => {
     setHandle(user2.token, 'Batman');
     expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
-      uId: user2.authUserId,
-      email: 'testing12347@gmail.com',
-      nameFirst: 'Almina',
-      nameLast: 'Kova',
-      handleStr: 'Batman',
+      user: {
+        uId: user2.authUserId,
+        email: 'testing12347@gmail.com',
+        nameFirst: 'Almina',
+        nameLast: 'Kova',
+        handleStr: 'Batman',
+      },
     });
   });
 
@@ -135,22 +147,26 @@ describe('userProfile iteration 2 testing', () => {
   test('setName run success', () => {
     setName(user.token, 'Almina', 'Kova');
     expect(userProfile(user.token, user.authUserId)).toStrictEqual({
-      uId: user.authUserId,
-      email: 'onlyfortestttt06@gmail.com',
-      nameFirst: 'Almina',
-      nameLast: 'Kova',
-      handleStr: expect.any(String),
+      user: {
+        uId: user.authUserId,
+        email: 'onlyfortestttt06@gmail.com',
+        nameFirst: 'Almina',
+        nameLast: 'Kova',
+        handleStr: expect.any(String),
+      },
     });
   });
 
   test('setName  run success', () => {
     setName(user2.token, 'Jonah', 'Meggs');
     expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
-      uId: user2.authUserId,
-      email: 'testing12347@gmail.com',
-      nameFirst: 'Jonah',
-      nameLast: 'Meggs',
-      handleStr: expect.any(String),
+      user: {
+        uId: user2.authUserId,
+        email: 'testing12347@gmail.com',
+        nameFirst: 'Jonah',
+        nameLast: 'Meggs',
+        handleStr: expect.any(String),
+      },
     });
   });
 
