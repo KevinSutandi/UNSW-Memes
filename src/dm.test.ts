@@ -111,7 +111,6 @@ describe('testing dmDetailsV1', () => {
       'Jonah',
       'Meggs'
     );
-
     user2 = authRegister(
       'kevins050324@gmail.com',
       'kevin1001',

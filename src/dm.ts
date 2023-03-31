@@ -132,9 +132,7 @@ export function isDm(dmId: number): boolean {
  */
 export function isDmMember(dmId: number, userId: number): boolean {
   const dm = findDm(dmId);
-  console.log(dmId);
   const allMemberIds = getAllMemberIds(dm);
-  console.log(allMemberIds);
   return allMemberIds.includes(userId);
 }
 
