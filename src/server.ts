@@ -171,8 +171,8 @@ app.post('/message/send/v1', (req: Request, res: Response, next) => {
 });
 
 app.put('/user/profile/sethandle/v1', (req: Request, res: Response, next) => {
-  const { token, handle } = req.body;
-  const result = setHandle(token, handle);
+  const { token, handleStr } = req.body;
+  const result = setHandle(token, handleStr);
   return res.json(result);
 });
 
