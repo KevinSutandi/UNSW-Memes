@@ -85,9 +85,7 @@ export function getChannelIndex(channelId: number) {
 
 export function isChannelMember(channelId: number, userId: number): boolean {
   const channel = findChannel(channelId);
-  console.log(channelId);
   const allMemberIds = getAllMemberIds(channel);
-  console.log(allMemberIds);
   return allMemberIds.includes(userId);
 }
 

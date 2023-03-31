@@ -4,7 +4,6 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
-
 import {
   channelsCreateV1,
   channelsListV1,
@@ -15,6 +14,7 @@ import {
   channelDetailsV1,
   channelLeaveV1,
   channelJoinV1,
+  channelInviteV1,
 } from './channel';
 import { messageRemoveV1, messageSendV1, messageEditV1 } from './message';
 import { dmCreateV1 } from './dm';
@@ -131,6 +131,12 @@ app.get('/channel/details/v2', (req: Request, res: Response, next) => {
 app.post('/message/send/v1', (req: Request, res: Response, next) => {
   const { token, channelId, message } = req.body;
   const result = messageSendV1(token, channelId, message);
+  return res.json(result);
+});
+
+app.post('/channel/invite/v2', (req: Request, res: Response, next) => {
+  const { token, channelId, uId } = req.body;
+  const result = channelInviteV1(token, channelId, uId);
   return res.json(result);
 });
 
