@@ -4,10 +4,7 @@
     "noImplicitAny": true,
     "noEmit": true,
     "resolveJsonModule": true,
-    "allowJs": true,
-    "suppressImplicitAnyIndexErrors": true
+    "allowJs": true
   },
-  "exclude": [
-    "**/**_broken.ts"
-  ]
+  "exclude": ["**/**_broken.ts"]
 }
