@@ -82,11 +82,11 @@ export function messageRemoveV1(
   }
 
   if (channel === undefined && dm === undefined) {
-    return { error: 'Channel Not Found' };
+    return { error: 'Message Not Found' };
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
-  } else if (dm !== undefined) {
+  } else {
     messageIndex = findMessageIndexInDM(dm, messageId);
     flags = dm;
   }
@@ -96,10 +96,6 @@ export function messageRemoveV1(
 
   if (allMemberIds.includes(user.authUserId) === false) {
     return { error: 'User is not registered in channel' };
-  }
-
-  if (messageIndex === -1) {
-    return { error: 'Message Not Found' };
   }
 
   if (flags === channel) {
@@ -162,11 +158,11 @@ export function messageEditV1(
   }
 
   if (channel === undefined && dm === undefined) {
-    return { error: 'Channel Not Found' };
+    return { error: 'Message Not Found' };
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
-  } else if (dm !== undefined) {
+  } else {
     messageIndex = findMessageIndexInDM(dm, messageId);
     flags = dm;
   }
@@ -176,10 +172,6 @@ export function messageEditV1(
 
   if (allMemberIds.includes(user.authUserId) === false) {
     return { error: 'User is not registered in channel' };
-  }
-
-  if (messageIndex === -1) {
-    return { error: 'Message Not Found' };
   }
 
   if (flags === channel) {

@@ -3,6 +3,7 @@
     "test": "jest --testMatch '**/?(*.)+(test).ts'",
     "tsc": "tsc --project tsconfig.json",
     "lint": "eslint src/**/*.{ts,js}",
+    "jest": "jest",
     "lint-fix": "eslint --fix src/**/*.{ts,js}",
     "start": "ts-node -T src/server.ts",
     "ts-node-coverage": "nyc --reporter=text --reporter=lcov ts-node -T src/server.ts",

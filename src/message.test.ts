@@ -9,6 +9,7 @@ import {
   channelJoin,
   dmCreate,
   messageSendDm,
+  dmMessages,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -529,18 +530,18 @@ describe('testing messageEdit DM', () => {
     expect(
       messageEdit(user1.token, message1.messageId, 'hello world')
     ).toStrictEqual({});
-    // expect(dmMessage(user1.token, dm1.dmId, 0)).toStrictEqual({
-    //   messages: [
-    //     {
-    //       messageId: message1.messageId,
-    //       uId: user1.authUserId,
-    //       message: 'hello world',
-    //       timeSent: expect.any(Number),
-    //     },
-    //   ],
-    //   start: 0,
-    //   end: -1,
-    // });
+    expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
+      messages: [
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'hello world',
+          timeSent: expect.any(Number),
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
   });
 
   test('globalOwner cant edit dm Message', () => {
@@ -555,19 +556,35 @@ describe('testing messageEdit DM', () => {
     expect(
       messageEdit(user2.token, message3.messageId, 'hello world')
     ).toStrictEqual({});
-    //   expect(dmMessage(user2.token, dm1.dmId, 0)).toStrictEqual({
-    //     messages: [
-    //       {
-    //         messageId: message3.messageId,
-    //         uId: user2.authUserId,
-    //         message: 'hello world',
-    //         timeSent: expect.any(Number),
-    //       },
-    //     ],
-    //     start: 0,
-    //     end: -1,
-    //   });
-    // });
+    expect(dmMessages(user2.token, dm1.dmId, 0)).toStrictEqual({
+      messages: [
+        {
+          messageId: message3.messageId,
+          uId: user2.authUserId,
+          message: 'hello world',
+          timeSent: expect.any(Number),
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('message should be deleted from dm when edited with 0 char', () => {
+    const message4 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(messageEdit(user1.token, message4.messageId, '')).toStrictEqual({});
+    expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
+      messages: [],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('message is too long', () => {
+    const message5 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(
+      messageEdit(user1.token, message5.messageId, 'a'.repeat(1001))
+    ).toStrictEqual(ERROR);
   });
 });
 

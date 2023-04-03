@@ -29,9 +29,6 @@ export function dmCreateV1(
       error: 'Invalid token',
     };
   }
-  // Find the user information using findUser
-  // make an array to check for duplicates
-  const userArray: Array<userData> = [];
 
   // Make sure that owner does not invite owner
   if (uIds.includes(user.authUserId)) {
@@ -40,20 +37,20 @@ export function dmCreateV1(
     };
   }
 
-  // add owner to userArray
-  userArray.push(user);
+  // Use a Set to check for duplicate user IDs
+  const userSet = new Set(uIds);
+  if (userSet.size !== uIds.length) {
+    return {
+      error: 'Duplicate uId',
+    };
+  }
 
+  const userArray: Array<userData> = [user];
   for (const uId of uIds) {
     const userUId = findUser(uId);
     if (userUId === undefined) {
       return {
         error: 'Invalid uId',
-      };
-    }
-
-    if (userArray.includes(userUId)) {
-      return {
-        error: 'Duplicate uId',
       };
     }
     userArray.push(userUId);
@@ -156,11 +153,7 @@ export function findDm(dmId: number): dmData | undefined {
  * @returns {(Array.<uId>|null)} - An array of member IDs, or null if the channel does not contain any.
  */
 export function getAllMemberIds(dm: dmData) {
-  if (dm) {
-    return dm.allMembers.map((member) => member.uId);
-  } else {
-    return null;
-  }
+  return dm.allMembers.map((member) => member.uId);
 }
 
 /**
@@ -279,19 +272,13 @@ export function dmListV1(token: string): dmListReturn | errorMessage {
   }
 
   const authUserIdToFind = user.authUserId;
-  const userDms: dmListReturn = { dms: [] };
-
-  data.dm.forEach((dm) => {
-    const isUserInDm = dm.allMembers.some(
-      (member) => member.uId === authUserIdToFind
-    );
-    if (isUserInDm === true) {
-      userDms.dms.push({
-        dmId: dm.dmId,
-        name: dm.name,
-      });
-    }
-  });
+  const userDms: dmListReturn = {
+    dms: data.dm
+      .filter((dm) =>
+        dm.allMembers.some((member) => member.uId === authUserIdToFind)
+      )
+      .map((dm) => ({ dmId: dm.dmId, name: dm.name })),
+  };
   return userDms;
 }
 

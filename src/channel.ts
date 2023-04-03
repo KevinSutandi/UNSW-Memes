@@ -113,11 +113,7 @@ export function channelJoinV1(
     return { error: 'User is already in channel' };
   }
   if (channel.isPublic === false && user.isGlobalOwner === 2) {
-    if (channel.isPublic === false) {
-      return { error: 'Channel is not public' };
-    } else {
-      return { error: 'User is not global owner' };
-    }
+    return { error: 'Channel is not public' };
   }
   const channelNum = getChannelIndex(channelId);
 
