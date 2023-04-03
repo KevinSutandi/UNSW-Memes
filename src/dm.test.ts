@@ -46,6 +46,17 @@ describe('testing dmCreateV1', () => {
     });
   });
 
+  test('UIds has multiple same users', () => {
+    const user2: AuthReturn = authRegister(
+      'kevinesutandi@gmail.com',
+      'kevin1001',
+      'bevin',
+      'levin'
+    );
+    const uIds = [user2.authUserId, user2.authUserId];
+    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
+  });
+
   test('owner invites owner to dm result error', () => {
     const uIds: number[] = [user.authUserId];
     expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
@@ -123,10 +134,12 @@ describe('testing dmDetailsV1', () => {
       'Zombie',
       'Ibrahim'
     );
-    const uIds = [user.authUserId, user2.authUserId];
-    dm1 = dmCreate(user.token, uIds);
-    dm2 = dmCreate(user2.token, uIds);
-    dm3 = dmCreate(user3.token, uIds);
+
+    const uIds2 = [user.authUserId];
+    const uIds3 = [user.authUserId, user2.authUserId];
+    dm1 = dmCreate(user.token, []);
+    dm2 = dmCreate(user2.token, uIds2);
+    dm3 = dmCreate(user3.token, uIds3);
   });
 
   afterEach(() => {
@@ -420,10 +433,12 @@ describe('testing dmLeaveV1', () => {
       'Zombie',
       'Ibrahim'
     );
-    const uIds = [user.authUserId, user2.authUserId];
-    dm1 = dmCreate(user.token, uIds);
-    dm2 = dmCreate(user2.token, uIds);
-    dm3 = dmCreate(user3.token, uIds);
+
+    const uIds2 = [user.authUserId];
+    const uIds3 = [user.authUserId, user2.authUserId];
+    dm1 = dmCreate(user.token, []);
+    dm2 = dmCreate(user2.token, uIds2);
+    dm3 = dmCreate(user3.token, uIds3);
   });
 
   afterEach(() => {
@@ -444,5 +459,9 @@ describe('testing dmLeaveV1', () => {
 
   test('One user leaves the DM, not the owner', () => {
     expect(dmLeave(user.token, dm3.dmId)).toStrictEqual({});
+  });
+
+  test('One user leaves the DM, the owner', () => {
+    expect(dmLeave(user3.token, dm3.dmId)).toStrictEqual({});
   });
 });

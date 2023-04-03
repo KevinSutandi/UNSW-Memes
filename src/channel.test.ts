@@ -610,12 +610,16 @@ describe('testing channelAddowner', () => {
 
   test('user has no permission test 1', () => {
     // not owner and not global
+    channelJoin(user2.token, channel1.channelId);
+    channelJoin(user3.token, channel1.channelId);
     expect(
-      channelAddOwner(user2.token, channel1.channelId, user1.authUserId)
+      channelAddOwner(user2.token, channel1.channelId, user3.authUserId)
     ).toStrictEqual(ERROR);
   });
 
   test('user has no permission test 2', () => {
+    channelJoin(user1.token, channel2.channelId);
+    channelJoin(user3.token, channel2.channelId);
     expect(
       channelAddOwner(user3.token, channel2.channelId, user1.authUserId)
     ).toStrictEqual(ERROR);
@@ -942,18 +946,24 @@ describe('testing removing owner from channel', () => {
   });
 
   test('User with uId is not owner test 1', () => {
+    channelJoin(user1.token, channel3.channelId);
+    channelJoin(user2.token, channel3.channelId);
     expect(
       channelRemoveOwner(user3.token, channel3.channelId, user2.authUserId)
     ).toStrictEqual(ERROR);
   });
 
   test('User with uId is not owner test 2', () => {
+    channelJoin(user1.token, channel3.channelId);
+    channelJoin(user2.token, channel3.channelId);
     expect(
       channelRemoveOwner(user1.token, channel2.channelId, user3.authUserId)
     ).toStrictEqual(ERROR);
   });
 
   test('Global owner with uId is not owner test 2', () => {
+    channelJoin(user1.token, channel2.channelId);
+    channelJoin(user3.token, channel2.channelId);
     expect(
       channelRemoveOwner(user2.token, channel2.channelId, user1.authUserId)
     ).toStrictEqual(ERROR);
