@@ -3,6 +3,7 @@ import { echo } from './echo';
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
+import errorHandler from 'middleware-http-errors';
 import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
 
 import {
@@ -61,6 +62,10 @@ app.get('/echo', (req: Request, res: Response, next) => {
   const data = req.query.echo as string;
   return res.json(echo(data));
 });
+
+// Keep this BENEATH route definitions
+// handles errors nicely
+app.use(errorHandler());
 
 app.post('/auth/login/v2', (req: Request, res: Response, next) => {
   const { email, password } = req.body;
