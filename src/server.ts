@@ -134,12 +134,6 @@ app.post('/channel/removeowner/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.get('/channels/list/v2', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
-  const result = channelsListV1(token);
-  return res.json(result);
-});
-
 app.get('/channel/details/v2', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const channelId = parseInt(req.query.channelId as string);
@@ -169,20 +163,6 @@ app.get('/dm/messages/v1', (req: Request, res: Response, next) => {
 app.get('/dm/list/v1', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const result = dmListV1(token);
-  return res.json(result);
-});
-
-// Will Reenable once user profile is working
-// app.get('/user/profile/v2', (req: Request, res: Response, next) => {
-//   const token = req.query.token as string;
-//   const uId = parseInt(req.query.uId as string);
-//   const result = userProfileV1(token, uId);
-//   return res.json(result);
-// });
-
-app.post('/message/send/v1', (req: Request, res: Response, next) => {
-  const { token, channelId, message } = req.body;
-  const result = messageSendV1(token, channelId, message);
   return res.json(result);
 });
 

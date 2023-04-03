@@ -86,7 +86,7 @@ export function messageRemoveV1(
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
-  } else if (dm !== undefined) {
+  } else {
     messageIndex = findMessageIndexInDM(dm, messageId);
     flags = dm;
   }
@@ -162,7 +162,7 @@ export function messageEditV1(
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
-  } else if (dm !== undefined) {
+  } else {
     messageIndex = findMessageIndexInDM(dm, messageId);
     flags = dm;
   }

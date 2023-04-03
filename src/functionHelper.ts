@@ -184,3 +184,8 @@ export function findDMbyId(dmId: number): dmData | undefined {
   const data = getData();
   return data.dm.find((dm) => dm.dmId === dmId);
 }
+
+export function findUserIndex(userId: number): number {
+  const data = getData();
+  return data.users.findIndex((user) => user.authUserId === userId);
+}

@@ -36,4 +36,7 @@ describe('testing clearV1', () => {
   test('dm should return no dm when called dmList', () => {
     expect(dmList(user1.token)).toStrictEqual({ dms: [] });
   });
+  test('clear everyting', () => {
+    expect(clearV1()).toStrictEqual({});
+  });
 });

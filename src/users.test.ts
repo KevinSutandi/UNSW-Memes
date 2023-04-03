@@ -36,6 +36,10 @@ describe('userProfile iteration 2 testing', () => {
     expect(userProfile('wrong token', 1)).toStrictEqual(ERROR);
   });
 
+  test('userProfile invalid uId', () => {
+    expect(userProfile(user.token, 10000)).toStrictEqual(ERROR);
+  });
+
   test('userProfile run success', () => {
     expect(userProfile(user.token, user.authUserId)).toStrictEqual({
       user: {

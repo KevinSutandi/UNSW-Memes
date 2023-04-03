@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import { userObject, errorMessage, allUsers } from './interfaces';
-import { isUser, getUserByToken } from './functionHelper';
+import { isUser, getUserByToken, findUserIndex } from './functionHelper';
 import validator from 'validator';
 
 /**
@@ -24,10 +24,6 @@ export function userProfileV1(
 ): { user: userObject } | errorMessage {
   // Gets user from the dataStore
   const data = getData();
-  // Check that authUserId is valid
-  if (!isUser(authUserId)) {
-    return { error: 'Invalid authUserId' };
-  }
   // Check that uId is valid
   if (!isUser(uId)) {
     return { error: 'Invalid uId' };
@@ -84,18 +80,10 @@ export function setEmail(token: string, email: string) {
   }
 
   const data = getData();
-  let emailExist = false;
-  data?.users.forEach((user) => {
-    if (user.email === email) {
-      emailExist = true;
-    }
-  });
-  if (emailExist) {
+  if (data.users.some((user) => user.email === email)) {
     return { error: 'email address is already being used by another user' };
   }
-  const userIndex = data.users.findIndex(
-    (item) => item.authUserId === user.authUserId
-  );
+  const userIndex = findUserIndex(user.authUserId);
   data.users[userIndex].email = email;
   setData(data);
   return {};
@@ -124,9 +112,7 @@ export function setName(token: string, nameFirst: string, nameLast: string) {
   ) {
     return { error: 'name length should in range of 1 to 50' };
   }
-  const userIndex = data.users.findIndex(
-    (item) => item.authUserId === user.authUserId
-  );
+  const userIndex = findUserIndex(user.authUserId);
   data.users[userIndex].nameFirst = nameFirst;
   data.users[userIndex].nameLast = nameLast;
   setData(data);
@@ -148,9 +134,7 @@ export function setHandle(token: string, handleStr: string) {
   }
 
   if (handleStr.length > 3 && handleStr.length < 20) {
-    const userIndex = data.users.findIndex(
-      (item) => item.authUserId === user.authUserId
-    );
+    const userIndex = findUserIndex(user.authUserId);
     data.users[userIndex].handleStr = handleStr;
     setData(data);
     return {};
