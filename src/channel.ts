@@ -55,6 +55,9 @@ export function channelMessagesV1(
     return { error: "'start' is greater than the amount of messages" };
   }
 
+  // reverse message
+  channel.messages.reverse();
+
   if (start + 50 > channelMessage) {
     return {
       messages: channel.messages.slice(start),

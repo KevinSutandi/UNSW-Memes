@@ -200,6 +200,9 @@ export function dmMessagesV1(token: string, dmId: number, start: number) {
   }
 
   const dm = findDm(dmId);
+  // reverse message
+  dm.messages.reverse();
+
   if (start + 50 > dmMessages) {
     return {
       messages: dm.messages.slice(start),
