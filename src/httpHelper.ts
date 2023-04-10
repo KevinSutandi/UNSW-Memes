@@ -41,7 +41,7 @@ export function authRegister(
 }
 
 export function authLogin(email: string, password: string) {
-  return requestHelper('POST', '/auth/login/v2', { email, password });
+  return requestHelper('POST', '/auth/login/v3', { email, password });
 }
 
 export function clearV1() {

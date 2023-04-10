@@ -67,7 +67,7 @@ app.get('/echo', (req: Request, res: Response, next) => {
 // handles errors nicely
 app.use(errorHandler());
 
-app.post('/auth/login/v2', (req: Request, res: Response, next) => {
+app.post('/auth/login/v3', (req: Request, res: Response, next) => {
   const { email, password } = req.body;
   const result = authLoginV1(email, password);
   return res.json(result);
