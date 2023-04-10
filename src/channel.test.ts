@@ -789,7 +789,7 @@ describe('/channel/invite/v3', () => {
   });
   test('invalid token test 3', () => {
     expect(
-      channelInvite(user3.token, channel2.channelId, user1.authUserId + 99)
+      channelInvite('user3.token', channel2.channelId, user1.authUserId + 99)
     ).toEqual(403);
   });
   test('person invited does not exist test 1', () => {
