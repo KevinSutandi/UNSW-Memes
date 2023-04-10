@@ -82,7 +82,7 @@ export function channelMessage(
 }
 
 export function channelDetails(token: string, channelId: number) {
-  return requestHelper('GET', '/channel/details/v2', { token, channelId });
+  return requestHelper('GET', '/channel/details/v3', { token, channelId });
 }
 
 export function channelJoin(token: string, channelId: number) {
