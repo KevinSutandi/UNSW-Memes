@@ -1,6 +1,7 @@
 import { getData } from './dataStore';
 import { channelData, dmData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
+// import { data } from './dataStore';
 
 /**
  * Determines whether a channel is a valid channel
@@ -110,7 +111,8 @@ export function isChannelMember(channelId: number, userId: number): boolean {
  * @returns {string} - returns a random string of 36 characters using uuidv4
  */
 export function makeToken() {
-  const token = uuidv4();
+  let token = uuidv4();
+  token = HashingString(token);
   return token;
 }
 
@@ -188,4 +190,13 @@ export function findDMbyId(dmId: number): dmData | undefined {
 export function findUserIndex(userId: number): number {
   const data = getData();
   return data.users.findIndex((user) => user.authUserId === userId);
+}
+
+export function HashingString(string: string): string {
+  const jwt = require('jsonwebtoken');
+  const encryptedPassword = jwt.sign(
+    string,
+    'KEVINHINDIEALMINAELSHIBO2394850-92840)_(*%&)_($#&()*'
+  );
+  return encryptedPassword;
 }
