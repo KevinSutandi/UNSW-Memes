@@ -73,7 +73,7 @@ app.post('/auth/login/v3', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.post('/auth/register/v2', (req: Request, res: Response, next) => {
+app.post('/auth/register/v3', (req: Request, res: Response, next) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = authRegisterV1(email, password, nameFirst, nameLast);
   return res.json(result);
@@ -134,8 +134,8 @@ app.post('/channel/removeowner/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.get('/channel/details/v2', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
+app.get('/channel/details/v3', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
   const channelId = parseInt(req.query.channelId as string);
   const result = channelDetailsV1(token, channelId);
   return res.json(result);

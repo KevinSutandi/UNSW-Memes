@@ -12,6 +12,7 @@ import {
   findOwnerIndex,
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
+import HTTPError from 'http-errors';
 
 /**
  *
@@ -211,16 +212,18 @@ export function channelInviteV1(token: string, channelId: number, uId: number) {
 export function channelDetailsV1(token: string, channelId: number) {
   // If channelId doesn't refer to a valid channel,
   // returns error
+  // console.log(token);
+  // console.log(channelId);
   const user = getUserByToken(token);
   if (!isChannel(channelId)) {
-    return { error: 'channelId does not refer to a valid channel' };
+    throw HTTPError(400, 'channelId does not refer to a valid channel');
   } else if (user === undefined) {
     // If token is invalid, returns error
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   // If the user is not a member of the channel
   if (!isChannelMember(channelId, user.authUserId)) {
-    return { error: user.authUserId + ' is not a member of the channel' };
+    throw HTTPError(403, 'User is not a member of the channel');
   }
   const channelObj = findChannel(channelId);
   return {
