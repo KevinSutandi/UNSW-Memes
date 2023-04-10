@@ -5,7 +5,7 @@ import {
   channelsListReturn,
   errorMessage,
 } from './interfaces';
-
+import HTTPError from 'http-errors';
 /**
  * Creates a new channel with the given name,
  * that is either a public or private channel.
@@ -29,12 +29,12 @@ export function channelsCreateV1(
   const data = getData();
   // Returns error if name's length is less than 1 or more than 20
   if (name.length < 1 || name.length > 20) {
-    return { error: 'Invalid name length' };
+    throw HTTPError(400, 'Invalid name length');
   }
   const user = getUserByToken(token);
-  // Returns error if the given userId is invalid
+  // Returns error if the given token is invalid
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   const newId = Math.floor(Math.random() * 10000);
   // Finds the user data
