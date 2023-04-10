@@ -24,10 +24,11 @@ export function authLoginV1(
   const jwt = require('jsonwebtoken');
 
   let correctUser: userData;
+  const encryptedPassword = HashingString(password);
   for (const user of dataStore.users) {
-    if (email === user.email && password === user.password) {
+    if (email === user.email && encryptedPassword === user.password) {
       correctUser = user;
-    } else if (email === user.email && password !== user.password) {
+    } else if (email === user.email && encryptedPassword !== user.password) {
       throw HTTPError(400, 'Password is not correct');
     }
   }
