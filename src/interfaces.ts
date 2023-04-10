@@ -241,4 +241,5 @@ export interface newData {
   users: Array<users>;
   channels: Array<Channel>;
   dm: Array<Dm>;
+  secret: string;
 }

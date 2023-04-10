@@ -23,6 +23,12 @@ export function requestHelper(method: HttpVerb, path: string, payload: object) {
     json = payload;
   }
   const res = request(method, SERVER_URL + path, { qs, json, timeout: 20000 });
+  if (res.statusCode !== 200) {
+    // Return error code number instead of object in case of error.
+    // (just for convenience)
+    return res.statusCode;
+  }
+  // return JSON.parse(res.getBody() as string);
   return JSON.parse(res.getBody('utf-8'));
 }
 
@@ -41,7 +47,7 @@ export function authRegister(
 }
 
 export function authLogin(email: string, password: string) {
-  return requestHelper('POST', '/auth/login/v2', { email, password });
+  return requestHelper('POST', '/auth/login/v3', { email, password });
 }
 
 export function clearV1() {
