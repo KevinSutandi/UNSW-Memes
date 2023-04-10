@@ -212,8 +212,8 @@ export function channelInviteV1(token: string, channelId: number, uId: number) {
 export function channelDetailsV1(token: string, channelId: number) {
   // If channelId doesn't refer to a valid channel,
   // returns error
-  console.log(token);
-  console.log(channelId);
+  // console.log(token);
+  // console.log(channelId);
   const user = getUserByToken(token);
   if (!isChannel(channelId)) {
     throw HTTPError(400, 'channelId does not refer to a valid channel');
