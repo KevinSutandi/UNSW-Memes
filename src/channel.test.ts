@@ -439,17 +439,13 @@ describe('testing channelLeaveV1', () => {
 
   test('The only owner leaving test, no longer member', () => {
     channelLeave(user1.token, channel1.channelId);
-    expect(channelDetails(user1.token, channel1.channelId)).toStrictEqual({
-      error: user1.authUserId + ' is not a member of the channel',
-    });
+    expect(channelDetails(user1.token, channel1.channelId)).toEqual(403);
   });
 
   test('One of the users leave test, no longer member', () => {
     channelJoin(user2.token, channel1.channelId);
     channelLeave(user2.token, channel1.channelId);
-    expect(channelDetails(user2.token, channel1.channelId)).toStrictEqual({
-      error: user2.authUserId + ' is not a member of the channel',
-    });
+    expect(channelDetails(user2.token, channel1.channelId)).toEqual(403);
   });
 
   test('One of the users leave test, but information stay remain', () => {
