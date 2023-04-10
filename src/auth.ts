@@ -1,4 +1,5 @@
 import validator from 'validator';
+import HTTPError from 'http-errors';
 import { findTokenIndex, getUserByToken, makeToken } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
@@ -21,19 +22,19 @@ export function authLoginV1(
     if (email === user.email && password === user.password) {
       correctUser = user;
     } else if (email === user.email && password !== user.password) {
-      return { error: 'Password is not correct' };
+      throw HTTPError(400, 'Password is not correct');
     }
   }
-  if (correctUser !== undefined) {
-    const userIndex = dataStore.users.findIndex(
-      (item) => item.authUserId === correctUser.authUserId
-    );
-    const token = makeToken();
-    dataStore.users[userIndex].token.push({ token: token });
-    setData(dataStore);
-    return { authUserId: correctUser.authUserId, token: token };
+  if (correctUser === undefined) {
+    throw HTTPError(400, 'Email does not belong to a valid user');
   }
-  return { error: 'Email entered does not belong to a user' };
+  const userIndex = dataStore.users.findIndex(
+    (item) => item.authUserId === correctUser.authUserId
+  );
+  const token = makeToken();
+  dataStore.users[userIndex].token.push({ token: token });
+  setData(dataStore);
+  return { authUserId: correctUser.authUserId, token: token };
 }
 
 /**
