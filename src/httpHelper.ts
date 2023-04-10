@@ -17,7 +17,7 @@ export function requestHelper(
   method: HttpVerb,
   path: string,
   payload: object,
-  headers?: string
+  headers?: { token: string }
 ) {
   let qs = {};
   let json = {};
@@ -31,8 +31,11 @@ export function requestHelper(
     qs,
     json,
     timeout: 20000,
-    headers: { headers },
+    headers: headers,
   });
+
+  // check headers
+  console.log(res.headers);
   if (res.statusCode !== 200) {
     // Return error code number instead of object in case of error.
     // (just for convenience)
@@ -93,12 +96,8 @@ export function channelMessage(
 }
 
 export function channelDetails(token: string, channelId: number) {
-  return requestHelper(
-    'GET',
-    '/channel/details/v3',
-    { token, channelId },
-    token
-  );
+  const headers = { token };
+  return requestHelper('GET', '/channel/details/v3', { channelId }, headers);
 }
 
 export function channelJoin(token: string, channelId: number) {
