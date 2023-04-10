@@ -192,10 +192,10 @@ export function findUserIndex(userId: number): number {
   return data.users.findIndex((user) => user.authUserId === userId);
 }
 
-export function HashingString(password: string): string {
+export function HashingString(string: string): string {
   const jwt = require('jsonwebtoken');
   const encryptedPassword = jwt.sign(
-    password,
+    string,
     'KEVINHINDIEALMINAELSHIBO2394850-92840)_(*%&)_($#&()*'
   );
   return encryptedPassword;
