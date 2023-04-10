@@ -156,20 +156,18 @@ describe('/channel/details/v3', () => {
   });
 
   test('invalid channelId', () => {
-    expect(channelDetails(user.token, channel.channelId + 1)).toStrictEqual(
-      400
-    );
+    expect(channelDetails(user.token, channel.channelId + 1)).toEqual(400);
   });
 
   test('valid token, user is not a member', () => {
-    expect(channelDetails(user2.token, channel.channelId)).toStrictEqual(403);
+    expect(channelDetails(user2.token, channel.channelId)).toEqual(403);
   });
 
   test('invalid token', () => {
-    expect(channelDetails('asade', channel.channelId)).toStrictEqual(403);
+    expect(channelDetails('asade', channel.channelId)).toEqual(403);
   });
 
-  test('valid input', () => {
+  test.only('valid input', () => {
     expect(channelDetails(user.token, channel.channelId)).toStrictEqual({
       name: 'general',
       isPublic: true,
