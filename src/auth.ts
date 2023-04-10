@@ -16,6 +16,7 @@ export function authLoginV1(
   password: string
 ): AuthReturn | errorMessage {
   const dataStore = getData();
+  const jwt = require('jsonwebtoken');
 
   let correctUser: userData;
   for (const user of dataStore.users) {
@@ -31,7 +32,10 @@ export function authLoginV1(
   const userIndex = dataStore.users.findIndex(
     (item) => item.authUserId === correctUser.authUserId
   );
-  const token = makeToken();
+
+  const unencryptedToken = makeToken();
+  const token = jwt.sign(unencryptedToken, 'somethinginteresting');
+
   dataStore.users[userIndex].token.push({ token: token });
   setData(dataStore);
   return { authUserId: correctUser.authUserId, token: token };
