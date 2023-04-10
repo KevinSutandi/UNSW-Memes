@@ -250,12 +250,12 @@ describe('/auth/login/v3', () => {
 
   test('returns an object with "error" key if password isnt valid', () => {
     const result = authLogin('kevins050324@gmail.com', 'invalidpassword');
-    expect(result).toStrictEqual(400);
+    expect(result).toEqual(400);
   });
 
   test('returns an object with "error" key if email isnt valid', () => {
     const result = authLogin('invalidemail', 'kevin1001');
-    expect(result).toStrictEqual(400);
+    expect(result).toEqual(400);
   });
 });
 
