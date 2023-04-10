@@ -34,8 +34,6 @@ export function requestHelper(
     headers: headers,
   });
 
-  // check headers
-  console.log(res.headers);
   if (res.statusCode !== 200) {
     // Return error code number instead of object in case of error.
     // (just for convenience)
@@ -43,7 +41,6 @@ export function requestHelper(
   }
 
   return JSON.parse(res.getBody() as string);
-  // return JSON.parse(res.getBody('utf-8'));
 }
 
 export function authRegister(
