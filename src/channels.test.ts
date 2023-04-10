@@ -90,17 +90,17 @@ describe('/channels/create/v2', () => {
   });
 
   test('name less than 1 char', () => {
-    expect(channelsCreate(user.token, '', true)).toStrictEqual(ERROR);
+    expect(channelsCreate(user.token, '', true)).toEqual(400);
   });
 
   test('name more than 20 chars', () => {
-    expect(
-      channelsCreate(user.token, '123456789012345678901', true)
-    ).toStrictEqual(ERROR);
+    expect(channelsCreate(user.token, '123456789012345678901', true)).toEqual(
+      400
+    );
   });
 
   test('invalid token', () => {
-    expect(channelsCreate('asade', 'general', false)).toStrictEqual(ERROR);
+    expect(channelsCreate('asade', 'general', false)).toStrictEqual(403);
   });
 
   test('valid input, with channelsDetailsV1', () => {

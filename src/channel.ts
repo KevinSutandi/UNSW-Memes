@@ -39,21 +39,21 @@ export function channelMessagesV1(
   const allMemberIds = getAllMemberIds(channel);
 
   if (user === undefined) {
-    return { error: 'User Not Found' };
+    throw HTTPError(403, 'Invalid user token');
   }
 
   if (channel === undefined) {
-    return { error: 'Channel Not Found' };
+    throw HTTPError(400, 'Channel Not Found');
   }
   const channelMessage = channel.messages.length;
   const uId = user.authUserId;
   // Error if the user is not a member of the channel
   if (allMemberIds.includes(uId) === false) {
-    return { error: 'User is not registered in channel' };
+    throw HTTPError(403, 'User is not a member of the channel');
   }
   // Error if 'start' is greater than the amount of messages
   if (start > channelMessage) {
-    return { error: "'start' is greater than the amount of messages" };
+    throw HTTPError(400, '"Start" is greater than the amount of messages');
   }
 
   // reverse message
