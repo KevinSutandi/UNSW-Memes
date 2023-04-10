@@ -224,7 +224,7 @@ describe('testing authRegisterV2', () => {
   });
 });
 
-describe('/auth/login/v2', () => {
+describe('/auth/login/v3', () => {
   let user: AuthReturn;
   beforeEach(() => {
     clearV1();
@@ -248,14 +248,14 @@ describe('/auth/login/v2', () => {
     });
   });
 
-  test('returns an object with "error" key if email isnt valid', () => {
+  test('returns an object with "error" key if password isnt valid', () => {
     const result = authLogin('kevins050324@gmail.com', 'invalidpassword');
-    expect(result).toStrictEqual(ERROR);
+    expect(result).toStrictEqual(400);
   });
 
   test('returns an object with "error" key if email isnt valid', () => {
     const result = authLogin('invalidemail', 'kevin1001');
-    expect(result).toStrictEqual(ERROR);
+    expect(result).toStrictEqual(400);
   });
 });
 
