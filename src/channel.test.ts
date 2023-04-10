@@ -167,7 +167,7 @@ describe('/channel/details/v3', () => {
     expect(channelDetails('asade', channel.channelId)).toEqual(403);
   });
 
-  test.only('valid input', () => {
+  test('valid input', () => {
     expect(channelDetails(user.token, channel.channelId)).toStrictEqual({
       name: 'general',
       isPublic: true,
