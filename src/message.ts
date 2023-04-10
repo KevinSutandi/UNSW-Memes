@@ -12,8 +12,9 @@ import {
   getDmIndex,
   getUserByToken,
 } from './functionHelper';
-import { errorMessage, newMessageReturn } from './interfaces';
-// import { errorMessage, newMessageReturn } from './interfaces';
+import { newMessageReturn } from './interfaces';
+import HTTPError from 'http-errors';
+
 /**
  *
  * @param {string} token - The token of the user sending the message.
@@ -25,7 +26,7 @@ export function messageSendV1(
   token: string,
   channelId: number,
   message: string
-): newMessageReturn | errorMessage {
+): newMessageReturn {
   const data = getData();
   const user = getUserByToken(token);
   const channel = findChannel(channelId);
@@ -33,19 +34,19 @@ export function messageSendV1(
 
   // Error Checking
   if (user === undefined) {
-    return { error: 'Token is invalid' };
+    throw HTTPError(403, 'Token is invalid');
   }
   if (channel === undefined) {
-    return { error: 'Channel Not Found' };
+    throw HTTPError(400, 'Channel does not exist');
   }
   if (allMemberIds.includes(user.authUserId) === false) {
-    return { error: 'User is not registered in channel' };
+    throw HTTPError(403, 'User is not registered in channel');
   }
   if (message.length < 1) {
-    return { error: 'Message is too short' };
+    throw HTTPError(400, 'Message is too short');
   }
   if (message.length > 1000) {
-    return { error: 'Message is too long' };
+    throw HTTPError(400, 'Message is too long');
   }
 
   const channelIndex = getChannelIndex(channelId);
@@ -69,7 +70,7 @@ export function messageSendV1(
 export function messageRemoveV1(
   token: string,
   messageId: number
-): Record<string, never> | errorMessage {
+): Record<string, never> {
   const data = getData();
   const user = getUserByToken(token);
   const channel = findChannelByMessageId(messageId);
@@ -78,11 +79,11 @@ export function messageRemoveV1(
   let flags;
 
   if (user === undefined) {
-    return { error: 'Token is invalid' };
+    throw HTTPError(403, 'Token is invalid');
   }
 
   if (channel === undefined && dm === undefined) {
-    return { error: 'Message Not Found' };
+    throw HTTPError(400, 'Message does not exist');
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
@@ -95,7 +96,7 @@ export function messageRemoveV1(
   const allOwnerIds = getAllOwnerIds(flags);
 
   if (allMemberIds.includes(user.authUserId) === false) {
-    return { error: 'User is not registered in channel' };
+    throw HTTPError(403, 'User is not registered in channel');
   }
 
   if (flags === channel) {
@@ -107,9 +108,10 @@ export function messageRemoveV1(
       allOwnerIds.includes(user.authUserId) === false &&
       user.isGlobalOwner === 2
     ) {
-      return {
-        error: 'User is not the author of the message and not an owner',
-      };
+      throw HTTPError(
+        403,
+        'User is not the author of the message and not an owner'
+      );
     }
 
     data.channels[channelIndex].messages.splice(messageIndex, 1);
@@ -123,9 +125,7 @@ export function messageRemoveV1(
       messageToEdit.uId !== user.authUserId &&
       allOwnerIds.includes(user.authUserId) === false
     ) {
-      return {
-        error: 'User is not the author of the message and not an owner',
-      };
+      throw HTTPError(403, 'User is not the author of the message');
     }
 
     data.dm[dmIndex].messages.splice(messageIndex, 1);
@@ -145,7 +145,7 @@ export function messageEditV1(
   token: string,
   messageId: number,
   message: string
-): Record<string, never> | errorMessage {
+): Record<string, never> {
   const data = getData();
   const user = getUserByToken(token);
   const channel = findChannelByMessageId(messageId);
@@ -154,11 +154,11 @@ export function messageEditV1(
   let flags;
 
   if (user === undefined) {
-    return { error: 'Token is invalid' };
+    throw HTTPError(403, 'Token is invalid');
   }
 
   if (channel === undefined && dm === undefined) {
-    return { error: 'Message Not Found' };
+    throw HTTPError(400, 'Message does not exist');
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
@@ -171,7 +171,7 @@ export function messageEditV1(
   const allOwnerIds = getAllOwnerIds(flags);
 
   if (allMemberIds.includes(user.authUserId) === false) {
-    return { error: 'User is not registered in channel' };
+    throw HTTPError(403, 'User is not registered in channel');
   }
 
   if (flags === channel) {
@@ -183,9 +183,10 @@ export function messageEditV1(
       allOwnerIds.includes(user.authUserId) === false &&
       user.isGlobalOwner === 2
     ) {
-      return {
-        error: 'User is not the author of the message and not an owner',
-      };
+      throw HTTPError(
+        403,
+        'User is not the author of the message and not an owner'
+      );
     }
 
     // Delets message if message is empty
@@ -195,7 +196,7 @@ export function messageEditV1(
       return {};
     }
     if (message.length > 1000) {
-      return { error: 'Message is too long' };
+      throw HTTPError(400, 'Message is too long');
     }
 
     data.channels[channelIndex].messages[messageIndex].message = message;
@@ -209,9 +210,7 @@ export function messageEditV1(
       messageToEdit.uId !== user.authUserId &&
       allOwnerIds.includes(user.authUserId) === false
     ) {
-      return {
-        error: 'User is not the author of the message and not an owner',
-      };
+      throw HTTPError(403, 'User is not the author of the message');
     }
 
     // Delets message if message is empty
@@ -221,7 +220,7 @@ export function messageEditV1(
       return {};
     }
     if (message.length > 1000) {
-      return { error: 'Message is too long' };
+      throw HTTPError(400, 'Message is too long');
     }
 
     data.dm[dmIndex].messages[messageIndex].message = message;
@@ -241,26 +240,26 @@ export function messageSendDmV1(
   token: string,
   dmId: number,
   message: string
-): newMessageReturn | errorMessage {
+): newMessageReturn {
   const data = getData();
   const user = getUserByToken(token);
   const dm = findDMbyId(dmId);
   const allMemberIds = getAllMemberIds(dm);
 
   if (user === undefined) {
-    return { error: 'Token is invalid' };
+    throw HTTPError(403, 'Token is invalid');
   }
   if (dm === undefined) {
-    return { error: 'DM Not Found' };
+    throw HTTPError(400, 'DM does not exist');
   }
   if (allMemberIds.includes(user.authUserId) === false) {
-    return { error: 'User is not registered in DM' };
+    throw HTTPError(403, 'User is not registered in DM');
   }
   if (message.length < 1) {
-    return { error: 'Message is too short' };
+    throw HTTPError(400, 'Message is too short');
   }
   if (message.length > 1000) {
-    return { error: 'Message is too long' };
+    throw HTTPError(400, 'Message is too long');
   }
 
   const dmIndex = getDmIndex(dmId);

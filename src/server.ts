@@ -172,8 +172,8 @@ app.post('/channel/invite/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.delete('/message/remove/v1', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
+app.delete('/message/remove/v2', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
   const messageId = parseInt(req.query.messageId as string);
   const result = messageRemoveV1(token, messageId);
   return res.json(result);
@@ -192,13 +192,15 @@ app.get('/dm/details/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.put('/message/edit/v1', (req: Request, res: Response, next) => {
-  const { token, messageId, message } = req.body;
+app.put('/message/edit/v2', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId, message } = req.body;
   const result = messageEditV1(token, messageId, message);
   return res.json(result);
 });
-app.post('/message/send/v1', (req: Request, res: Response, next) => {
-  const { token, channelId, message } = req.body;
+app.post('/message/send/v2', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { channelId, message } = req.body;
   const result = messageSendV1(token, channelId, message);
   return res.json(result);
 });
@@ -241,8 +243,9 @@ app.delete('/dm/remove/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.post('/message/senddm/v1', (req: Request, res: Response, next) => {
-  const { token, dmId, message } = req.body;
+app.post('/message/senddm/v2', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { dmId, message } = req.body;
   const result = messageSendDmV1(token, dmId, message);
   return res.json(result);
 });
