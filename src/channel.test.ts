@@ -131,7 +131,7 @@ describe('testing channelMessage (ALL VALID CASES)', () => {
   });
 });
 
-describe('/channel/details/v2', () => {
+describe('/channel/details/v3', () => {
   let user: AuthReturn, user2: AuthReturn;
   let channel: channelsCreateReturn;
   beforeEach(() => {
@@ -155,18 +155,18 @@ describe('/channel/details/v2', () => {
     clearV1();
   });
 
-  test('invalid token', () => {
+  test('invalid channelId', () => {
     expect(channelDetails(user.token, channel.channelId + 1)).toStrictEqual(
-      ERROR
+      400
     );
   });
 
   test('valid token, user is not a member', () => {
-    expect(channelDetails(user2.token, channel.channelId)).toStrictEqual(ERROR);
+    expect(channelDetails(user2.token, channel.channelId)).toStrictEqual(403);
   });
 
   test('invalid token', () => {
-    expect(channelDetails('asade', channel.channelId)).toStrictEqual(ERROR);
+    expect(channelDetails('asade', channel.channelId)).toStrictEqual(403);
   });
 
   test('valid input', () => {
