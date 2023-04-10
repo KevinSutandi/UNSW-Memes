@@ -173,7 +173,7 @@ export function channelInviteV1(token: string, channelId: number, uId: number) {
     isChannel(channelId) &&
     allMemberIds.includes(user.authUserId) === false
   ) {
-    throw HTTPError(400, 'You are not a channel member');
+    throw HTTPError(403, 'You are not a channel member');
   }
   // Finds the user based on uId
   const invitedUser = findUser(uId);
