@@ -108,8 +108,8 @@ app.delete('/clear/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.get('/channel/messages/v2', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
+app.get('/channel/messages/v3', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
   const channelId = parseInt(req.query.channelId as string);
   const start = parseInt(req.query.start as string);
   const result = channelMessagesV1(token, channelId, start);

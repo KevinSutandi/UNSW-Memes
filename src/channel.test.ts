@@ -11,7 +11,8 @@ import {
   channelRemoveOwner,
   messageSend,
 } from './httpHelper';
-import { AuthReturn, channelsCreateReturn } from './interfaces';
+import { messagesObject } from './interfaces';
+import { AuthReturn, channelsCreateReturn, messages } from './interfaces';
 
 const ERROR = { error: expect.any(String) };
 
@@ -50,24 +51,22 @@ describe('testing channelMessage (ALL INVALID CASES)', () => {
   });
 
   test('channelId does not exist test', () => {
-    expect(
-      channelMessage(user1.token, channel1.channelId + 100000, 0)
-    ).toStrictEqual(ERROR);
+    expect(channelMessage(user1.token, channel1.channelId + 100000, 0)).toBe(
+      400
+    );
   });
   test('token does not exist test', () => {
-    expect(
-      channelMessage(user3.token + 999, channel3.channelId, 0)
-    ).toStrictEqual(ERROR);
+    expect(channelMessage(user3.token + 999, channel3.channelId, 0)).toBe(403);
   });
   test('User is not in channel (cannot read messages)', () => {
     expect(channelMessage(user3.token, channel2.channelId, 0)).toStrictEqual(
-      ERROR
+      403
     );
   });
   test('start index is greater than the number of messages', () => {
     expect(
       channelMessage(user2.token, channel2.channelId, 999999)
-    ).toStrictEqual(ERROR);
+    ).toStrictEqual(400);
   });
   test('No Messages in channel (expect empty array)', () => {
     expect(channelMessage(user2.token, channel2.channelId, 0)).toStrictEqual({
@@ -93,12 +92,22 @@ describe('testing channelMessage (ALL VALID CASES)', () => {
   });
 
   test('30 messages in the channel', () => {
+    const messageIds: messagesObject[] = [];
     for (let i = 0; i < 30; i++) {
-      messageSend(user1.token, channel1.channelId, `hello ${i}`);
+      messageIds[i] = messageSend(
+        user1.token,
+        channel1.channelId,
+        `hello ${i}`
+      );
     }
+
+    messageIds.reverse();
 
     const result = channelMessage(user1.token, channel1.channelId, 0);
     const numMessages = result.messages.length;
+    for (let i = 0; i < numMessages; i++) {
+      expect(result.messages[i].messageId).toBe(messageIds[i].messageId);
+    }
     expect(result).toStrictEqual({
       messages: expect.any(Array),
       start: 0,
@@ -108,9 +117,16 @@ describe('testing channelMessage (ALL VALID CASES)', () => {
   });
 
   test('more than 50 messages in the channel', () => {
+    const messageIds: messagesObject[] = [];
     for (let i = 0; i < 60; i++) {
-      messageSend(user1.token, channel1.channelId, `hello shin ${i}`);
+      messageIds[i] = messageSend(
+        user1.token,
+        channel1.channelId,
+        `hello shin ${i}`
+      );
     }
+
+    messageIds.reverse();
 
     const result = channelMessage(user1.token, channel1.channelId, 0);
     const result2 = channelMessage(user1.token, channel1.channelId, 50);
@@ -121,7 +137,17 @@ describe('testing channelMessage (ALL VALID CASES)', () => {
       start: 0,
       end: 50,
     });
+    for (let i = 0; i < 50; i++) {
+      expect(result.messages[i].messageId).toStrictEqual(
+        messageIds[i].messageId
+      );
+    }
     expect(numMessages).toBe(50);
+    for (let i = 50; i < 60; i++) {
+      expect(result2.messages[i - 50].messageId).toStrictEqual(
+        messageIds[i].messageId
+      );
+    }
     expect(result2).toStrictEqual({
       messages: expect.any(Array),
       start: 50,
