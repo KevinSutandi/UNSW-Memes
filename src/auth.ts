@@ -1,6 +1,11 @@
 import validator from 'validator';
 import HTTPError from 'http-errors';
-import { findTokenIndex, getUserByToken, makeToken } from './functionHelper';
+import {
+  findTokenIndex,
+  getUserByToken,
+  makeToken,
+  HashingString,
+} from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
 
@@ -59,31 +64,34 @@ export function authRegisterV1(
   const dataStore = getData();
 
   if (!validator.isEmail(email)) {
-    return { error: 'Please enter valid email!' };
+    throw HTTPError(400, 'Email is not valid');
   }
 
   const emailfound = dataStore.users.find((item) => item.email === email);
   if (emailfound !== undefined) {
-    return { error: 'This email address is already used!' };
+    throw HTTPError(400, 'Email already exists');
   }
 
   if (password.length < 6) {
-    return { error: 'Your password is too short!' };
+    throw HTTPError(400, 'Password is too short');
   }
 
   if (nameFirst.length > 50) {
-    return { error: 'Your first name is too long' };
+    throw HTTPError(400, 'Your first name is too long');
   } else if (nameFirst.length < 1) {
-    return { error: 'Your first name is too short' };
+    throw HTTPError(400, 'Your first name is too short');
   }
 
   if (nameLast.length > 50) {
-    return { error: 'Your last name is too long' };
+    throw HTTPError(400, 'Your last name is too long');
   } else if (nameLast.length < 1) {
-    return { error: 'Your last name is too short' };
+    throw HTTPError(400, 'Your last name is too short');
   }
 
   const authId = Math.floor(Math.random() * 10000000);
+
+  // hash password
+  const hashPassword = HashingString(password);
 
   // Create a random token that is a string and it is unique every time
   const token = makeToken();
@@ -113,7 +121,7 @@ export function authRegisterV1(
     authUserId: authId,
     handleStr: handlestring,
     email: email,
-    password: password,
+    password: hashPassword,
     nameFirst: nameFirst,
     nameLast: nameLast,
     isGlobalOwner: isGlobalOwner,
