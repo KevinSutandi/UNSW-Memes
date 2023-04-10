@@ -67,7 +67,7 @@ app.get('/echo', (req: Request, res: Response, next) => {
 // handles errors nicely
 app.use(errorHandler());
 
-app.post('/auth/login/v2', (req: Request, res: Response, next) => {
+app.post('/auth/login/v3', (req: Request, res: Response, next) => {
   const { email, password } = req.body;
   const result = authLoginV1(email, password);
   return res.json(result);
@@ -134,8 +134,8 @@ app.post('/channel/removeowner/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.get('/channel/details/v2', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
+app.get('/channel/details/v3', (req: Request, res: Response, next) => {
+  const token = req.header('token');
   const channelId = parseInt(req.query.channelId as string);
   const result = channelDetailsV1(token, channelId);
   return res.json(result);
