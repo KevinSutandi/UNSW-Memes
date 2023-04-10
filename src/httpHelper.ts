@@ -85,11 +85,16 @@ export function channelMessage(
   channelId: number,
   start: number
 ) {
-  return requestHelper('GET', '/channel/messages/v2', {
-    token,
-    channelId,
-    start,
-  });
+  const headers = { token };
+  return requestHelper(
+    'GET',
+    '/channel/messages/v3',
+    {
+      channelId,
+      start,
+    },
+    headers
+  );
 }
 
 export function channelDetails(token: string, channelId: number) {
