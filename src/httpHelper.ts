@@ -73,7 +73,7 @@ export function channelsCreate(
   name: string,
   isPublic: boolean
 ): channelsCreateReturn {
-  return requestHelper('POST', '/channels/create/v2', {
+  return requestHelper('POST', '/channels/create/v3', {
     token,
     name,
     isPublic,

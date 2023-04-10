@@ -79,7 +79,7 @@ app.post('/auth/register/v3', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.post('/channels/create/v2', (req: Request, res: Response, next) => {
+app.post('/channels/create/v3', (req: Request, res: Response, next) => {
   const { token, name, isPublic } = req.body;
   const result = channelsCreateV1(token, name, isPublic);
   return res.json(result);
