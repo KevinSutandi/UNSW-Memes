@@ -136,7 +136,6 @@ app.post('/channel/removeowner/v1', (req: Request, res: Response, next) => {
 
 app.get('/channel/details/v3', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
-  console.log(token);
   const channelId = parseInt(req.query.channelId as string);
   const result = channelDetailsV1(token, channelId);
   return res.json(result);
