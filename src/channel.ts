@@ -152,13 +152,13 @@ export function channelInviteV1(token: string, channelId: number, uId: number) {
   // Error cases
   const user = getUserByToken(token);
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   if (!isChannel(channelId)) {
-    return { error: 'channelId does not refer to a valid channel' };
+    throw HTTPError(400, 'channelId does not refer to a valid channel');
   }
   if (!isUser(uId)) {
-    return { error: 'uId does not refer to a valid user' };
+    throw HTTPError(400, 'uId does not refer to a valid user');
   }
   const channel = findChannel(channelId);
 
@@ -166,14 +166,14 @@ export function channelInviteV1(token: string, channelId: number, uId: number) {
   const allMemberIds = getAllMemberIds(channel);
 
   if (allMemberIds.includes(uId) === true) {
-    return { error: 'User already in the channel' };
+    throw HTTPError(400, 'User already in the channel');
   }
 
   if (
     isChannel(channelId) &&
     allMemberIds.includes(user.authUserId) === false
   ) {
-    return { error: 'You are not a channel member' };
+    throw HTTPError(400, 'You are not a channel member');
   }
   // Finds the user based on uId
   const invitedUser = findUser(uId);
