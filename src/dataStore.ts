@@ -1,10 +1,10 @@
 import fs from 'fs';
-import { Channel, Dm, users, newData } from './interfaces';
+import { newData, userData, channelData, dmData } from './interfaces';
 
 export let data: {
-  users: users[];
-  channels: Channel[];
-  dm: Dm[];
+  users: userData[];
+  channels: channelData[];
+  dm: dmData[];
   secret: string;
 } = {
   users: [],

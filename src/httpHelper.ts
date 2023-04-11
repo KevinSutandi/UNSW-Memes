@@ -244,3 +244,31 @@ export function messageSendDm(token: string, dmId: number, message: string) {
     { token }
   );
 }
+
+export function standUpStart(token: string, channelId: number, length: number) {
+  return requestHelper(
+    'POST',
+    '/standup/start/v1',
+    {
+      channelId,
+      length,
+    },
+    { token }
+  );
+}
+
+export function standUpActive(token: string, channelId: number) {
+  return requestHelper('GET', '/standup/active/v1', { channelId }, { token });
+}
+
+export function standUpSend(token: string, channelId: number, message: string) {
+  return requestHelper(
+    'POST',
+    '/standup/send/v1',
+    {
+      channelId,
+      message,
+    },
+    { token }
+  );
+}

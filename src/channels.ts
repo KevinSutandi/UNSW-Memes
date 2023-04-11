@@ -62,6 +62,11 @@ export function channelsCreateV1(
       },
     ],
     messages: [],
+    standUp: {
+      standUpActive: false,
+      standUpLength: 0,
+      standUpMessage: [],
+    },
     start: 0,
     end: 0,
   });
