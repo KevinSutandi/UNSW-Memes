@@ -167,7 +167,7 @@ app.get('/dm/list/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.post('/channel/invite/v2', (req: Request, res: Response, next) => {
+app.post('/channel/invite/v3', (req: Request, res: Response, next) => {
   const { token, channelId, uId } = req.body;
   const result = channelInviteV1(token, channelId, uId);
   return res.json(result);

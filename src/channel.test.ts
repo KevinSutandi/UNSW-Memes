@@ -738,7 +738,7 @@ describe('testing channelAddowner', () => {
   });
 });
 
-describe('/channel/invite/v2', () => {
+describe('/channel/invite/v3', () => {
   let user1: AuthReturn, user2: AuthReturn, user3: AuthReturn;
   let channel1: channelsCreateReturn,
     channel2: channelsCreateReturn,
@@ -770,60 +770,60 @@ describe('/channel/invite/v2', () => {
   test('channelId does not exist test 1', () => {
     expect(
       channelInvite(user1.token, channel1.channelId + 5, user2.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toEqual(400);
   });
   test('channelId does not exist test 2', () => {
     expect(
       channelInvite(user3.token, channel3.channelId + 3, user3.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toEqual(400);
   });
   test('invalid token test 1', () => {
     expect(
       channelInvite('user1.token + 4', channel3.channelId, user2.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toEqual(403);
   });
   test('invalid token test 2', () => {
     expect(
       channelInvite('user3.token + 10', channel2.channelId, user1.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toEqual(403);
   });
   test('invalid token test 3', () => {
     expect(
-      channelInvite(user3.token, channel2.channelId, user1.authUserId + 99)
-    ).toStrictEqual(ERROR);
+      channelInvite('user3.token', channel2.channelId, user1.authUserId + 99)
+    ).toEqual(403);
   });
   test('person invited does not exist test 1', () => {
     expect(
       channelInvite(user1.token, channel1.channelId, user2.authUserId + 99)
-    ).toStrictEqual(ERROR);
+    ).toEqual(400);
   });
   test('person invited does not exist test 2', () => {
     expect(
       channelInvite(user3.token, channel3.channelId, user1.authUserId + 99)
-    ).toStrictEqual(ERROR);
+    ).toEqual(400);
   });
   test('person invited already in channel test 1', () => {
     channelJoin(user2.token, channel1.channelId);
     expect(
       channelInvite(user1.token, channel1.channelId, user2.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toEqual(400);
   });
   test('person invited already in channel test 2', () => {
     channelJoin(user1.token, channel2.channelId);
     channelJoin(user3.token, channel2.channelId);
     expect(
       channelInvite(user2.token, channel2.channelId, user3.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toEqual(400);
   });
   test('person inviting is not in channel test 1', () => {
     expect(
       channelInvite(user1.token, channel2.channelId, user3.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toEqual(403);
   });
   test('person inviting is not in channel test 2', () => {
     expect(
       channelInvite(user3.token, channel2.channelId, user1.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toEqual(403);
   });
   test('Invite person to channel test 1', () => {
     channelInvite(user1.token, channel1.channelId, user3.authUserId);

@@ -143,7 +143,7 @@ export function messageSend(token: string, channelId: number, message: string) {
 }
 
 export function channelInvite(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/invite/v2', { token, channelId, uId });
+  return requestHelper('POST', '/channel/invite/v3', { token, channelId, uId });
 }
 
 export function messageRemove(token: string, messageId: number) {
