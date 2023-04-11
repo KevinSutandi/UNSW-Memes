@@ -108,12 +108,9 @@ export function standupSendV1(
   const data = getData();
 
   const standupDeets = standupActiveV1(token, channelId);
-  if (standupDeets.isActive === false) {
-    throw HTTPError(400, 'Standup is not active');
-  }
 
   const timeNow = Math.floor(Date.now() / 1000);
-  if (timeNow > standupDeets.timeFinish) {
+  if (timeNow > standupDeets.timeFinish && standupDeets.isActive === false) {
     throw HTTPError(400, 'Standup has finished');
   }
 

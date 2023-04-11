@@ -138,8 +138,8 @@ describe('Test error cases for standup with async', () => {
 
     channelJoin(user2.token, channel1.channelId);
 
-    const timeToCompare = Math.floor(new Date().getTime() / 1000) + 3;
-    const timeFinish = standUpStart(user1.token, channel1.channelId, 3);
+    const timeToCompare = Math.floor(new Date().getTime() / 1000) + 2;
+    const timeFinish = standUpStart(user1.token, channel1.channelId, 2);
 
     // check the timeFinish is within 3 seconds
     expect(timeFinish.timeFinish).toBeGreaterThanOrEqual(timeToCompare);
@@ -163,7 +163,7 @@ describe('Test error cases for standup with async', () => {
     ).toStrictEqual({});
 
     // wait for standup to end
-    await sleep(3);
+    await sleep(2);
     expect(standUpActive(user1.token, channel1.channelId)).toStrictEqual({
       isActive: false,
       timeFinish: 0,
