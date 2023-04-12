@@ -26,6 +26,7 @@ import {
   messageSendV1,
   messageEditV1,
   messageSendDmV1,
+  messageSendLaterV1,
 } from './message';
 import {
   setEmail,
@@ -280,6 +281,13 @@ app.post('/standup/send/v1', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
   const { channelId, message } = req.body;
   const result = standupSendV1(token, channelId, message);
+  return res.json(result);
+});
+
+app.post('/message/sendlater/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { channelId, message, timeSent } = req.body;
+  const result = messageSendLaterV1(token, channelId, message, timeSent);
   return res.json(result);
 });
 
