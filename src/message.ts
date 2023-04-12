@@ -303,7 +303,7 @@ export function messageSendLaterV1(
     throw HTTPError(400, 'Message is too long');
   }
 
-  const currentTime = new Date().getTime();
+  const currentTime = Math.floor(Date.now() / 1000);
   if (timeSent < currentTime) {
     throw HTTPError(400, 'Time sent cannot be a time in the past');
   }
@@ -320,8 +320,8 @@ export function messageSendLaterV1(
       timeSent: Math.floor(Date.now() / 1000),
     };
     data.channels[channelIndex].messages.push(newMessage);
-  }, timeDelay);
+    setData(data);
+  }, timeDelay * 1000);
 
-  setData(data);
   return { messageId: messageId };
 }
