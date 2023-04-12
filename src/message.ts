@@ -325,3 +325,52 @@ export function messageSendLaterV1(
 
   return { messageId: messageId };
 }
+
+export function messageSendLaterDmV1(
+  token: string,
+  dmId: number,
+  message: string,
+  timeSent: number
+) {
+  const data = getData();
+  const user = getUserByToken(token);
+  const dm = findDMbyId(dmId);
+  const allMemberIds = getAllMemberIds(dm);
+
+  if (user === undefined) {
+    throw HTTPError(403, 'Token is invalid');
+  }
+  if (dm === undefined) {
+    throw HTTPError(400, 'DM does not exist');
+  }
+  if (allMemberIds.includes(user.authUserId) === false) {
+    throw HTTPError(403, 'User is not registered in DM');
+  }
+  if (message.length < 1) {
+    throw HTTPError(400, 'Message is too short');
+  }
+  if (message.length > 1000) {
+    throw HTTPError(400, 'Message is too long');
+  }
+
+  const currentTime = Math.floor(Date.now() / 1000);
+  if (timeSent < currentTime) {
+    throw HTTPError(400, 'Time sent cannot be a time in the past');
+  }
+
+  const dmIndex = getDmIndex(dmId);
+  const messageId = Math.floor(Math.random() * 1000000);
+
+  const timeDelay = timeSent - currentTime;
+  setTimeout(() => {
+    const newMessage = {
+      messageId: messageId,
+      uId: user.authUserId,
+      message: message,
+      timeSent: Math.floor(Date.now() / 1000),
+    };
+    data.dm[dmIndex].messages.push(newMessage);
+    setData(data);
+  }, timeDelay * 1000);
+  return { messageId: messageId };
+}
