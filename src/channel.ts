@@ -353,7 +353,6 @@ export function channelAddOwnerV1(
  * @param {number} uId - The ID of the user to remove as owner.
  * @returns {Object | errorMessage} An empty object if successful, or an object with an "error" property if unsuccessful.
  */
-
 export function channelRemoveOwnerV1(
   token: string,
   channelId: number,

@@ -13,7 +13,6 @@ const SERVER_URL = `${url}:${port}`;
  * @param {object} payload - The payload to include in the HTTP request.
  * @returns {object} - The JSON response from the server.
  */
-
 export function requestHelper(
   method: HttpVerb,
   path: string,
