@@ -172,7 +172,14 @@ export function channelRemoveOwner(
 }
 
 export function dmCreate(token: string, uIds: Array<number>) {
-  return requestHelper('POST', '/dm/create/v1', { token, uIds });
+  return requestHelper(
+    'POST',
+    '/dm/create/v1',
+    {
+      uIds,
+    },
+    { token }
+  );
 }
 
 export function dmMessages(token: string, dmId: number, start: number) {

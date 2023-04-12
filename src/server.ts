@@ -143,7 +143,8 @@ app.get('/channel/details/v3', (req: Request, res: Response, next) => {
 });
 
 app.post('/dm/create/v1', (req: Request, res: Response, next) => {
-  const { token, uIds } = req.body;
+  const token = req.headers.token as string;
+  const { uIds } = req.body;
   const result = dmCreateV1(token, uIds);
   return res.json(result);
 });
