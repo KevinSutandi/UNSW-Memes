@@ -6,6 +6,7 @@ import {
   setEmail,
   setHandle,
   clearV1,
+  userProfileUploadPhoto,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -48,6 +49,7 @@ describe('userProfile iteration 2 testing', () => {
         nameFirst: 'Jonah',
         nameLast: 'Meggs',
         handleStr: expect.any(String),
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -60,6 +62,7 @@ describe('userProfile iteration 2 testing', () => {
         nameFirst: 'Almina',
         nameLast: 'Kova',
         handleStr: expect.any(String),
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -87,6 +90,7 @@ describe('userProfile iteration 2 testing', () => {
         nameFirst: 'Jonah',
         nameLast: 'Meggs',
         handleStr: expect.any(String),
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -100,6 +104,7 @@ describe('userProfile iteration 2 testing', () => {
         nameFirst: 'Almina',
         nameLast: 'Kova',
         handleStr: expect.any(String),
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -121,6 +126,7 @@ describe('userProfile iteration 2 testing', () => {
         nameFirst: 'Jonah',
         nameLast: 'Meggs',
         handleStr: 'Hello Kitty',
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -134,6 +140,7 @@ describe('userProfile iteration 2 testing', () => {
         nameFirst: 'Almina',
         nameLast: 'Kova',
         handleStr: 'Batman',
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -157,6 +164,7 @@ describe('userProfile iteration 2 testing', () => {
         nameFirst: 'Almina',
         nameLast: 'Kova',
         handleStr: expect.any(String),
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -170,6 +178,7 @@ describe('userProfile iteration 2 testing', () => {
         nameFirst: 'Jonah',
         nameLast: 'Meggs',
         handleStr: expect.any(String),
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -187,6 +196,7 @@ describe('userProfile iteration 2 testing', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: expect.any(String),
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user2.authUserId,
@@ -194,8 +204,66 @@ describe('userProfile iteration 2 testing', () => {
           nameFirst: 'Almina',
           nameLast: 'Kova',
           handleStr: expect.any(String),
+          profileImgUrl: expect.any(String),
         },
       ],
     });
+  });
+});
+
+describe('userProfileUploadPhoto Error Cases', () => {
+  let user: AuthReturn;
+  beforeEach(() => {
+    clearV1();
+    user = authRegister(
+      'onlyfortestttt06@gmail.com',
+      'testpw0005',
+      'Jonah',
+      'Meggs'
+    );
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  const validImgUrl = 'http://i.redd.it/v0caqchbtn741.jpg';
+  const invalidPNG = 'https://i.redd.it/v0caqchbtn741.png';
+  const invalid404 = 'https://imgur.com/F9Nf9FKSLJDFHKJLx.jpg';
+
+  test('userProfileUploadPhoto invalid Token', () => {
+    expect(
+      userProfileUploadPhoto('wrong token', validImgUrl, 0, 0, 200, 200)
+    ).toStrictEqual(403);
+  });
+
+  test('userProfileUploadPhoto invalid image url (not jpg)', () => {
+    expect(
+      userProfileUploadPhoto(user.token, invalidPNG, 0, 0, 200, 200)
+    ).toStrictEqual(400);
+  });
+
+  test('userProfileUploadPhoto invalid image url (404)', () => {
+    expect(
+      userProfileUploadPhoto(user.token, invalid404, 0, 0, 200, 200)
+    ).toStrictEqual(400);
+  });
+
+  test('invalid dimensions', () => {
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 0, 0)
+    ).toStrictEqual(400);
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 300, 300, 0, 0)
+    ).toStrictEqual(400);
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 900, 900)
+    ).toStrictEqual(400);
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 200, 900)
+    ).toStrictEqual(400);
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 900, 200)
+    ).toStrictEqual(400);
   });
 });

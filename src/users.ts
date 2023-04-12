@@ -1,9 +1,17 @@
 import { getData, setData } from './dataStore';
 import { userObject, errorMessage, allUsers } from './interfaces';
-import { isUser, getUserByToken, findUserIndex } from './functionHelper';
+import {
+  isUser,
+  getUserByToken,
+  findUserIndex,
+  downloadImage,
+} from './functionHelper';
 import validator from 'validator';
 import HttpError from 'http-errors';
+import { port } from './config.json';
 import request from 'sync-request';
+import sharp from 'sharp';
+import fs from 'fs';
 
 /**
  * For a valid user, userProfileV1 returns information about the user
@@ -193,48 +201,48 @@ export function userProfileUploadPhotoV1(
     throw HttpError(400, 'Invalid image type');
   }
 
-  // check if image is any of xStart, yStart, xEnd, yEnd are not within the dimensions of the image
-  const download = require('image-downloader');
+  downloadImage(imgUrl, `${user.authUserId}.jpg`);
 
-  const options = {
-    url: imgUrl,
-    dest: '../../img/default.jpg',
-  };
+  const imagePath = `img/${user.authUserId}.jpg`;
 
-  download.image(options);
+  const sizeOf = require('image-size');
+  const dimensions = sizeOf(imagePath);
 
-  const sharp = require('sharp');
+  if (
+    xStart < 0 ||
+    yStart < 0 ||
+    xEnd > dimensions.width ||
+    yEnd > dimensions.height ||
+    xStart >= xEnd ||
+    yStart >= yEnd
+  ) {
+    throw HttpError(400, 'Invalid image dimensions');
+  }
 
-  const image = sharp('../../img/default.jpg');
-
-  image.stats.then((stats: any) => {
-    if (
-      xStart < 0 ||
-      yStart < 0 ||
-      xEnd > stats.width ||
-      yEnd > stats.height ||
-      xStart > xEnd ||
-      yStart > yEnd
-    ) {
-      throw HttpError(400, 'Invalid image dimensions');
-    }
-  });
-
-  const randomUrl = Math.random().toString(36).substring(2, 15);
-
-  // crop image according to xStart, yStart, xEnd, yEnd
-  image
+  // crop photo
+  const randomString = Math.random().toString(36).substring(5);
+  const imageCroppedPath = `img/${randomString}.jpg`;
+  sharp(imagePath)
     .extract({
       left: xStart,
       top: yStart,
       width: xEnd - xStart,
       height: yEnd - yStart,
     })
-    .toFile(`../../img/${randomUrl}.jpg`);
+    .toFile(imageCroppedPath);
 
-  const data = getData();
+  // delete the uncropped photo
+  fs.unlinkSync(imagePath);
+
   const userIndex = findUserIndex(user.authUserId);
-  data.users[userIndex].profileImgUrl = `https://i.imgur.com/${randomUrl}.jpg`;
+  const data = getData();
+  const PORT: number = parseInt(process.env.PORT || port);
+  const HOST: string = process.env.IP || 'localhost';
+
+  data.users[
+    userIndex
+  ].profileImgUrl = `http://${HOST}:${PORT}/img/${randomString}.jpg`;
   setData(data);
+
   return {};
 }

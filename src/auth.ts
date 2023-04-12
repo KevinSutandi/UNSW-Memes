@@ -7,6 +7,7 @@ import {
   makeToken,
   HashingString,
   getUserIndexByToken,
+  downloadImage,
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
@@ -118,14 +119,7 @@ export function authRegisterV1(
     isGlobalOwner = 1;
   }
 
-  const download = require('image-downloader');
-
-  const options = {
-    url: 'https://i.imgur.com/NtfLP7K.jpg',
-    dest: '../../img/default.jpg',
-  };
-
-  download.image(options);
+  downloadImage();
 
   const PORT: number = parseInt(process.env.PORT || port);
   const HOST: string = process.env.IP || 'localhost';

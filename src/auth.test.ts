@@ -36,6 +36,7 @@ describe('testing authRegisterV3', () => {
         nameFirst: 'EL_001',
         nameLast: 'YIU',
         handleStr: 'el001yiu',
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -56,6 +57,7 @@ describe('testing authRegisterV3', () => {
         nameFirst: 'abcdefghijklm',
         nameLast: 'YIUopqrst',
         handleStr: 'abcdefghijklmyiuopqr',
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -83,6 +85,7 @@ describe('testing authRegisterV3', () => {
         nameFirst: 'kevin',
         nameLast: 'sutandi',
         handleStr: 'kevinsutandi',
+        profileImgUrl: expect.any(String),
       },
     });
     expect(userProfile(result2.token, result2.authUserId)).toStrictEqual({
@@ -92,6 +95,7 @@ describe('testing authRegisterV3', () => {
         nameFirst: 'kevin',
         nameLast: 'sutandi',
         handleStr: 'kevinsutandi0',
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -126,6 +130,7 @@ describe('testing authRegisterV3', () => {
         nameFirst: 'abcdefghijklm',
         nameLast: 'YIUopqrst',
         handleStr: 'abcdefghijklmyiuopqr',
+        profileImgUrl: expect.any(String),
       },
     });
     expect(userProfile(result2.token, result2.authUserId)).toStrictEqual({
@@ -135,6 +140,7 @@ describe('testing authRegisterV3', () => {
         nameFirst: 'abcdefghijklm',
         nameLast: 'YIUopqrst',
         handleStr: 'abcdefghijklmyiuopqr0',
+        profileImgUrl: expect.any(String),
       },
     });
     expect(userProfile(result3.token, result3.authUserId)).toStrictEqual({
@@ -144,6 +150,7 @@ describe('testing authRegisterV3', () => {
         nameFirst: 'abcdefghijklm',
         nameLast: 'YIUopqrst',
         handleStr: 'abcdefghijklmyiuopqr1',
+        profileImgUrl: expect.any(String),
       },
     });
   });
