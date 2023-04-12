@@ -55,6 +55,8 @@ app.use(cors());
 // for logging errors (print to terminal)
 app.use(morgan('dev'));
 
+app.use('/img', express.static('img'));
+
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
 

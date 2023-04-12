@@ -38,6 +38,7 @@ export function userProfileV1(
       nameFirst: data.users[userNum].nameFirst,
       nameLast: data.users[userNum].nameLast,
       handleStr: data.users[userNum].handleStr,
+      profileImgUrl: data.users[userNum].profileImgUrl,
     },
   };
 }
@@ -162,6 +163,7 @@ export function getAllUsers(token: string): allUsers | errorMessage {
       nameFirst: a.nameFirst,
       nameLast: a.nameLast,
       handleStr: a.handleStr,
+      profileImgUrl: a.profileImgUrl,
     })),
   };
 }
