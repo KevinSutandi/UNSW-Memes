@@ -1,8 +1,21 @@
 import validator from 'validator';
-import { findTokenIndex, getUserByToken, makeToken } from './functionHelper';
+import HTTPError from 'http-errors';
+import {
+  findTokenIndex,
+  getUserByToken,
+  makeToken,
+  HashingString,
+} from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
 
+/**
+ * Logs the user and then assigns a token to the user
+ * @param {string} email - the email address
+ * @param {string} password - the password
+ * @returns { error : string } error - different error strings for different situations
+ * @returns { token: string, authUserId : number } token - the token for the user, authUserId - the authUserId for the user
+ */
 export function authLoginV1(
   email: string,
   password: string
@@ -10,23 +23,26 @@ export function authLoginV1(
   const dataStore = getData();
 
   let correctUser: userData;
+  const encryptedPassword = HashingString(password);
   for (const user of dataStore.users) {
-    if (email === user.email && password === user.password) {
+    if (email === user.email && encryptedPassword === user.password) {
       correctUser = user;
-    } else if (email === user.email && password !== user.password) {
-      return { error: 'Password is not correct' };
+    } else if (email === user.email && encryptedPassword !== user.password) {
+      throw HTTPError(400, 'Password is not correct');
     }
   }
-  if (correctUser !== undefined) {
-    const userIndex = dataStore.users.findIndex(
-      (item) => item.authUserId === correctUser.authUserId
-    );
-    const token = makeToken();
-    dataStore.users[userIndex].token.push({ token: token });
-    setData(dataStore);
-    return { authUserId: correctUser.authUserId, token: token };
+  if (correctUser === undefined) {
+    throw HTTPError(400, 'Email does not belong to a valid user');
   }
-  return { error: 'Email entered does not belong to a user' };
+  const userIndex = dataStore.users.findIndex(
+    (item) => item.authUserId === correctUser.authUserId
+  );
+
+  const token = HashingString(makeToken());
+
+  dataStore.users[userIndex].token.push({ token: token });
+  setData(dataStore);
+  return { authUserId: correctUser.authUserId, token: token };
 }
 
 /**
@@ -38,7 +54,6 @@ export function authLoginV1(
  * @returns { token: string, authUserId : number } token - the token for the user, authUserId - the authUserId for the user
  *
  */
-
 export function authRegisterV1(
   email: string,
   password: string,
@@ -48,31 +63,34 @@ export function authRegisterV1(
   const dataStore = getData();
 
   if (!validator.isEmail(email)) {
-    return { error: 'Please enter valid email!' };
+    throw HTTPError(400, 'Email is not valid');
   }
 
   const emailfound = dataStore.users.find((item) => item.email === email);
   if (emailfound !== undefined) {
-    return { error: 'This email address is already used!' };
+    throw HTTPError(400, 'Email already exists');
   }
 
   if (password.length < 6) {
-    return { error: 'Your password is too short!' };
+    throw HTTPError(400, 'Password is too short');
   }
 
   if (nameFirst.length > 50) {
-    return { error: 'Your first name is too long' };
+    throw HTTPError(400, 'Your first name is too long');
   } else if (nameFirst.length < 1) {
-    return { error: 'Your first name is too short' };
+    throw HTTPError(400, 'Your first name is too short');
   }
 
   if (nameLast.length > 50) {
-    return { error: 'Your last name is too long' };
+    throw HTTPError(400, 'Your last name is too long');
   } else if (nameLast.length < 1) {
-    return { error: 'Your last name is too short' };
+    throw HTTPError(400, 'Your last name is too short');
   }
 
   const authId = Math.floor(Math.random() * 10000000);
+
+  // hash password
+  const hashPassword = HashingString(password);
 
   // Create a random token that is a string and it is unique every time
   const token = makeToken();
@@ -102,7 +120,7 @@ export function authRegisterV1(
     authUserId: authId,
     handleStr: handlestring,
     email: email,
-    password: password,
+    password: hashPassword,
     nameFirst: nameFirst,
     nameLast: nameLast,
     isGlobalOwner: isGlobalOwner,
@@ -113,7 +131,11 @@ export function authRegisterV1(
 
   return { token: token, authUserId: authId };
 }
-
+/**
+ * Logs out the user and then removes the token from the user
+ * @param {string} token - the user's token
+ * @returns { error : string } error - different error strings for different situations
+ */
 export function authLogoutV1(token: string) {
   const data = getData();
   const user = getUserByToken(token);

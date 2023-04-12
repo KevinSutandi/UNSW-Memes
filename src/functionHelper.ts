@@ -1,6 +1,7 @@
 import { getData } from './dataStore';
-import { channelData, userData } from './interfaces';
+import { channelData, dmData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
+// import { data } from './dataStore';
 
 /**
  * Determines whether a channel is a valid channel
@@ -50,10 +51,10 @@ export function isUser(authUserId: number): boolean {
  *
  * @param {number} userId - the authenticated user Id
  * @returns {undefined} - returns undefined if the user isnt in the dataStore
- * @returns {user} - returns user object if the user is in the dataStore
+ * @returns {userData | undefined} - returns user object if the user is in the dataStore
  *
  */
-export function findUser(userId: number) {
+export function findUser(userId: number): userData | undefined {
   const data = getData();
   return data.users.find((a) => a.authUserId === userId);
 }
@@ -62,9 +63,9 @@ export function findUser(userId: number) {
  * Returns an array of member IDs for the specified channel.
  *
  * @param {object} channel - The channel object to retrieve member IDs from.
- * @returns {(Array.<uId>|null)} - An array of member IDs, or null if the channel does not contain any.
+ * @returns {(Array.<number>|null)} - An array of member IDs, or null if the channel does not contain any.
  */
-export function getAllMemberIds(channel: channelData) {
+export function getAllMemberIds(channel: channelData | dmData): Array<number> {
   if (channel) {
     return channel.allMembers.map((member) => member.uId);
   } else {
@@ -78,22 +79,48 @@ export function getAllMemberIds(channel: channelData) {
  * @param {number} channelId - The ID of the channel to retrieve the index of.
  * @returns {number} - The index of the channel with the specified ID, or -1 if no matching channel is found.
  */
-export function getChannelIndex(channelId: number) {
+export function getChannelIndex(channelId: number): number {
   const data = getData();
   return data.channels.findIndex((channel) => channel.channelId === channelId);
 }
 
+/**
+ * Returns the index of the DM with the specified ID.
+ * @param {number} dmId - The ID of the DM to retrieve the index of.
+ * @returns {number} - The index of the DM with the specified ID, or -1 if no matching DM is found.
+ */
+export function getDmIndex(dmId: number): number {
+  const data = getData();
+  return data.dm.findIndex((dm) => dm.dmId === dmId);
+}
+
+/**
+ * Checks if a user is a member of a given channel.
+ * @param {number} channelId - The ID of the channel to check.
+ * @param {number} userId - The ID of the user to check.
+ * @returns {boolean} - Returns true if the user is a member of the channel, and false otherwise.
+ */
 export function isChannelMember(channelId: number, userId: number): boolean {
   const channel = findChannel(channelId);
   const allMemberIds = getAllMemberIds(channel);
   return allMemberIds.includes(userId);
 }
 
+/**
+ *
+ * @returns {string} - returns a random string of 36 characters using uuidv4
+ */
 export function makeToken() {
-  const token = uuidv4();
+  let token = uuidv4();
+  token = HashingString(token);
   return token;
 }
 
+/**
+ * Returns the user object that corresponds to the provided token.
+ * @param {string} token - The token to search for.
+ * @returns {userData|undefined} - The user object if found, or undefined if not.
+ */
 export function getUserByToken(token: string) {
   const data = getData();
   const tokenFound = data.users.find((c) =>
@@ -101,8 +128,15 @@ export function getUserByToken(token: string) {
   );
   return tokenFound;
 }
-
-export function findChannelByMessageId(messageId: number) {
+/**
+ * Returns the channel that contains the message with the specified ID.
+ * @param {number} messageId - The ID of the message to find.
+ * @returns {channelData|undefined} - The channel object that contains the message with the specified ID,
+ *                                    or undefined if no channel contains the message.
+ */
+export function findChannelByMessageId(
+  messageId: number
+): channelData | undefined {
   const data = getData();
   const channelFound = data.channels.find((channel) =>
     channel.messages.find((messages) => messages.messageId === messageId)
@@ -110,12 +144,12 @@ export function findChannelByMessageId(messageId: number) {
   return channelFound;
 }
 
-export function findMember(userId: number, channelId: number) {
-  const channelFound = findChannel(channelId);
-  const memberfound = channelFound.allMembers.find(
-    (member) => member.uId === userId
+export function findDMbyMessageId(messageId: number): dmData | undefined {
+  const data = getData();
+  const dmFound = data.dm.find((dm) =>
+    dm.messages.find((messages) => messages.messageId === messageId)
   );
-  return memberfound;
+  return dmFound;
 }
 
 export function isChannelOwner(userId: number, channelId: number): boolean {
@@ -124,18 +158,45 @@ export function isChannelOwner(userId: number, channelId: number): boolean {
   return ownerMembersIds.includes(userId);
 }
 
-export function getAllOwnerIds(channel: channelData) {
-  if (channel) {
-    return channel.ownerMembers.map((owner) => owner.uId);
-  } else {
-    return null;
-  }
+export function getAllOwnerIds(channel: channelData | dmData): Array<number> {
+  return channel.ownerMembers.map((owner) => owner.uId);
 }
 
-export function findTokenIndex(user: userData, token: string) {
+export function findTokenIndex(user: userData, token: string): number {
   return user.token.findIndex((item) => item.token === token);
 }
 
-export function findMessageIndex(channel: channelData, messageId: number) {
+export function findOwnerIndex(channelId: number, uId: number): number {
+  const channelFound = findChannel(channelId);
+  return channelFound.ownerMembers.findIndex((item) => item.uId === uId);
+}
+
+export function findMessageIndexInChannel(
+  channel: channelData,
+  messageId: number
+): number {
   return channel.messages.findIndex((item) => item.messageId === messageId);
+}
+
+export function findMessageIndexInDM(dm: dmData, messageId: number): number {
+  return dm.messages.findIndex((item) => item.messageId === messageId);
+}
+
+export function findDMbyId(dmId: number): dmData | undefined {
+  const data = getData();
+  return data.dm.find((dm) => dm.dmId === dmId);
+}
+
+export function findUserIndex(userId: number): number {
+  const data = getData();
+  return data.users.findIndex((user) => user.authUserId === userId);
+}
+
+export function HashingString(string: string): string {
+  const jwt = require('jsonwebtoken');
+  const encryptedPassword = jwt.sign(
+    string,
+    'KEVINHINDIEALMINAELSHIBO2394850-92840)_(*%&)_($#&()*'
+  );
+  return encryptedPassword;
 }

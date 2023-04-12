@@ -5,7 +5,7 @@ import {
   channelsListReturn,
   errorMessage,
 } from './interfaces';
-
+import HTTPError from 'http-errors';
 /**
  * Creates a new channel with the given name,
  * that is either a public or private channel.
@@ -29,12 +29,12 @@ export function channelsCreateV1(
   const data = getData();
   // Returns error if name's length is less than 1 or more than 20
   if (name.length < 1 || name.length > 20) {
-    return { error: 'Invalid name length' };
+    throw HTTPError(400, 'Invalid name length');
   }
   const user = getUserByToken(token);
-  // Returns error if the given userId is invalid
+  // Returns error if the given token is invalid
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   const newId = Math.floor(Math.random() * 10000);
   // Finds the user data
@@ -62,6 +62,11 @@ export function channelsCreateV1(
       },
     ],
     messages: [],
+    standUp: {
+      standUpActive: false,
+      standUpLength: 0,
+      standUpMessage: [],
+    },
     start: 0,
     end: 0,
   });
@@ -77,7 +82,7 @@ export function channelsCreateV1(
  * from data.channels. Then it returns the channelId
  * and name.
  *
- * @param {number} authUserId - the authenticated user Id
+ * @param {string} token - the authenticated user token
  *
  * @returns {error: 'error message'} - if the given authUserId is invalid
  * @returns {{channelId: number, name: string}} - returns the details of the channel
@@ -111,6 +116,12 @@ export function channelsListV1(
   return userChannels;
 }
 
+/**
+ *
+ * @param {string} token - The authentication token of the user making the request.
+ * @returns {channelsListReturn | errorMessage} Returns an object containing an array
+ *                                              of channel objects with their IDs and names, or an error message if the token is invalid.
+ */
 export function channelsListAllV1(
   token: string
 ): channelsListReturn | errorMessage {

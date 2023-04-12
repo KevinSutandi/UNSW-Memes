@@ -13,7 +13,8 @@ const SERVER_URL = `${url}:${port}`;
  * @param {object} payload - The payload to include in the HTTP request.
  * @returns {object} - The JSON response from the server.
  */
- export function requestHelper(
+
+export function requestHelper(
   method: HttpVerb,
   path: string,
   payload: object,
@@ -49,7 +50,7 @@ export function authRegister(
   nameFirst: string,
   nameLast: string
 ) {
-  return requestHelper('POST', '/auth/register/v2', {
+  return requestHelper('POST', '/auth/register/v3', {
     email,
     password,
     nameFirst,
@@ -58,7 +59,7 @@ export function authRegister(
 }
 
 export function authLogin(email: string, password: string) {
-  return requestHelper('POST', '/auth/login/v2', { email, password });
+  return requestHelper('POST', '/auth/login/v3', { email, password });
 }
 
 export function clearV1() {
@@ -73,7 +74,7 @@ export function channelsCreate(
   name: string,
   isPublic: boolean
 ): channelsCreateReturn {
-  return requestHelper('POST', '/channels/create/v2', {
+  return requestHelper('POST', '/channels/create/v3', {
     token,
     name,
     isPublic,
@@ -85,15 +86,21 @@ export function channelMessage(
   channelId: number,
   start: number
 ) {
-  return requestHelper('GET', '/channel/messages/v2', {
-    token,
-    channelId,
-    start,
-  });
+  const headers = { token };
+  return requestHelper(
+    'GET',
+    '/channel/messages/v3',
+    {
+      channelId,
+      start,
+    },
+    headers
+  );
 }
 
 export function channelDetails(token: string, channelId: number) {
-  return requestHelper('GET', '/channel/details/v2', { token, channelId });
+  const headers = { token };
+  return requestHelper('GET', '/channel/details/v3', { channelId }, headers);
 }
 
 export function channelJoin(token: string, channelId: number) {
@@ -105,6 +112,10 @@ export function channelsList(token: string) {
   return requestHelper('GET', '/channels/list/v2', { token });
 }
 
+export function dmLeave(token: string, dmId: number) {
+  return requestHelper('POST', '/dm/leave/v1', { token, dmId });
+}
+
 export function channelsListAll(token: string) {
   return requestHelper('GET', '/channels/listall/v2', { token });
 }
@@ -114,37 +125,152 @@ export function channelLeave(token: string, channelId: number) {
 }
 
 export function channelAddOwner(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/addowner/v1', { token, channelId, uId });
-}
-
-export function messageSend(token: string, channelId: number, message: string) {
-  return requestHelper('POST', '/message/send/v1', {
+  return requestHelper('POST', '/channel/addowner/v1', {
     token,
     channelId,
-    message,
+    uId,
   });
 }
 
+export function messageSend(token: string, channelId: number, message: string) {
+  return requestHelper(
+    'POST',
+    '/message/send/v2',
+    {
+      channelId,
+      message,
+    },
+    { token }
+  );
+}
+
 export function channelInvite(token: string, channelId: number, uId: number) {
-  return requestHelper('POST', '/channel/invite/v2', { token, channelId, uId });
+  return requestHelper('POST', '/channel/invite/v3', { token, channelId, uId });
 }
 
 export function messageRemove(token: string, messageId: number) {
-  return requestHelper('DELETE', '/message/remove/v1', { token, messageId });
+  return requestHelper(
+    'DELETE',
+    '/message/remove/v2',
+    { messageId },
+    { token }
+  );
 }
 
 export function authLogout(token: string) {
   return requestHelper('POST', '/auth/logout/v1', { token });
 }
 
+export function channelRemoveOwner(
+  token: string,
+  channelId: number,
+  uId: number
+) {
+  return requestHelper('POST', '/channel/removeowner/v1', {
+    token,
+    channelId,
+    uId,
+  });
+}
+
 export function dmCreate(token: string, uIds: Array<number>) {
   return requestHelper('POST', '/dm/create/v1', { token, uIds });
 }
 
+export function dmMessages(token: string, dmId: number, start: number) {
+  return requestHelper('GET', '/dm/messages/v1', { token, dmId, start });
+}
+
+export function dmDetails(token: string, dmId: number) {
+  return requestHelper('GET', '/dm/details/v1', { token, dmId });
+}
+
+export function dmList(token: string) {
+  return requestHelper('GET', '/dm/list/v1', { token });
+}
+
 export function messageEdit(token: string, messageId: number, message: string) {
-  return requestHelper('PUT', '/message/edit/v1', {
+  return requestHelper(
+    'PUT',
+    '/message/edit/v2',
+    {
+      messageId,
+      message,
+    },
+    { token }
+  );
+}
+
+export function userProfile(token: string, uId: number) {
+  return requestHelper('GET', '/user/profile/v2', {
     token,
-    messageId,
-    message,
+    uId,
   });
+}
+
+export function usersAll(token: string) {
+  return requestHelper('GET', '/users/all/v1', { token });
+}
+
+export function setName(token: string, nameFirst: string, nameLast: string) {
+  return requestHelper('PUT', '/user/profile/setname/v1', {
+    token,
+    nameFirst,
+    nameLast,
+  });
+}
+
+export function setEmail(token: string, email: string) {
+  return requestHelper('PUT', '/user/profile/setemail/v1', { token, email });
+}
+
+export function setHandle(token: string, handleStr: string) {
+  return requestHelper('PUT', '/user/profile/sethandle/v1', {
+    token,
+    handleStr,
+  });
+}
+
+export function dmRemove(token: string, dmId: number) {
+  return requestHelper('DELETE', '/dm/remove/v1', { token, dmId });
+}
+
+export function messageSendDm(token: string, dmId: number, message: string) {
+  return requestHelper(
+    'POST',
+    '/message/senddm/v2',
+    {
+      dmId,
+      message,
+    },
+    { token }
+  );
+}
+
+export function standUpStart(token: string, channelId: number, length: number) {
+  return requestHelper(
+    'POST',
+    '/standup/start/v1',
+    {
+      channelId,
+      length,
+    },
+    { token }
+  );
+}
+
+export function standUpActive(token: string, channelId: number) {
+  return requestHelper('GET', '/standup/active/v1', { channelId }, { token });
+}
+
+export function standUpSend(token: string, channelId: number, message: string) {
+  return requestHelper(
+    'POST',
+    '/standup/send/v1',
+    {
+      channelId,
+      message,
+    },
+    { token }
+  );
 }

@@ -6,10 +6,15 @@ import {
   messageSend,
   messageRemove,
   messageEdit,
+  channelJoin,
+  dmCreate,
+  messageSendDm,
+  dmMessages,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
-const ERROR = { error: expect.any(String) };
+const badrequest = 400;
+const forbidden = 403;
 
 describe('testing sendMessages', () => {
   let user1: AuthReturn;
@@ -32,19 +37,19 @@ describe('testing sendMessages', () => {
   test('channel does not exist', () => {
     expect(
       messageSend(user1.token, channel1.channelId + 200, 'hello world')
-    ).toStrictEqual(ERROR);
+    ).toStrictEqual(badrequest);
   });
 
   test('length of message is below 1 character', () => {
     expect(messageSend(user1.token, channel1.channelId, '')).toStrictEqual(
-      ERROR
+      badrequest
     );
   });
 
   test('length of message is above 1000 characters', () => {
     const message = 'a'.repeat(1001);
     expect(messageSend(user1.token, channel1.channelId, message)).toStrictEqual(
-      ERROR
+      badrequest
     );
   });
 
@@ -57,12 +62,12 @@ describe('testing sendMessages', () => {
     );
     expect(
       messageSend(user2.token, channel1.channelId, 'hello world')
-    ).toStrictEqual(ERROR);
+    ).toStrictEqual(forbidden);
   });
   test('token is invalid', () => {
     expect(
       messageSend('laskdjflkasdfinvalid', channel1.channelId, 'hello world')
-    ).toStrictEqual(ERROR);
+    ).toStrictEqual(forbidden);
   });
 
   test('valid message should return messageId', () => {
@@ -79,28 +84,49 @@ describe('testing sendMessages', () => {
     }
     const ids = result.map((message) => message.messageId);
     const uniqueIds = new Set(ids);
-    expect(ids.length).toBe(uniqueIds.size);
+    expect(ids.length).toStrictEqual(uniqueIds.size);
   });
 
   test('30 messages in the channel', () => {
+    const messageIds = [];
     for (let i = 0; i < 30; i++) {
-      messageSend(user1.token, channel1.channelId, `hello world number ${i}`);
+      messageIds[i] = messageSend(
+        user1.token,
+        channel1.channelId,
+        `hello world number ${i}`
+      );
     }
 
+    messageIds.reverse();
     const result = channelMessage(user1.token, channel1.channelId, 0);
     const numMessages = result.messages.length;
+    for (let i = 0; i < 30; i++) {
+      expect(result.messages[i]).toStrictEqual({
+        messageId: messageIds[i].messageId,
+        uId: user1.authUserId,
+        message: `hello world number ${numMessages - i - 1}`,
+        timeSent: expect.any(Number),
+      });
+    }
     expect(result).toStrictEqual({
       messages: expect.any(Array),
       start: 0,
       end: -1,
     });
-    expect(numMessages).toBe(30);
+    expect(numMessages).toStrictEqual(30);
   });
 
   test('more than 50 messages in the channel', () => {
+    const messageIds = [];
     for (let i = 0; i < 60; i++) {
-      messageSend(user1.token, channel1.channelId, `hello ${i}`);
+      messageIds[i] = messageSend(
+        user1.token,
+        channel1.channelId,
+        `hello ${i}`
+      );
     }
+
+    messageIds.reverse();
 
     const result = channelMessage(user1.token, channel1.channelId, 0);
     const result2 = channelMessage(user1.token, channel1.channelId, 50);
@@ -111,17 +137,27 @@ describe('testing sendMessages', () => {
       start: 0,
       end: 50,
     });
-    expect(numMessages).toBe(50);
+    expect(numMessages).toStrictEqual(50);
     expect(result2).toStrictEqual({
       messages: expect.any(Array),
       start: 50,
       end: -1,
     });
-    expect(numMessages2).toBe(10);
+    expect(numMessages2).toStrictEqual(10);
+    for (let i = 0; i < 50; i++) {
+      expect(result.messages[i].messageId).toStrictEqual(
+        messageIds[i].messageId
+      );
+    }
+    for (let i = 0; i < 10; i++) {
+      expect(result2.messages[i].messageId).toStrictEqual(
+        messageIds[i + 50].messageId
+      );
+    }
   });
 });
 
-describe('testing removeMessages', () => {
+describe('testing removeMessages Error Cases and Channels', () => {
   let user1: AuthReturn;
   let channel1: { channelId: number };
   let message1: { messageId: number };
@@ -144,7 +180,7 @@ describe('testing removeMessages', () => {
   test('token is invalid', () => {
     expect(
       messageRemove('laskdjflkasdfinvalid', message1.messageId)
-    ).toStrictEqual(ERROR);
+    ).toStrictEqual(forbidden);
   });
   test('user is not in channel', () => {
     const user2 = authRegister(
@@ -153,11 +189,13 @@ describe('testing removeMessages', () => {
       'Bevin',
       'Bongo'
     );
-    expect(messageRemove(user2.token, message1.messageId)).toStrictEqual(ERROR);
+    expect(messageRemove(user2.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
   });
   test('message does not exist', () => {
     expect(messageRemove(user1.token, message1.messageId + 200)).toStrictEqual(
-      ERROR
+      badrequest
     );
   });
   test('remove own message', () => {
@@ -168,11 +206,6 @@ describe('testing removeMessages', () => {
       end: -1,
     });
   });
-  /**
-   *   Will add more tests when channelJoin is available to test multiple user in channel
-   *   for now it is commented out
-   */
-  /*
   test('remove other user message when user is globalOwner', () => {
     const user2 = authRegister(
       'kevinesutandi@gmail.com',
@@ -182,7 +215,11 @@ describe('testing removeMessages', () => {
     );
     const channel2 = channelsCreate(user2.token, 'wego', true);
     channelJoin(user1.token, channel2.channelId);
-    const message2 = messageSend(user2.token, channel2.channelId, 'test moments');
+    const message2 = messageSend(
+      user2.token,
+      channel2.channelId,
+      'test moments'
+    );
     expect(messageRemove(user1.token, message2.messageId)).toStrictEqual({});
   });
   test('remove other user message when user is channelOwner', () => {
@@ -193,14 +230,18 @@ describe('testing removeMessages', () => {
       'Bongo'
     );
     const user3 = authRegister(
-      'welovedogs@gmail.com'
+      'welovedogs@gmail.com',
       'doglover1001',
       'Dog',
       'Lomer'
     );
     const channel2 = channelsCreate(user2.token, 'wego', true);
     channelJoin(user3.token, channel2.channelId);
-    const message3 = messageSend(user3.token, channel2.channelId, 'dogs are bad');
+    const message3 = messageSend(
+      user3.token,
+      channel2.channelId,
+      'dogs are bad'
+    );
     expect(messageRemove(user2.token, message3.messageId)).toStrictEqual({});
   });
   test('remove other user message when user is channelMember', () => {
@@ -211,7 +252,9 @@ describe('testing removeMessages', () => {
       'Bongo'
     );
     channelJoin(user2.token, channel1.channelId);
-    expect(messageRemove(user2.token, message1.messageId)).toStrictEqual(ERROR);
+    expect(messageRemove(user2.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
   });
   test('remove own message while not channelOwner', () => {
     const user2 = authRegister(
@@ -221,10 +264,122 @@ describe('testing removeMessages', () => {
       'Bongo'
     );
     channelJoin(user2.token, channel1.channelId);
-    const message2 = messageSend(user2.token, channel1.channelId, 'test moments');
+    const message2 = messageSend(
+      user2.token,
+      channel1.channelId,
+      'test moments'
+    );
     expect(messageRemove(user2.token, message2.messageId)).toStrictEqual({});
   });
-   */
+});
+
+describe('testing removeMessages DM', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let dm1: { dmId: number };
+  let dm2: { dmId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    const uIds1 = [user2.authUserId];
+    dm1 = dmCreate(user1.token, uIds1);
+    const uIds2 = [user1.authUserId];
+    dm2 = dmCreate(user2.token, uIds2);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('dm does not exist', () => {
+    expect(messageRemove(user1.token, 100000)).toStrictEqual(badrequest);
+  });
+
+  test('remove own message', () => {
+    const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(messageRemove(user1.token, message1.messageId)).toStrictEqual({});
+    expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
+      messages: [],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('remove own message 2', () => {
+    const message1 = messageSendDm(user2.token, dm1.dmId, 'test moments');
+    expect(messageRemove(user2.token, message1.messageId)).toStrictEqual({});
+    expect(dmMessages(user2.token, dm1.dmId, 0)).toStrictEqual({
+      messages: [],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('owner remove other message', () => {
+    const message2 = messageSendDm(user1.token, dm2.dmId, 'test moments');
+    expect(messageRemove(user2.token, message2.messageId)).toStrictEqual({});
+    expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
+      messages: [],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('owner remove other message 2', () => {
+    const message2 = messageSendDm(user2.token, dm1.dmId, 'test moments');
+    expect(messageRemove(user1.token, message2.messageId)).toStrictEqual({});
+    expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
+      messages: [],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('globalOwner cannot remove other message', () => {
+    const user3 = authRegister(
+      'soccer@gmail.com',
+      'levin2042',
+      'welove',
+      'dogs'
+    );
+    const uIds = [user1.authUserId, user2.authUserId];
+    const dm3 = dmCreate(user3.token, uIds);
+    const message2 = messageSendDm(user3.token, dm3.dmId, 'test moments');
+    expect(messageRemove(user1.token, message2.messageId)).toStrictEqual(
+      forbidden
+    );
+  });
+
+  test('member remove other message', () => {
+    const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(messageRemove(user2.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
+  });
+
+  test('user not part of dm cannot remove message', () => {
+    const user3 = authRegister(
+      'wisellyw@gmail.com',
+      'doglover1001',
+      'Wiselly',
+      'Mega'
+    );
+    const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(messageRemove(user3.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
+  });
 });
 
 describe('testing messageEdit', () => {
@@ -250,7 +405,7 @@ describe('testing messageEdit', () => {
   test('token is invalid', () => {
     expect(
       messageEdit('invalidtoken', message1.messageId, 'hello')
-    ).toStrictEqual(ERROR);
+    ).toStrictEqual(forbidden);
   });
 
   test('user is not in channel', () => {
@@ -261,20 +416,20 @@ describe('testing messageEdit', () => {
       'Bongo'
     );
     expect(messageEdit(user2.token, message1.messageId, 'hello')).toStrictEqual(
-      ERROR
+      forbidden
     );
   });
 
   test('message does not exist', () => {
     expect(
       messageEdit(user1.token, message1.messageId + 200, 'hello')
-    ).toStrictEqual(ERROR);
+    ).toStrictEqual(badrequest);
   });
 
   test('message length over 1000', () => {
     expect(
       messageEdit(user1.token, message1.messageId, 'a'.repeat(1001))
-    ).toStrictEqual(ERROR);
+    ).toStrictEqual(badrequest);
   });
 
   test('delete message when message string empty', () => {
@@ -290,7 +445,7 @@ describe('testing messageEdit', () => {
     expect(messageEdit(user1.token, message1.messageId, '')).toStrictEqual({});
     expect(
       messageEdit(user1.token, message1.messageId, 'hello world')
-    ).toStrictEqual(ERROR);
+    ).toStrictEqual(badrequest);
   });
 
   test('edit own message', () => {
@@ -311,11 +466,6 @@ describe('testing messageEdit', () => {
     });
   });
 
-  /**
-   *  Will enable tests when channelJoin is available to test multiple user in channel
-   */
-
-  /*
   test('edit other user message when user is globalOwner in channel', () => {
     const user2 = authRegister(
       'kevinesutandi@gmail.com',
@@ -325,7 +475,11 @@ describe('testing messageEdit', () => {
     );
     const channel2 = channelsCreate(user2.token, 'wego', true);
     channelJoin(user1.token, channel2.channelId);
-    const message2 = messageSend(user2.token, channel2.channelId, 'test moments');
+    const message2 = messageSend(
+      user2.token,
+      channel2.channelId,
+      'test moments'
+    );
     expect(
       messageEdit(user1.token, message2.messageId, 'hello world')
     ).toStrictEqual({});
@@ -336,7 +490,7 @@ describe('testing messageEdit', () => {
           uId: user2.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
-        }
+        },
       ],
       start: 0,
       end: -1,
@@ -357,7 +511,11 @@ describe('testing messageEdit', () => {
     );
     const channel2 = channelsCreate(user2.token, 'wego', true);
     channelJoin(user3.token, channel2.channelId);
-    const message3 = messageSend(user3.token, channel2.channelId, 'test moments');
+    const message3 = messageSend(
+      user3.token,
+      channel2.channelId,
+      'test moments'
+    );
     expect(
       messageEdit(user2.token, message3.messageId, 'hello world')
     ).toStrictEqual({});
@@ -368,7 +526,7 @@ describe('testing messageEdit', () => {
           uId: user3.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
-        }
+        },
       ],
       start: 0,
       end: -1,
@@ -383,7 +541,175 @@ describe('testing messageEdit', () => {
       'Bongo'
     );
     channelJoin(user2.token, channel1.channelId);
-    expect(messageEdit(user2.token, message1.messageId, 'hello world')).toStrictEqual(ERROR);
+    expect(
+      messageEdit(user2.token, message1.messageId, 'hello world')
+    ).toStrictEqual(forbidden);
   });
-  */
+});
+
+describe('testing messageEdit DM', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let dm1: { dmId: number };
+  let dm2: { dmId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    const uIds = [user2.authUserId];
+    dm1 = dmCreate(user1.token, uIds);
+    const uIds2 = [user1.authUserId];
+    dm2 = dmCreate(user2.token, uIds2);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('dm does not exist', () => {
+    expect(messageEdit(user1.token, 100000, 'hello')).toStrictEqual(badrequest);
+  });
+
+  test('edit own message', () => {
+    const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(
+      messageEdit(user1.token, message1.messageId, 'hello world')
+    ).toStrictEqual({});
+    expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
+      messages: [
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'hello world',
+          timeSent: expect.any(Number),
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('globalOwner cant edit dm Message', () => {
+    const message2 = messageSendDm(user2.token, dm2.dmId, 'test moments');
+    expect(
+      messageEdit(user1.token, message2.messageId, 'hello world')
+    ).toStrictEqual(forbidden);
+  });
+
+  test('channelOwner can edit dm Message', () => {
+    const message3 = messageSendDm(user2.token, dm1.dmId, 'test moments');
+    expect(
+      messageEdit(user2.token, message3.messageId, 'hello world')
+    ).toStrictEqual({});
+    expect(dmMessages(user2.token, dm1.dmId, 0)).toStrictEqual({
+      messages: [
+        {
+          messageId: message3.messageId,
+          uId: user2.authUserId,
+          message: 'hello world',
+          timeSent: expect.any(Number),
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('message should be deleted from dm when edited with 0 char', () => {
+    const message4 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(messageEdit(user1.token, message4.messageId, '')).toStrictEqual({});
+    expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
+      messages: [],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('message is too long', () => {
+    const message5 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(
+      messageEdit(user1.token, message5.messageId, 'a'.repeat(1001))
+    ).toStrictEqual(badrequest);
+  });
+});
+
+describe('testing messageSendDm', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let dm1: { dmId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+
+    user2 = authRegister(
+      'kevinesutandi@gmail.com',
+      'lesgo1001',
+      'Gabriel',
+      'Hardman'
+    );
+
+    const uIds = [user2.authUserId];
+    dm1 = dmCreate(user1.token, uIds);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('dm does not exist', () => {
+    expect(messageSendDm(user1.token, 100000, 'hello world')).toStrictEqual(
+      badrequest
+    );
+  });
+
+  test('invalid token', () => {
+    expect(
+      messageSendDm('abnomrklasdjflk', dm1.dmId, 'hello world')
+    ).toStrictEqual(forbidden);
+  });
+
+  test('invalid messages', () => {
+    expect(messageSendDm(user1.token, dm1.dmId, '')).toStrictEqual(badrequest);
+    expect(
+      messageSendDm(user1.token, dm1.dmId, 'a'.repeat(1001))
+    ).toStrictEqual(badrequest);
+  });
+
+  test('non dm member send message', () => {
+    const user3 = authRegister(
+      'Hindie@gmail.com',
+      'welovecows',
+      'Hindie',
+      'Suputra'
+    );
+    expect(messageSendDm(user3.token, dm1.dmId, 'hello world')).toStrictEqual(
+      forbidden
+    );
+  });
+
+  test('valid message', () => {
+    expect(messageSendDm(user1.token, dm1.dmId, 'hello world')).toStrictEqual({
+      messageId: expect.any(Number),
+    });
+  });
+  test('valid message 2 ', () => {
+    expect(messageSendDm(user2.token, dm1.dmId, 'hello world')).toStrictEqual({
+      messageId: expect.any(Number),
+    });
+  });
 });

@@ -5,9 +5,8 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "allowJs": true,
+    "ignoreDeprecations": "5.0",
     "suppressImplicitAnyIndexErrors": true
   },
-  "exclude": [
-    "**/**_broken.ts"
-  ]
+  "exclude": ["**/**_broken.ts"]
 }

@@ -1,82 +1,16 @@
 import fs from 'fs';
+import { newData, userData, channelData, dmData } from './interfaces';
 
-interface users {
-  authUserId: number;
-  handleStr: string;
-  email: string;
-  password: string;
-  nameFirst: string;
-  nameLast: string;
-  isGlobalOwner: number;
-  token: Array<{
-    token: string;
-  }>;
-}
-
-interface Channel {
-  channelId: number;
-  name: string;
-  isPublic: boolean;
-  ownerMembers: Array<{
-    uId: number;
-    email: string;
-    nameFirst: string;
-    nameLast: string;
-    handleStr: string;
-  }>;
-  allMembers: Array<{
-    uId: number;
-    email: string;
-    nameFirst: string;
-    nameLast: string;
-    handleStr: string;
-  }>;
-  messages: Array<{
-    messageId: number;
-    uId: number;
-    message: string;
-    timeSent: number;
-  }>;
-  start: number;
-  end: number;
-}
-
-interface Dm {
-  dmId: number;
-  name: string;
-  ownerMembers: Array<{
-    uId: number;
-    email: string;
-    nameFirst: string;
-    nameLast: string;
-    handleStr: string;
-  }>;
-  allMembers: Array<{
-    uId: number;
-    email: string;
-    nameFirst: string;
-    nameLast: string;
-    handleStr: string;
-  }>;
-  messages: Array<{
-    messageId: number;
-    uId: number;
-    message: string;
-    timeSent: number;
-  }>;
-  start: number;
-  end: number;
-}
-interface newData {
-  users: Array<users>;
-  channels: Array<Channel>;
-  dm: Array<Dm>;
-}
-
-let data: { users: users[]; channels: Channel[]; dm: Dm[] } = {
+export let data: {
+  users: userData[];
+  channels: channelData[];
+  dm: dmData[];
+  secret: string;
+} = {
   users: [],
   channels: [],
   dm: [],
+  secret: 'KEVINHINDIEALMINAELSHIBO2394850-92840)_(*%&)_($#&()*',
 };
 
 // YOU SHOULDNT NEED TO MODIFY THE FUNCTIONS BELOW IN ITERATION 1
