@@ -718,6 +718,7 @@ describe('testing messageSendDm', () => {
 describe('testing messageSendLater', () => {
   let user1: AuthReturn;
   let channel1: { channelId: number };
+  let sendTime: number;
   beforeEach(() => {
     clearV1();
     user1 = authRegister(
@@ -727,6 +728,7 @@ describe('testing messageSendLater', () => {
       'Sutandi'
     );
     channel1 = channelsCreate(user1.token, 'wego', true);
+    sendTime = new Date().getTime();
   });
 
   afterEach(() => {
@@ -735,20 +737,30 @@ describe('testing messageSendLater', () => {
 
   test('channel does not exist', () => {
     expect(
-      messageSendLater(user1.token, channel1.channelId + 200, 'hello world', 5)
+      messageSendLater(
+        user1.token,
+        channel1.channelId + 200,
+        'hello world',
+        sendTime + 2000
+      )
     ).toStrictEqual(badrequest);
   });
 
   test('length of message is below 1 character', () => {
     expect(
-      messageSendLater(user1.token, channel1.channelId, '', 5)
+      messageSendLater(user1.token, channel1.channelId, '', sendTime + 2000)
     ).toStrictEqual(badrequest);
   });
 
   test('length of message is above 1000 characters', () => {
     const message = 'a'.repeat(1001);
     expect(
-      messageSendLater(user1.token, channel1.channelId, message, 5)
+      messageSendLater(
+        user1.token,
+        channel1.channelId,
+        message,
+        sendTime + 2000
+      )
     ).toStrictEqual(badrequest);
   });
 
@@ -760,7 +772,12 @@ describe('testing messageSendLater', () => {
       'Bongo'
     );
     expect(
-      messageSendLater(user2.token, channel1.channelId, 'hello world', 5)
+      messageSendLater(
+        user2.token,
+        channel1.channelId,
+        'hello world',
+        sendTime + 2000
+      )
     ).toStrictEqual(forbidden);
   });
   test('token is invalid', () => {
@@ -769,7 +786,7 @@ describe('testing messageSendLater', () => {
         'laskdjflkasdfinvalid',
         channel1.channelId,
         'hello world',
-        5
+        sendTime + 2000
       )
     ).toStrictEqual(forbidden);
   });
@@ -779,7 +796,7 @@ describe('testing messageSendLater', () => {
         user1.token,
         channel1.channelId,
         'halooo',
-        Math.floor(Date.now() / 1000) - 5
+        sendTime - 500
       )
     ).toStrictEqual(badrequest);
   });
@@ -789,7 +806,7 @@ describe('testing messageSendLater', () => {
       user1.token,
       channel1.channelId,
       'hello world',
-      10
+      sendTime + 200000
     );
     expect(result).toStrictEqual({ messageId: expect.any(Number) });
   });
