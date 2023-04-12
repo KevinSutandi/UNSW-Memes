@@ -187,7 +187,7 @@ app.post('/auth/logout/v1', (req: Request, res: Response, next) => {
 });
 
 app.get('/dm/details/v1', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
+  const token = req.headers.token as string;
   const dmId = parseInt(req.query.dmId as string);
   const result = dmDetailsV1(token, dmId);
   return res.json(result);

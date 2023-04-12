@@ -152,12 +152,12 @@ describe('testing dmDetailsV1', () => {
 
   // test when dmId does not refer to valid dm
   test('dmId doesnt refer to a valid user', () => {
-    expect(dmDetails(user.token, dm1.dmId + 10)).toStrictEqual(ERROR);
+    expect(dmDetails(user.token, dm1.dmId + 10)).toStrictEqual(400);
   });
 
   // test when dmId is valid but authUser is not a member of dm
   test('dmId is valid but authUser is not member of DM', () => {
-    expect(dmDetails(user3.token, dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmDetails(user3.token, dm2.dmId)).toStrictEqual(403);
   });
 
   test('valid dm with one user', () => {

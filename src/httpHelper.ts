@@ -180,7 +180,12 @@ export function dmMessages(token: string, dmId: number, start: number) {
 }
 
 export function dmDetails(token: string, dmId: number) {
-  return requestHelper('GET', '/dm/details/v1', { token, dmId });
+  return requestHelper(
+    'GET',
+    '/dm/details/v1',
+    { dmId },
+    { token }
+  );
 }
 
 export function dmList(token: string) {
