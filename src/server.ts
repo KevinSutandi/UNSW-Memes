@@ -273,7 +273,7 @@ app.post('/standup/send/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.post('message/sendlater/v1', (req: Request, res: Response, next) => {
+app.post('/message/sendlater/v1', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
   const { channelId, message, timeSent } = req.body;
   const result = messageSendLaterV1(token, channelId, message, timeSent);

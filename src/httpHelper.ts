@@ -281,7 +281,7 @@ export function messageSendLater(
 ) {
   return requestHelper(
     'POST',
-    'message/sendlater/v1',
+    '/message/sendlater/v1',
     {
       channelId,
       message,
