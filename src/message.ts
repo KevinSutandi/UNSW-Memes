@@ -310,15 +310,15 @@ export function messageSendLaterV1(
 
   const channelIndex = getChannelIndex(channelId);
   const messageId = Math.floor(Math.random() * 1000000);
-  const newMessage = {
-    messageId: messageId,
-    uId: user.authUserId,
-    message: message,
-    timeSent: Math.floor(Date.now() / 1000),
-  };
 
   const timeDelay = timeSent - currentTime;
   setTimeout(() => {
+    const newMessage = {
+      messageId: messageId,
+      uId: user.authUserId,
+      message: message,
+      timeSent: Math.floor(Date.now() / 1000),
+    };
     data.channels[channelIndex].messages.push(newMessage);
   }, timeDelay);
 
