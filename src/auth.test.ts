@@ -2,7 +2,7 @@ import {
   authLogin,
   authRegister,
   channelsCreate,
-  channelsList,
+  // channelsList,
   clearV1,
   authLogout,
   userProfile,
@@ -10,7 +10,6 @@ import {
 import { AuthReturn } from './interfaces';
 
 const INPUT_ERROR = 400;
-const ERROR = { error: expect.any(String) };
 const IDPASS = { authUserId: expect.any(Number), token: expect.any(String) };
 
 describe('testing authRegisterV3', () => {
