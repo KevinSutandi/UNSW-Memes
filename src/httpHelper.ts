@@ -111,7 +111,12 @@ export function channelsList(token: string) {
 }
 
 export function dmLeave(token: string, dmId: number) {
-  return requestHelper('POST', '/dm/leave/v1', { token, dmId });
+  return requestHelper(
+    'POST',
+    '/dm/leave/v1',
+    { dmId },
+    { token }
+  );
 }
 
 export function channelsListAll(token: string) {

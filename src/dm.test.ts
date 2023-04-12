@@ -446,11 +446,11 @@ describe('testing dmLeaveV1', () => {
   });
 
   test('dmId doesnt refer to a valid user', () => {
-    expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(ERROR);
+    expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(400);
   });
 
   test('dmId is valid but authUser is not member of DM', () => {
-    expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(403);
   });
 
   test('user token is not valid', () => {

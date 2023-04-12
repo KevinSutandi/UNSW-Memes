@@ -149,7 +149,8 @@ app.post('/dm/create/v1', (req: Request, res: Response, next) => {
 });
 
 app.post('/dm/leave/v1', (req: Request, res: Response, next) => {
-  const { token, dmId } = req.body;
+  const token = req.headers.token as string;
+  const { dmId } = req.body;
   const result = dmLeaveV1(token, dmId);
   return res.json(result);
 });
