@@ -5,6 +5,7 @@ import {
   getUserByToken,
   makeToken,
   HashingString,
+  getUserIndexByToken,
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
@@ -136,14 +137,16 @@ export function authRegisterV1(
  * @param {string} token - the user's token
  * @returns { error : string } error - different error strings for different situations
  */
-export function authLogoutV1(token: string) {
+export function authLogoutV1(token: string): Record<string, never> {
   const data = getData();
   const user = getUserByToken(token);
+  const userIndex = getUserIndexByToken(token);
   if (user === undefined) {
-    return { error: 'Token is invalid' };
+    throw HTTPError(403, 'Token is not valid');
   }
+
   const tokenIndex = findTokenIndex(user, token);
-  data.users[tokenIndex].token.splice(tokenIndex, 1);
+  data.users[userIndex].token.splice(tokenIndex, 1);
   setData(data);
   return {};
 }
