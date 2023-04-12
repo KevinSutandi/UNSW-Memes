@@ -369,8 +369,10 @@ export function messageSendLaterDmV1(
       message: message,
       timeSent: Math.floor(Date.now() / 1000),
     };
-    data.dm[dmIndex].messages.push(newMessage);
-    setData(data);
+    if (dmIndex !== undefined) {
+      data.dm[dmIndex].messages.push(newMessage);
+      setData(data);
+    }
   }, timeDelay * 1000);
   return { messageId: messageId };
 }
