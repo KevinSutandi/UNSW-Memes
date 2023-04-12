@@ -420,50 +420,38 @@ describe('testing channelLeaveV1', () => {
   });
 
   test('Invalid channelId test 1', () => {
-    expect(channelLeave(user2.token, channel2.channelId + 10)).toStrictEqual(
-      ERROR
-    );
+    expect(channelLeave(user2.token, channel2.channelId + 10)).toBe(400);
   });
 
   test('Invalid channelId test 2', () => {
-    expect(channelLeave(user1.token, channel1.channelId + 3)).toStrictEqual(
-      ERROR
-    );
+    expect(channelLeave(user1.token, channel1.channelId + 3)).toBe(400);
   });
 
   test('invalid token test 1', () => {
-    expect(channelLeave(user1.token + 10, channel1.channelId)).toStrictEqual(
-      ERROR
-    );
+    expect(channelLeave(user1.token + 10, channel1.channelId)).toBe(403);
   });
 
   test('invalid token test 2', () => {
-    expect(channelLeave(user2.token + 1, channel2.channelId)).toStrictEqual(
-      ERROR
-    );
+    expect(channelLeave(user2.token + 1, channel2.channelId)).toBe(403);
   });
 
-  test('Not authorised user test 1', () => {
-    expect(channelLeave(user1.token, channel2.channelId)).toStrictEqual(ERROR);
+  test('authorised user is not member test 1', () => {
+    expect(channelLeave(user1.token, channel2.channelId)).toBe(403);
   });
 
-  test('Not authorised user test 2', () => {
-    expect(channelLeave(user3.token, channel2.channelId)).toStrictEqual(ERROR);
-  });
-
-  test('Not authorised user test 2', () => {
-    expect(channelLeave(user3.token, channel2.channelId)).toStrictEqual(ERROR);
+  test('authorised user is not member test 2', () => {
+    expect(channelLeave(user3.token, channel2.channelId)).toBe(403);
   });
 
   test('The only owner leaving test, no longer member', () => {
     channelLeave(user1.token, channel1.channelId);
-    expect(channelDetails(user1.token, channel1.channelId)).toEqual(403);
+    expect(channelDetails(user1.token, channel1.channelId)).toBe(403);
   });
 
   test('One of the users leave test, no longer member', () => {
     channelJoin(user2.token, channel1.channelId);
     channelLeave(user2.token, channel1.channelId);
-    expect(channelDetails(user2.token, channel1.channelId)).toEqual(403);
+    expect(channelDetails(user2.token, channel1.channelId)).toBe(403);
   });
 
   test('One of the users leave test, but information stay remain', () => {

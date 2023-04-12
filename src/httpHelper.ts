@@ -120,7 +120,8 @@ export function channelsListAll(token: string) {
 }
 
 export function channelLeave(token: string, channelId: number) {
-  return requestHelper('POST', '/channel/leave/v1', { token, channelId });
+  const headers = { token };
+  return requestHelper('POST', '/channel/leave/v1', { channelId }, headers);
 }
 
 export function channelAddOwner(token: string, channelId: number, uId: number) {

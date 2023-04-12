@@ -96,9 +96,6 @@ export function channelJoinV1(
 ): object | errorMessage {
   const data = getData();
   // Get the particular user in data store
-  console.log('token is ', token);
-  console.log('channelId is', channelId);
-
   const user = getUserByToken(token);
 
   // Get the particular channel index from data store
@@ -257,21 +254,22 @@ export function channelDetailsV1(token: string, channelId: number) {
  *                                    | user is not the channel member
  *                                    | User token is invalid
  */
-export function channelLeaveV1(
-  token: string,
-  channelId: number
-): object | errorMessage {
+ export function channelLeaveV1(token: string, channelId: number) {
   const data = getData();
   const user = getUserByToken(token);
   if (!isChannel(channelId)) {
-    return { error: 'channelId does not refer to a valid channel' };
+    throw HTTPError(400, 'channelId does not refer to a valid channel');
   }
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
+  // if the user with auth is the 
+
+  
+
   // If the user is not a member of the channel
   if (!isChannelMember(channelId, user.authUserId)) {
-    return { error: user.authUserId + ' is not a member of the channel' };
+    throw HTTPError(403, user.authUserId + ' is not a member of the channel');
   }
 
   const channelIndex = data.channels.findIndex(
@@ -288,7 +286,6 @@ export function channelLeaveV1(
   }
 
   data.channels[channelIndex].allMembers.splice(userMemberIndex, 1);
-
   setData(data);
   return {};
 }
