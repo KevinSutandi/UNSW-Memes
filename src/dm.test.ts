@@ -147,7 +147,7 @@ describe('testing dmDetailsV1', () => {
   });
 
   test('user token is not valid', () => {
-    expect(dmDetails('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmDetails('alminaaaaascnj', dm2.dmId)).toStrictEqual(403);
   });
 
   // test when dmId does not refer to valid dm

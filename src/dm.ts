@@ -238,7 +238,7 @@ export function dmDetailsV1(token: string, dmId: number) {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   if (!isDm(dmId)) {
     throw HTTPError(400, 'dmId does not refer to a valid DM');
