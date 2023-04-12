@@ -230,33 +230,25 @@ describe('testing channelJoinV2', () => {
     channel3 = channelsCreate(user3.token, 'Batagor', false);
   });
   test('channelId does not exist test 1', () => {
-    expect(channelJoin(user1.token, channel2.channelId + 5)).toStrictEqual(
-      ERROR
-    );
+    expect(channelJoin(user1.token, channel2.channelId + 5)).toBe(400);
   });
   test('channelId does not exist test 2', () => {
-    expect(channelJoin(user3.token, channel2.channelId + 3)).toStrictEqual(
-      ERROR
-    );
+    expect(channelJoin(user3.token, channel2.channelId + 3)).toBe(400);
   });
   test('invalid token test 1', () => {
-    expect(channelJoin(user1.token + 4, channel3.channelId)).toStrictEqual(
-      ERROR
-    );
+    expect(channelJoin(user1.token + 4, channel3.channelId)).toBe(403);
   });
   test('invalid token test 2', () => {
-    expect(channelJoin(user3.token + 10, channel2.channelId)).toStrictEqual(
-      ERROR
-    );
+    expect(channelJoin(user3.token + 10, channel2.channelId)).toBe(403);
   });
   test('authUserId already in channel test 1', () => {
-    expect(channelJoin(user1.token, channel1.channelId)).toStrictEqual(ERROR);
+    expect(channelJoin(user1.token, channel1.channelId)).toStrictEqual(400);
   });
   test('authUserId already in channel test 2', () => {
-    expect(channelJoin(user2.token, channel2.channelId)).toStrictEqual(ERROR);
+    expect(channelJoin(user2.token, channel2.channelId)).toBe(400);
   });
   test('channel is private while non gloabalOwner is joining', () => {
-    expect(channelJoin(user2.token, channel3.channelId)).toStrictEqual(ERROR);
+    expect(channelJoin(user2.token, channel3.channelId)).toBe(403);
   });
   test('channel is private while globalOwner is joining', () => {
     channelJoin(user1.token, channel3.channelId);

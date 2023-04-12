@@ -72,7 +72,8 @@ app.get('/channels/listall/v2', (req: Request, res: Response, next) => {
 });
 
 app.post('/channel/join/v2', (req: Request, res: Response, next) => {
-  const { token, channelId } = req.body;
+  const token = req.headers.token as string;
+  const { channelId } = req.body;
   const result = channelJoinV1(token, channelId);
   return res.json(result);
 });

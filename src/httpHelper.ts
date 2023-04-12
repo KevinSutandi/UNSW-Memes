@@ -13,7 +13,12 @@ const SERVER_URL = `${url}:${port}`;
  * @param {object} payload - The payload to include in the HTTP request.
  * @returns {object} - The JSON response from the server.
  */
-export function requestHelper(method: HttpVerb, path: string, payload: object) {
+ export function requestHelper(
+  method: HttpVerb,
+  path: string,
+  payload: object,
+  headers?: { token: string }
+) {
   let qs = {};
   let json = {};
   if (['GET', 'DELETE'].includes(method)) {
@@ -22,8 +27,20 @@ export function requestHelper(method: HttpVerb, path: string, payload: object) {
     // PUT/POST
     json = payload;
   }
-  const res = request(method, SERVER_URL + path, { qs, json, timeout: 20000 });
-  return JSON.parse(res.getBody('utf-8'));
+  const res = request(method, SERVER_URL + path, {
+    qs,
+    json,
+    timeout: 20000,
+    headers: headers,
+  });
+
+  if (res.statusCode !== 200) {
+    // Return error code number instead of object in case of error.
+    // (just for convenience)
+    return res.statusCode;
+  }
+
+  return JSON.parse(res.getBody() as string);
 }
 
 export function authRegister(
@@ -80,7 +97,8 @@ export function channelDetails(token: string, channelId: number) {
 }
 
 export function channelJoin(token: string, channelId: number) {
-  return requestHelper('POST', '/channel/join/v2', { token, channelId });
+  const headers = { token };
+  return requestHelper('POST', '/channel/join/v2', { channelId }, headers);
 }
 
 export function channelsList(token: string) {
