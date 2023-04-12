@@ -254,7 +254,7 @@ export function channelDetailsV1(token: string, channelId: number) {
  *                                    | user is not the channel member
  *                                    | User token is invalid
  */
- export function channelLeaveV1(token: string, channelId: number) {
+export function channelLeaveV1(token: string, channelId: number) {
   const data = getData();
   const user = getUserByToken(token);
   if (!isChannel(channelId)) {
@@ -263,9 +263,7 @@ export function channelDetailsV1(token: string, channelId: number) {
   if (user === undefined) {
     throw HTTPError(403, 'Invalid token');
   }
-  // if the user with auth is the 
-
-  
+  // if the user with auth is the
 
   // If the user is not a member of the channel
   if (!isChannelMember(channelId, user.authUserId)) {
