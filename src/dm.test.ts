@@ -36,7 +36,7 @@ describe('testing dmCreateV1', () => {
 
   test('user token is not valid', () => {
     const uIds = [user.authUserId];
-    expect(dmCreate('alminaaaaascnj', uIds)).toStrictEqual(ERROR);
+    expect(dmCreate('alminaaaaascnj', uIds)).toStrictEqual(403);
   });
 
   test('dm is successful with just owner', () => {

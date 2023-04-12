@@ -26,9 +26,7 @@ export function dmCreateV1(
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return {
-      error: 'Invalid token',
-    };
+    throw HTTPError(403, 'Invalid token');
   }
 
   // Make sure that owner does not invite owner
