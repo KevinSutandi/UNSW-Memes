@@ -33,6 +33,7 @@ import {
   setHandle,
   getAllUsers,
   userProfileV2,
+  userProfileUploadPhotoV1,
 } from './users';
 import {
   dmCreateV1,
@@ -284,6 +285,23 @@ app.post('/standup/send/v1', (req: Request, res: Response, next) => {
   const result = standupSendV1(token, channelId, message);
   return res.json(result);
 });
+
+app.post(
+  '/user/profile/uploadphoto/v1',
+  (req: Request, res: Response, next) => {
+    const token = req.headers.token as string;
+    const { imgUrl, xStart, yStart, xEnd, yEnd } = req.body;
+    const result = userProfileUploadPhotoV1(
+      token,
+      imgUrl,
+      xStart,
+      yStart,
+      xEnd,
+      yEnd
+    );
+    return res.json(result);
+  }
+);
 
 // start server
 const server = app.listen(PORT, HOST, () => {

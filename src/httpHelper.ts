@@ -302,3 +302,25 @@ export function standUpSend(token: string, channelId: number, message: string) {
     { token }
   );
 }
+
+export function userProfileUploadPhoto(
+  token: string,
+  imgUrl: string,
+  xStart: number,
+  yStart: number,
+  xEnd: number,
+  yEnd: number
+) {
+  return requestHelper(
+    'POST',
+    '/user/profile/uploadphoto/v1',
+    {
+      imgUrl,
+      xStart,
+      yStart,
+      xEnd,
+      yEnd,
+    },
+    { token }
+  );
+}
