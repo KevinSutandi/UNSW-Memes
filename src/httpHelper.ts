@@ -272,3 +272,21 @@ export function standUpSend(token: string, channelId: number, message: string) {
     { token }
   );
 }
+
+export function messageSendLater(
+  token: string,
+  channelId: number,
+  message: string,
+  timeSent: number
+) {
+  return requestHelper(
+    'POST',
+    'message/sendlater/v1',
+    {
+      channelId,
+      message,
+      timeSent,
+    },
+    { token }
+  );
+}
