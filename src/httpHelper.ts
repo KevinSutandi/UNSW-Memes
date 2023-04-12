@@ -167,11 +167,11 @@ export function channelRemoveOwner(
   channelId: number,
   uId: number
 ) {
+  const headers = { token };
   return requestHelper('POST', '/channel/removeowner/v1', {
-    token,
     channelId,
     uId,
-  });
+  }, headers);
 }
 
 export function dmCreate(token: string, uIds: Array<number>) {
