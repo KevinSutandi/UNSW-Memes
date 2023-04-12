@@ -96,8 +96,8 @@ export function channelJoinV1(
 ): object | errorMessage {
   const data = getData();
   // Get the particular user in data store
-  console.log('token is ',token);
-  console.log('channelId is', channelId)
+  console.log('token is ', token);
+  console.log('channelId is', channelId);
 
   const user = getUserByToken(token);
 

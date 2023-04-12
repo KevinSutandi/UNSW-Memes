@@ -125,7 +125,8 @@ app.post('/channel/leave/v1', (req: Request, res: Response, next) => {
 });
 
 app.post('/channel/addowner/v1', (req: Request, res: Response, next) => {
-  const { token, channelId, uId } = req.body;
+  const token = req.headers.token as string;
+  const { channelId, uId } = req.body;
   const result = channelAddOwnerV1(token, channelId, uId);
   return res.json(result);
 });
