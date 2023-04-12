@@ -274,3 +274,19 @@ export function messageSendDmV1(
   setData(data);
   return { messageId: messageId };
 }
+
+export function messageSendLaterV1(
+  token: string,
+  channelId: number,
+  message: string,
+  timeSent: number
+) {
+  const currentTime = new Date().getTime();
+  if (timeSent < currentTime) {
+    throw HTTPError(400, 'Time sent cannot be a time in the past');
+  }
+  const timeDelay = timeSent - currentTime;
+  setTimeout(() => {
+    messageSendV1(token, channelId, message);
+  }, timeDelay);
+}
