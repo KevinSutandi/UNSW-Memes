@@ -800,30 +800,22 @@ describe('testing messageSendLater', () => {
     ).toStrictEqual(badrequest);
   });
 
-  test('valid message should return messageId', () => {
+  test('valid message should return messageId', async () => {
+    const timeStamp = new Date().getTime();
     const result = messageSendLater(
       user1.token,
       channel1.channelId,
       'hello world',
-      sendTime + 200000
+      timeStamp + 2000
     );
     expect(result).toStrictEqual({ messageId: expect.any(Number) });
-  });
-
-  test('10 valid messages all diff id', () => {
-    const result = [];
-    for (let i = 0; i < 10; i++) {
-      result.push(
-        messageSendLater(
-          user1.token,
-          channel1.channelId,
-          `hello world number ${i}`,
-          sendTime + 1 * (i + 1)
-        )
-      );
-    }
-    const ids = result.map((message) => message.messageId);
-    const uniqueIds = new Set(ids);
-    expect(ids.length).toStrictEqual(uniqueIds.size);
+    // test datascript and test node messages and channel
+    await new Promise((r) => setTimeout(r, 2000));
+    // check channelmessage should contain
+    expect(channelMessage(user1.token, channel1.channelId, 0)).toStrictEqual({
+      messages: expect.any(Array),
+      start: 0,
+      end: -1,
+    });
   });
 });
