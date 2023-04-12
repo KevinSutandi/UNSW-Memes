@@ -209,7 +209,7 @@ describe('testing dmListV1', () => {
   });
   // test when there are multiple dms in the list
   test('the token taken is invalid', () => {
-    expect(dmList('alminaaaaascnj')).toStrictEqual(ERROR);
+    expect(dmList('alminaaaaascnj')).toStrictEqual(403);
   });
 
   test('valid user but there are no dms in the list', () => {
