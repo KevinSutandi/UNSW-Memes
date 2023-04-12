@@ -454,7 +454,7 @@ describe('testing dmLeaveV1', () => {
   });
 
   test('user token is not valid', () => {
-    expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(403);
   });
 
   test('One user leaves the DM, not the owner', () => {
