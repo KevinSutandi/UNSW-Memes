@@ -810,4 +810,53 @@ describe('testing messageSendLater', () => {
     );
     expect(result).toStrictEqual({ messageId: expect.any(Number) });
   });
+
+  test('10 valid messages all diff id', () => {
+    const result = [];
+    for (let i = 0; i < 10; i++) {
+      result.push(
+        messageSendLater(
+          user1.token,
+          channel1.channelId,
+          `hello world number ${i}`,
+          sendTime + 1000 * (i + 1)
+        )
+      );
+    }
+    const ids = result.map((message) => message.messageId);
+    const uniqueIds = new Set(ids);
+    expect(ids.length).toStrictEqual(uniqueIds.size);
+  });
+
+  // test.only('30 messages in the channel', () => {
+  //   const messageIds: newMessageReturn[] = [];
+  //   for (let i = 0; i < 30; i++) {
+  //     messageIds[i] = messageSendLater(
+  //       user1.token,
+  //       channel1.channelId,
+  //       `hello world number ${i}`,
+  //       sendTime + 1000000 * (i + 1)
+  //     );
+  //   }
+
+  //   setTimeout(() => {
+  //     messageIds.reverse();
+  //     const result = channelMessage(user1.token, channel1.channelId, 0);
+  //     const numMessages = result.messages.length;
+  //     for (let i = 0; i < 30; i++) {
+  //       expect(result.messages[i]).toStrictEqual({
+  //         messageId: messageIds[i].messageId,
+  //         uId: user1.authUserId,
+  //         message: `hello world number ${numMessages - i - 1}`,
+  //         timeSent: expect.any(Number),
+  //       });
+  //     }
+  //     expect(result).toStrictEqual({
+  //       messages: expect.any(Array),
+  //       start: 0,
+  //       end: -1,
+  //     });
+  //     expect(numMessages).toStrictEqual(30);
+  //   }, 30000000);
+  // });
 });
