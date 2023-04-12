@@ -551,61 +551,61 @@ describe('testing channelAddowner', () => {
   test('Invalid channelId test 1', () => {
     expect(
       channelAddOwner(user2.token, channel2.channelId + 10, user1.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toBe(400);
   });
 
   test('Invalid channelId test 2', () => {
     expect(
       channelAddOwner(user1.token, channel1.channelId + 3, user2.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toBe(400);
   });
 
   test('invalid token test 1', () => {
     expect(
       channelAddOwner(user1.token + 10, channel1.channelId, user2.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toBe(403);
   });
 
   test('invalid token test 2', () => {
     expect(
       channelAddOwner(user2.token + 1, channel2.channelId, user1.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toBe(403);
   });
 
   test('invalid uId test 1', () => {
     expect(
       channelAddOwner(user1.token, channel1.channelId, user2.authUserId + 10)
-    ).toStrictEqual(ERROR);
+    ).toBe(400);
   });
 
   test('invalid uID test 2', () => {
     expect(
       channelAddOwner(user2.token, channel2.channelId, user1.authUserId + 6)
-    ).toStrictEqual(ERROR);
+    ).toBe(400);
   });
 
   test('user not member test 1', () => {
     expect(
       channelAddOwner(user3.token, channel1.channelId, user2.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toBe(400);
   });
 
   test('user not member test 2', () => {
     expect(
       channelAddOwner(user2.token, channel2.channelId, user3.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toBe(400);
   });
 
   test('user already is owner test 1', () => {
     expect(
       channelAddOwner(user1.token, channel1.channelId, user1.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toBe(400);
   });
 
   test('user already is owner test 2', () => {
     expect(
       channelAddOwner(user2.token, channel2.channelId, user2.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toBe(400);
   });
 
   test('user has no permission test 1', () => {
@@ -614,7 +614,7 @@ describe('testing channelAddowner', () => {
     channelJoin(user3.token, channel1.channelId);
     expect(
       channelAddOwner(user2.token, channel1.channelId, user3.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toBe(403);
   });
 
   test('user has no permission test 2', () => {
@@ -622,7 +622,7 @@ describe('testing channelAddowner', () => {
     channelJoin(user3.token, channel2.channelId);
     expect(
       channelAddOwner(user3.token, channel2.channelId, user1.authUserId)
-    ).toStrictEqual(ERROR);
+    ).toBe(403);
   });
 
   test('testing user1 is global owner', () => {

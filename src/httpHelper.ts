@@ -125,11 +125,12 @@ export function channelLeave(token: string, channelId: number) {
 }
 
 export function channelAddOwner(token: string, channelId: number, uId: number) {
+  const headers = { token };
   return requestHelper('POST', '/channel/addowner/v1', {
     token,
     channelId,
     uId,
-  });
+  }, headers);
 }
 
 export function messageSend(token: string, channelId: number, message: string) {

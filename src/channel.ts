@@ -305,27 +305,27 @@ export function channelAddOwnerV1(
 
   // Error checking
   if (!isChannel(channelId)) {
-    return { error: 'channelId does not refer to a valid channel' };
+    throw HTTPError(400, 'channelId does not refer to a valid channel');
   }
 
   if (uIdfound === undefined) {
-    return { error: 'Invalid uId' };
+    throw HTTPError(400, 'Invalid uId');
   }
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
 
   if (!isChannelMember(channelId, uId)) {
-    return { error: ' is not a member of the channel' };
+    throw HTTPError(400, 'User is not a member of the channel');
   }
 
   if (isChannelOwner(uId, channelId)) {
-    return { error: user.authUserId + ' is already owner of this channel' };
+    throw HTTPError(400, user.authUserId + ' is already owner of this channel');
   }
 
   if (!isChannelOwner(user.authUserId, channelId) && user.isGlobalOwner === 2) {
-    return { error: user.authUserId + 'has no owner permission' };
+    throw HTTPError(403, user.authUserId + 'has no owner permission');
   }
 
   // owner adds the user with uId to the ownermembers and allmembers of the channel
