@@ -883,18 +883,13 @@ describe('testing messageSendLaterDm', () => {
   });
 
   test('timeSent is a time in the past', () => {
-    const timeStamp = new Date().getTime();
+    // const timeStamp = new Date().getTime();
     expect(
-      messageSendLaterDm(
-        user1.token,
-        dm1.dmId,
-        'haloo',
-        timeStamp - 5000
-      ).toStrictEqual(badrequest)
-    );
+      messageSendLaterDm(user1.token, dm1.dmId, 'haloo', 50)
+    ).toStrictEqual(badrequest);
   });
 
-  test('valid message', () => {
+  test('valid message', async () => {
     const timeStamp = new Date().getTime();
     expect(
       messageSendLaterDm(user1.token, dm1.dmId, 'hello world', timeStamp + 2000)
@@ -902,11 +897,10 @@ describe('testing messageSendLaterDm', () => {
       messageId: expect.any(Number),
     });
     await new Promise((r) => setTimeout(r, 2000));
-    dmMessages();
-  });
-  test('valid message 2 ', () => {
-    expect(messageSendDm(user2.token, dm1.dmId, 'hello world')).toStrictEqual({
-      messageId: expect.any(Number),
+    expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
+      messages: expect.any(Array),
+      start: 0,
+      end: -1,
     });
   });
 });
