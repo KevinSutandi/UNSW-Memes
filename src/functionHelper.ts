@@ -128,6 +128,14 @@ export function getUserByToken(token: string) {
   );
   return tokenFound;
 }
+
+export function getUserIndexByToken(token: string): number {
+  const data = getData();
+  const tokenFound = data.users.findIndex((c) =>
+    c.token.find((t) => t.token === token)
+  );
+  return tokenFound;
+}
 /**
  * Returns the channel that contains the message with the specified ID.
  * @param {number} messageId - The ID of the message to find.
