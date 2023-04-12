@@ -8,7 +8,6 @@ import {
   dmData,
   dmListReturn,
 } from './interfaces';
-import HTTPError from 'http-errors';
 
 /**
  *
@@ -186,17 +185,18 @@ export function dmMessagesV1(token: string, dmId: number, start: number) {
     return { error: 'Invalid token' };
   }
   if (!isDm(dmId)) {
-    throw HTTPError(400, 'dmId does not refer to a valid DM');
+    return { error: 'dmId does not refer to a valid DM' };
   }
   if (!isDmMember(dmId, user.authUserId)) {
-    throw HTTPError(403, 'User is not a member of the DM');
+    return { error: 'User is not a member of the DM' };
   }
   const dmIndex = data.dm.findIndex((a) => a.dmId === dmId);
   const dmMessages = data.dm[dmIndex].messages.length;
   if (start > data.dm[dmIndex].messages.length) {
-    throw HTTPError(400,
-      'start is greater than the total number of messages in the channel'
-    );
+    return {
+      error:
+        'start is greater than the total number of messages in the channel',
+    };
   }
 
   const dm = findDm(dmId);
