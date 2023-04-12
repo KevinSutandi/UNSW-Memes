@@ -176,7 +176,15 @@ export function dmCreate(token: string, uIds: Array<number>) {
 }
 
 export function dmMessages(token: string, dmId: number, start: number) {
-  return requestHelper('GET', '/dm/messages/v1', { token, dmId, start });
+  return requestHelper(
+    'GET',
+    '/dm/messages/v1',
+    {
+      dmId,
+      start,
+    },
+    { token }
+  );
 }
 
 export function dmDetails(token: string, dmId: number) {

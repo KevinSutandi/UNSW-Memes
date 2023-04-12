@@ -155,12 +155,13 @@ app.post('/dm/leave/v1', (req: Request, res: Response, next) => {
 });
 
 app.get('/dm/messages/v1', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
+  const token = req.headers.token as string;
   const dmId = parseInt(req.query.dmId as string);
   const start = parseInt(req.query.start as string);
   const result = dmMessagesV1(token, dmId, start);
   return res.json(result);
 });
+
 app.get('/dm/list/v1', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const result = dmListV1(token);
@@ -199,6 +200,7 @@ app.put('/message/edit/v2', (req: Request, res: Response, next) => {
   const result = messageEditV1(token, messageId, message);
   return res.json(result);
 });
+
 app.post('/message/send/v2', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
   const { channelId, message } = req.body;
