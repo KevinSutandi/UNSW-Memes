@@ -183,3 +183,10 @@ export interface newData {
   dm: Array<dmData>;
   secret: string;
 }
+
+
+export interface notification {
+  channelId: number | -1;
+  dmId: number | -1;
+  notificationMessage: string
+}

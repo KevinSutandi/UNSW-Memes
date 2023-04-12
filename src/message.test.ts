@@ -10,6 +10,10 @@ import {
   dmCreate,
   messageSendDm,
   dmMessages,
+  messagePinV1,
+  messageUnpinV1,
+  searchV1,
+  notificationsGetV1
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -713,3 +717,255 @@ describe('testing messageSendDm', () => {
     });
   });
 });
+
+describe('testing messagePin in Channels Cases', () => {
+  let user1: AuthReturn;
+  let channel1: { channelId: number };
+  let message1: { messageId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    channel1 = channelsCreate(user1.token, 'wego', true);
+    message1 = messageSend(user1.token, channel1.channelId, 'test moments');
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('token is invalid', () => {
+    expect(
+      messagePinV1('laskdjflkasdfinvalid', message1.messageId)
+    ).toStrictEqual({ statusCode: 403, message: 'Token is invalid' });
+  });
+  test('user is not in channel', () => {
+    const user2 = authRegister(
+      'kevinesutandi@gmail.com',
+      'lesgo1001',
+      'Bevin',
+      'Bongo'
+    );
+    expect(messagePinV1(user2.token, message1.messageId))
+      .toStrictEqual({ statusCode: 403, message: 'User is not registered in channel' });
+  });
+  test('message does not exist', () => {
+    expect(messagePinV1(user1.token, message1.messageId + 200))
+      .toStrictEqual({ statusCode: 400, message: "Message Not Found" });
+  });
+  test('pin message and pin message is already pinned', () => {
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
+    expect(messagePinV1(user1.token, message1.messageId))
+      .toStrictEqual({ statusCode: 400, message: 'Message is already pinned' });
+  });
+});
+
+describe('testing messagePin in dm Cases', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let dm1: { dmId: number };
+  let dm2: { dmId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    const uIds1 = [user2.authUserId];
+    dm1 = dmCreate(user1.token, uIds1);
+    const uIds2 = [user1.authUserId];
+    dm2 = dmCreate(user2.token, uIds2);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('pin message', () => {
+    const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
+  })
+});
+
+describe('testing messageUnpin in Channels Cases', () => {
+  let user1: AuthReturn;
+  let channel1: { channelId: number };
+  let message1: { messageId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    channel1 = channelsCreate(user1.token, 'wego', true);
+    message1 = messageSend(user1.token, channel1.channelId, 'test moments');
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('token is invalid', () => {
+    expect(
+      messageUnpinV1('laskdjflkasdfinvalid', message1.messageId)
+    ).toStrictEqual({ statusCode: 403, message: 'Token is invalid' });
+  });
+  test('user is not in channel', () => {
+    const user2 = authRegister(
+      'kevinesutandi@gmail.com',
+      'lesgo1001',
+      'Bevin',
+      'Bongo'
+    );
+    expect(messageUnpinV1(user2.token, message1.messageId))
+      .toStrictEqual({ statusCode: 403, message: 'User is not registered in channel' });
+  });
+  test('message does not exist', () => {
+    expect(messageUnpinV1(user1.token, message1.messageId + 200))
+      .toStrictEqual({ statusCode: 400, message: "Message Not Found" });
+  });
+  test('unpin message and unpin message is already unpinned', () => {
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
+    expect(messageUnpinV1(user1.token, message1.messageId))
+      .toStrictEqual({ statusCode: 400, message: 'Message is already unpinned' });
+  });
+});
+
+describe('testing messageUnpin in dm Cases', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let dm1: { dmId: number };
+  let dm2: { dmId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    const uIds1 = [user2.authUserId];
+    dm1 = dmCreate(user1.token, uIds1);
+    const uIds2 = [user1.authUserId];
+    dm2 = dmCreate(user2.token, uIds2);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('unpin message', () => {
+    const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
+  })
+});
+
+describe('testing search', () => {
+  let user1: AuthReturn;
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('queryStr is invalid', () => {
+    expect(
+      searchV1(user1.token, '')
+    ).toStrictEqual({ statusCode: 400, message: 'queryStr is invalid' });
+  });
+
+  test('search', () => {
+    let user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    const uIds1 = [user2.authUserId];
+    let dm1 = dmCreate(user1.token, uIds1);
+    messageSendDm(user1.token, dm1.dmId, 'test moments1');
+    let channel1 = channelsCreate(user1.token, 'wego', true);
+    messageSend(user1.token, channel1.channelId, 'test moments2');
+    expect(
+      searchV1(user1.token, 'test')
+    ).toStrictEqual({
+      statusCode: 200, message: {
+        messages: expect.any(Array),
+        start: expect.any(Number),
+        end: expect.any(Number),
+      }
+    });
+  });
+});
+
+describe(' notifications get', () => {
+  let user1: AuthReturn;
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('get', () => {
+    let user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    const uIds1 = [user2.authUserId];
+    let dm1 = dmCreate(user1.token, uIds1);
+    let channel1 = channelsCreate(user1.token, 'wego', true);
+    for (let i = 0; i < 11; i++) {
+      messageSendDm(user1.token, dm1.dmId, 'test dm moments' + i);
+
+      messageSend(user1.token, channel1.channelId, 'test channel moments' + i);
+    }
+
+    expect(
+      notificationsGetV1(user1.token)
+    ).toStrictEqual({
+      statusCode: 200, message: expect.any(Array)
+    });
+  });
+});
+
+
