@@ -345,12 +345,12 @@ describe('testing dmMessagesV1 error cases', () => {
 
   // test when dmId does not refer to a valid DM
   test('dmId does not refer to a valid DM', () => {
-    expect(dmMessages(user.token, dm1.dmId + 1, 0)).toStrictEqual(ERROR);
+    expect(dmMessages(user.token, dm1.dmId + 1, 0)).toStrictEqual(400);
   });
 
   // test when start > total number of messages in the channel
   test('start > total number of messages in the channel', () => {
-    expect(dmMessages(user.token, dm1.dmId, 999999)).toStrictEqual(ERROR);
+    expect(dmMessages(user.token, dm1.dmId, 999999)).toStrictEqual(400);
   });
 
   // test when dmId is valid but authuser is not member of DM
@@ -361,7 +361,7 @@ describe('testing dmMessagesV1 error cases', () => {
       'Kevin',
       'Sutandi'
     );
-    expect(dmMessages(user4.token, dm1.dmId, 0)).toStrictEqual(ERROR);
+    expect(dmMessages(user4.token, dm1.dmId, 0)).toStrictEqual(403);
   });
 
   // token is invalid
