@@ -281,7 +281,7 @@ describe('testing dmRemoveV1', () => {
     dm2 = dmCreate(user2.token, uIds2);
   });
   test('token is invalid', () => {
-    expect(dmRemove('asasd', dm.dmId)).toStrictEqual(ERROR);
+    expect(dmRemove('asasd', dm.dmId)).toStrictEqual(403);
   });
 
   // test when dmId isnt a valid DM

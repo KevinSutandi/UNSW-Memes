@@ -290,7 +290,7 @@ export function dmRemoveV1(token: string, dmId: number) {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   const dmIndex = data.dm.findIndex((item) => item.dmId === dmId);
   if (dmIndex === -1) {
