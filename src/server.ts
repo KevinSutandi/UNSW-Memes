@@ -26,6 +26,7 @@ import {
   messageSendV1,
   messageEditV1,
   messageSendDmV1,
+  messageSendLaterV1,
   messagePinV1,
   messageUnpinV1,
   searchV1,
@@ -37,10 +38,6 @@ import {
   setHandle,
   getAllUsers,
   userProfileV2,
-  setHandleV2,
-  setNameV2,
-  setEmailV2,
-  userProfileV3,
 } from './users';
 import {
   dmCreateV1,
@@ -70,55 +67,6 @@ const HOST: string = process.env.IP || 'localhost';
 app.get('/echo', (req: Request, res: Response, next) => {
   const data = req.query.echo as string;
   return res.json(echo(data));
-});
-
-app.post('/message/pin/v1', (req: Request, res: Response, next) => {
-  const { token, messageId } = req.body;
-  const result = messagePinV1(token, messageId);
-  return res.json(result);
-});
-
-app.post('/message/unpin/v1', (req: Request, res: Response, next) => {
-  const { token, messageId } = req.body;
-  const result = messageUnpinV1(token, messageId);
-  return res.json(result);
-});
-
-app.post('/search/v1', (req: Request, res: Response, next) => {
-  const { token, queryStr } = req.body;
-  const result = searchV1(token, queryStr);
-  return res.json(result);
-});
-
-app.put('/user/profile/setHandle/v2', (req: Request, res: Response, next) => {
-  const { token, handleStr } = req.body;
-  const result = setHandleV2(token, handleStr);
-  return res.json(result);
-});
-
-app.put('/user/profile/setname/v2', (req: Request, res: Response, next) => {
-  const { token, nameFirst, nameLast } = req.body;
-  const result = setNameV2(token, nameFirst, nameLast);
-  return res.json(result);
-});
-
-app.put('/user/profile/setemail/v2', (req: Request, res: Response, next) => {
-  const { token, email } = req.body;
-  const result = setEmailV2(token, email);
-  return res.json(result);
-});
-
-app.get('/user/profile/v3', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
-  const uId = parseInt(req.query.uId as string);
-  const result = userProfileV3(token, uId);
-  return res.status("error" in result ? 400 : 200).json(result);
-});
-
-app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
-  const result = notificationsGetV1(token);
-  return res.json(result);
 });
 
 // Keep this BENEATH route definitions
@@ -225,7 +173,6 @@ app.get('/dm/messages/v2', (req: Request, res: Response, next) => {
   const result = dmMessagesV1(token, dmId, start);
   return res.json(result);
 });
-
 app.get('/dm/list/v2', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
   const result = dmListV1(token);
@@ -265,7 +212,6 @@ app.put('/message/edit/v2', (req: Request, res: Response, next) => {
   const result = messageEditV1(token, messageId, message);
   return res.json(result);
 });
-
 app.post('/message/send/v2', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
   const { channelId, message } = req.body;
@@ -273,6 +219,63 @@ app.post('/message/send/v2', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.put('/user/profile/sethandle/v2', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { handleStr } = req.body;
+  const result = setHandle(token, handleStr);
+  return res.json(result);
+});
+
+app.put('/user/profile/setemail/v2', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { email } = req.body;
+  const result = setEmail(token, email);
+  return res.json(result);
+});
+
+app.put('/user/profile/setname/v2', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { nameFirst, nameLast } = req.body;
+  const result = setName(token, nameFirst, nameLast);
+  return res.json(result);
+});
+
+app.get('/users/all/v2', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const result = getAllUsers(token);
+  return res.json(result);
+});
+
+app.get('/user/profile/v3', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const uId = parseInt(req.query.uId as string);
+  const result = userProfileV2(token, uId);
+  return res.json(result);
+});
+
+app.post('/message/pin/v1', (req: Request, res: Response, next) => {
+  const { token, messageId } = req.body;
+  const result = messagePinV1(token, messageId);
+  return res.json(result);
+});
+
+app.post('/message/unpin/v1', (req: Request, res: Response, next) => {
+  const { token, messageId } = req.body;
+  const result = messageUnpinV1(token, messageId);
+  return res.json(result);
+});
+
+app.post('/search/v1', (req: Request, res: Response, next) => {
+  const { token, queryStr } = req.body;
+  const result = searchV1(token, queryStr);
+  return res.json(result);
+});
+
+app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
+  const token = req.query.token as string;
+  const result = notificationsGetV1(token);
+  return res.json(result);
+});
 
 
 app.delete('/dm/remove/v2', (req: Request, res: Response, next) => {
@@ -310,14 +313,12 @@ app.post('/standup/send/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.get('/users/all/v2', (req: Request, res: Response, next) => {
+app.post('/message/sendlater/v1', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
-  const result = getAllUsers(token);
+  const { channelId, message, timeSent } = req.body;
+  const result = messageSendLaterV1(token, channelId, message, timeSent);
   return res.json(result);
 });
-
-
-
 
 // start server
 const server = app.listen(PORT, HOST, () => {
@@ -329,3 +330,4 @@ const server = app.listen(PORT, HOST, () => {
 process.on('SIGINT', () => {
   server.close(() => console.log('Shutting down server gracefully.'));
 });
+

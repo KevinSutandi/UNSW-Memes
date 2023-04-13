@@ -2,14 +2,16 @@ import {
   authRegister,
   usersAll,
   clearV1,
-  setHandleV2,
-  setEmailV2,
-  setNameV2,
-  userProfileV3,
+  setHandle,
+  setEmail,
+  setName,
+  userProfile,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
 const ERROR = { error: expect.any(String) };
+const badrequest = 400;
+const forbidden = 403;
 
 
 describe('userProfile iteration 3 testing', () => {
@@ -35,14 +37,14 @@ describe('userProfile iteration 3 testing', () => {
 
   test('userProfile setHandlerv2', () => {
 
-    expect(setHandleV2('', 'Batman')).toStrictEqual({ statusCode: 403, message: 'Invalid token' })
-    expect(setHandleV2(user2.token, '')).toStrictEqual({ statusCode: 400, message: 'handle is invalid' })
-    expect(setHandleV2(user2.token, '@@@')).toStrictEqual({ statusCode: 400, message: 'handle is invalid' })
-    expect(setHandleV2(user2.token, '111111111111111111111111111111111111111111111111111111')).toStrictEqual({ statusCode: 400, message: 'handle is invalid' })
+    expect(setHandle('', 'Batman')).toStrictEqual(forbidden)
+    expect(setHandle(user2.token, '')).toStrictEqual(badrequest)
+    expect(setHandle(user2.token, '@@@')).toStrictEqual(badrequest)
+    expect(setHandle(user2.token, '111111111111111111111111111111111111111111111111111111')).toStrictEqual(badrequest)
 
-    setHandleV2(user2.token, 'Batman');
-    expect(setHandleV2(user2.token, 'Batman')).toStrictEqual({ statusCode: 400, message: 'handle is already had' })
-    expect(userProfileV3(user2.token, user2.authUserId)).toStrictEqual({ statusCode: 200,message:{
+    setHandle(user2.token, 'Batman');
+    expect(setHandle(user2.token, 'Batman')).toStrictEqual(badrequest)
+    expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
       user: {
         uId: user2.authUserId,
         email: 'testing12347@gmail.com',
@@ -50,52 +52,51 @@ describe('userProfile iteration 3 testing', () => {
         nameLast: 'Kova',
         handleStr: 'Batman',
       }
-    }}
+    }
     );
   });
 
-  test('userProfile setEmailv2', () => {
+  test('userProfile setEmail', () => {
 
-    expect(setEmailV2('', '12')).toStrictEqual({ statusCode: 403, message: 'Invalid token' })
-    expect(setEmailV2(user2.token, '12')).toStrictEqual({ statusCode: 400, message: 'invalid email' })
+    expect(setEmail('', '12')).toStrictEqual(forbidden)
+    expect(setEmail(user2.token, '12')).toStrictEqual(badrequest)
 
-    setEmailV2(user.token, 'onlyfortestttt9@gmail.com');
-    expect(setEmailV2(user2.token, 'onlyfortestttt9@gmail.com')).toStrictEqual({ statusCode: 400, message: 'email address is already being used by another user' })
-    expect(userProfileV3(user.token, user.authUserId)).toStrictEqual({ statusCode: 200,message:{
+    setEmail(user.token, 'onlyfortestttt9@gmail.com');
+    expect(setEmail(user2.token, 'onlyfortestttt9@gmail.com')).toStrictEqual(badrequest)
+    expect(userProfile(user.token, user.authUserId)).toStrictEqual({
       user: {
         uId: user.authUserId,
         email: 'onlyfortestttt9@gmail.com',
         nameFirst: 'Jonah',
         nameLast: 'Meggs',
         handleStr: expect.any(String),
-      },}
-    });
+      }   } );
   });
 
-  test('userProfile setNameV2', () => {
+  test('userProfile setName', () => {
 
-    expect(setNameV2('', '12', "12")).toStrictEqual({ statusCode: 403, message: 'Invalid token' })
-    expect(setNameV2(user2.token, '', '')).toStrictEqual({ statusCode: 400, message: 'name length should in range of 1 to 50' })
+    expect(setName('', '12', "12")).toStrictEqual(forbidden)
+    expect(setName(user2.token, '', '')).toStrictEqual(badrequest)
 
-    expect(setNameV2(user2.token, 'Jonah', 'Meggs')).toStrictEqual({statusCode: 200,message:{}});
-    expect(userProfileV3(user2.token, user2.authUserId)).toStrictEqual({ statusCode: 200,message:{
+    expect(setName(user2.token, 'Jonah', 'Meggs')).toStrictEqual({});
+    expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
       user: {
         uId: user2.authUserId,
         email: 'testing12347@gmail.com',
         nameFirst: 'Jonah',
         nameLast: 'Meggs',
         handleStr: expect.any(String),
-      },}
-    });
+      }}
+    );
   });
 
   test('userProfile userprofile', () => {
 
-    expect(userProfileV3('', user.authUserId)).toStrictEqual({ statusCode: 403, message: 'Invalid token' })
-    expect(userProfileV3(user.token, 1000000)).toStrictEqual({ statusCode: 400, message: 'Invalid uId' })
+    expect(userProfile('', user.authUserId)).toStrictEqual(forbidden)
+    expect(userProfile(user.token, 1000000)).toStrictEqual(badrequest)
 
-    expect(userProfileV3(user.token, user.authUserId)).toStrictEqual({
-      statusCode: 200, message: {
+    expect(userProfile(user.token, user.authUserId)).toStrictEqual({
+      
         user: {
           uId: user.authUserId,
           email: 'onlyfortestttt06@gmail.com',
@@ -103,7 +104,7 @@ describe('userProfile iteration 3 testing', () => {
           nameLast: 'Meggs',
           handleStr: expect.any(String),
         }
-      },
+      ,
     });
 
   });

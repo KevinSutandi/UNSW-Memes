@@ -41,20 +41,6 @@ export function requestHelper(
   return JSON.parse(res.getBody() as string);
 }
 
-export function requestHelper2(method: HttpVerb, path: string, payload: object) {
-  let qs = {};
-  let json = {};
-  if (['GET', 'DELETE'].includes(method)) {
-    qs = payload;
-  } else {
-    // PUT/POST
-    json = payload;
-  }
-  const res = request(method, SERVER_URL + path, { qs, json, timeout: 20000 });
-  const bodyObj = JSON.parse(res.body as string);
-  return { statusCode: res.statusCode, message: "error" in bodyObj ? bodyObj.error.message : bodyObj };
-}
-
 export function authRegister(
   email: string,
   password: string,
@@ -226,56 +212,76 @@ export function messageEdit(token: string, messageId: number, message: string) {
   );
 }
 
+export function userProfile(token: string, uId: number) {
+  return requestHelper(
+    'GET',
+    '/user/profile/v3',
+    {
+      uId,
+    },
+    { token }
+  );
+}
+
 export function usersAll(token: string) {
   return requestHelper('GET', '/users/all/v2', {}, { token });
 }
 
-export function setHandleV2(token: string, handleStr: string) {
-  return requestHelper2('PUT', '/user/profile/setHandle/v2', {
-    token,
-    handleStr,
-  });
+export function setName(token: string, nameFirst: string, nameLast: string) {
+  return requestHelper(
+    'PUT',
+    '/user/profile/setname/v2',
+    {
+      nameFirst,
+      nameLast,
+    },
+    { token }
+  );
 }
 
-export function setNameV2(token: string, nameFirst: string, nameLast: string) {
-  return requestHelper2('PUT', '/user/profile/setname/v2', {
-    token,
-    nameFirst,
-    nameLast,
-  });
+export function setEmail(token: string, email: string) {
+  return requestHelper(
+    'PUT',
+    '/user/profile/setemail/v2',
+    { email },
+    { token }
+  );
 }
 
-export function setEmailV2(token: string, email: string) {
-  return requestHelper2('PUT', '/user/profile/setemail/v2', { token, email });
-}
-
-export function userProfileV3(token: string, uId: number) {
-  return requestHelper2('GET', '/user/profile/v3', { token, uId });
+export function setHandle(token: string, handleStr: string) {
+  return requestHelper(
+    'PUT',
+    '/user/profile/sethandle/v2',
+    {
+      handleStr,
+    },
+    { token }
+  );
 }
 
 export function messagePinV1(token: string, messageId: number) {
-  return requestHelper2('POST', '/message/pin/v1', {
+  return requestHelper('POST', '/message/pin/v1', {
     token,
     messageId,
   });
 }
 
 export function messageUnpinV1(token: string, messageId: number) {
-  return requestHelper2('POST', '/message/unpin/v1', {
+  return requestHelper('POST', '/message/unpin/v1', {
     token,
     messageId,
   });
 }
 
 export function searchV1(token: string, queryStr: string) {
-  return requestHelper2('POST', '/search/v1', {
+  return requestHelper('POST', '/search/v1', {
     token,
     queryStr,
   });
 }
 
 export function notificationsGetV1(token: string) {
-  return requestHelper2('GET', '/notifications/get/v1', {
+  return requestHelper('GET', '/notifications/get/v1', {
     token
   });
 }
@@ -320,6 +326,24 @@ export function standUpSend(token: string, channelId: number, message: string) {
     {
       channelId,
       message,
+    },
+    { token }
+  );
+}
+
+export function messageSendLater(
+  token: string,
+  channelId: number,
+  message: string,
+  timeSent: number
+) {
+  return requestHelper(
+    'POST',
+    '/message/sendlater/v1',
+    {
+      channelId,
+      message,
+      timeSent,
     },
     { token }
   );

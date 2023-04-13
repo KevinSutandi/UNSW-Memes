@@ -52,7 +52,7 @@ export function userProfileV1(
  * @param {number} uId - The user ID to retrieve the profile for.
  * @return {Object} Returns a user object if successful, or an error message if unsuccessful.
  */
-export function userProfileV3(
+export function userProfileV2(
   token: string,
   uId: number
 ): { user: userObject } {
@@ -87,7 +87,7 @@ export function userProfileV3(
  * @param {string} email - The new email address to set for the user.
  * @return {{}} Returns an empty object if successful, or an error message if unsuccessful.
  */
-export function setEmailV2(token: string, email: string) {
+export function setEmail(token: string, email: string) {
   const user = getUserByToken(token);
   if (user === undefined) {
     throw HTTPError(403, 'Invalid token')
@@ -115,7 +115,7 @@ export function setEmailV2(token: string, email: string) {
  * @param {string} nameLast - The user's new last name.
  * @return {{}} Returns an empty object if successful, or an error message if unsuccessful.
  */
-export function setNameV2(token: string, nameFirst: string, nameLast: string) {
+export function setName(token: string, nameFirst: string, nameLast: string) {
   const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
@@ -144,7 +144,7 @@ export function setNameV2(token: string, nameFirst: string, nameLast: string) {
  * @param {string} handleStr - The new handle for the user.
  * @return {{}} Returns an empty object if successful, or an error message if unsuccessful.
  */
-export function setHandleV2(token: string, handleStr: string): {} {
+export function setHandle(token: string, handleStr: string): {} {
   const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {

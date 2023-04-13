@@ -741,7 +741,7 @@ describe('testing messagePin in Channels Cases', () => {
   test('token is invalid', () => {
     expect(
       messagePinV1('laskdjflkasdfinvalid', message1.messageId)
-    ).toStrictEqual({ statusCode: 403, message: 'Token is invalid' });
+    ).toStrictEqual(forbidden);
   });
   test('user is not in channel', () => {
     const user2 = authRegister(
@@ -751,16 +751,16 @@ describe('testing messagePin in Channels Cases', () => {
       'Bongo'
     );
     expect(messagePinV1(user2.token, message1.messageId))
-      .toStrictEqual({ statusCode: 403, message: 'User is not registered in channel' });
+      .toStrictEqual(forbidden);
   });
   test('message does not exist', () => {
     expect(messagePinV1(user1.token, message1.messageId + 200))
-      .toStrictEqual({ statusCode: 400, message: "Message Not Found" });
+      .toStrictEqual(badrequest );
   });
   test('pin message and pin message is already pinned', () => {
-    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
     expect(messagePinV1(user1.token, message1.messageId))
-      .toStrictEqual({ statusCode: 400, message: 'Message is already pinned' });
+      .toStrictEqual( badrequest );
   });
 });
 
@@ -795,7 +795,7 @@ describe('testing messagePin in dm Cases', () => {
 
   test('pin message', () => {
     const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
-    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
   })
 });
 
@@ -822,7 +822,7 @@ describe('testing messageUnpin in Channels Cases', () => {
   test('token is invalid', () => {
     expect(
       messageUnpinV1('laskdjflkasdfinvalid', message1.messageId)
-    ).toStrictEqual({ statusCode: 403, message: 'Token is invalid' });
+    ).toStrictEqual(forbidden);
   });
   test('user is not in channel', () => {
     const user2 = authRegister(
@@ -832,17 +832,17 @@ describe('testing messageUnpin in Channels Cases', () => {
       'Bongo'
     );
     expect(messageUnpinV1(user2.token, message1.messageId))
-      .toStrictEqual({ statusCode: 403, message: 'User is not registered in channel' });
+      .toStrictEqual(forbidden);
   });
   test('message does not exist', () => {
     expect(messageUnpinV1(user1.token, message1.messageId + 200))
-      .toStrictEqual({ statusCode: 400, message: "Message Not Found" });
+      .toStrictEqual( badrequest );
   });
   test('unpin message and unpin message is already unpinned', () => {
-    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
-    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({});
     expect(messageUnpinV1(user1.token, message1.messageId))
-      .toStrictEqual({ statusCode: 400, message: 'Message is already unpinned' });
+      .toStrictEqual(badrequest );
   });
 });
 
@@ -877,8 +877,8 @@ describe('testing messageUnpin in dm Cases', () => {
 
   test('unpin message', () => {
     const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
-    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
-    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({ statusCode: 200, message: {} });
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({});
   })
 });
 
@@ -901,7 +901,7 @@ describe('testing search', () => {
   test('queryStr is invalid', () => {
     expect(
       searchV1(user1.token, '')
-    ).toStrictEqual({ statusCode: 400, message: 'queryStr is invalid' });
+    ).toStrictEqual( badrequest );
   });
 
   test('search', () => {
@@ -919,12 +919,11 @@ describe('testing search', () => {
     expect(
       searchV1(user1.token, 'test')
     ).toStrictEqual({
-      statusCode: 200, message: {
         messages: expect.any(Array),
         start: expect.any(Number),
         end: expect.any(Number),
       }
-    });
+    );
   });
 });
 
@@ -962,9 +961,8 @@ describe(' notifications get', () => {
 
     expect(
       notificationsGetV1(user1.token)
-    ).toStrictEqual({
-      statusCode: 200, message: expect.any(Array)
-    });
+    ).toStrictEqual(expect.any(Array)
+    );
   });
 });
 
