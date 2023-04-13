@@ -34,6 +34,7 @@ export interface standUp {
   standUpActive: boolean;
   standUpLength: number;
   standUpMessage: Array<messagesObject>;
+  standUpOwner: number;
 }
 
 /**
