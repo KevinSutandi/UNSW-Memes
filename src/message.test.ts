@@ -11,6 +11,7 @@ import {
   messageSendDm,
   dmMessages,
   messageSendLater,
+  messageSendLaterDm,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -813,6 +814,90 @@ describe('testing messageSendLater', () => {
     await new Promise((r) => setTimeout(r, 2000));
     // check channelmessage should contain
     expect(channelMessage(user1.token, channel1.channelId, 0)).toStrictEqual({
+      messages: expect.any(Array),
+      start: 0,
+      end: -1,
+    });
+  });
+});
+
+describe('testing messageSendLaterDm', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let dm1: { dmId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+
+    user2 = authRegister(
+      'kevinesutandi@gmail.com',
+      'lesgo1001',
+      'Gabriel',
+      'Hardman'
+    );
+
+    const uIds = [user2.authUserId];
+    dm1 = dmCreate(user1.token, uIds);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('dm does not exist', () => {
+    expect(
+      messageSendLaterDm(user1.token, 100000, 'hello world', 50)
+    ).toStrictEqual(badrequest);
+  });
+
+  test('invalid token', () => {
+    expect(
+      messageSendLaterDm('abnomrklasdjflk', dm1.dmId, 'hello world', 50)
+    ).toStrictEqual(forbidden);
+  });
+
+  test('invalid messages', () => {
+    expect(messageSendLaterDm(user1.token, dm1.dmId, '', 50)).toStrictEqual(
+      badrequest
+    );
+    expect(
+      messageSendLaterDm(user1.token, dm1.dmId, 'a'.repeat(1001), 50)
+    ).toStrictEqual(badrequest);
+  });
+
+  test('non dm member send message', () => {
+    const user3 = authRegister(
+      'Hindie@gmail.com',
+      'welovecows',
+      'Hindie',
+      'Suputra'
+    );
+    expect(
+      messageSendLaterDm(user3.token, dm1.dmId, 'hello world', 50)
+    ).toStrictEqual(forbidden);
+  });
+
+  test('timeSent is a time in the past', () => {
+    // const timeStamp = new Date().getTime();
+    expect(
+      messageSendLaterDm(user1.token, dm1.dmId, 'haloo', 50)
+    ).toStrictEqual(badrequest);
+  });
+
+  test('valid message', async () => {
+    const timeStamp = new Date().getTime();
+    expect(
+      messageSendLaterDm(user1.token, dm1.dmId, 'hello world', timeStamp + 2000)
+    ).toStrictEqual({
+      messageId: expect.any(Number),
+    });
+    await new Promise((r) => setTimeout(r, 2000));
+    expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
       messages: expect.any(Array),
       start: 0,
       end: -1,

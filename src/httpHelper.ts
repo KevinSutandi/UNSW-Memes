@@ -320,3 +320,21 @@ export function messageSendLater(
     { token }
   );
 }
+
+export function messageSendLaterDm(
+  token: string,
+  dmId: number,
+  message: string,
+  timeSent: number
+) {
+  return requestHelper(
+    'POST',
+    '/message/sendlaterdm/v1',
+    {
+      dmId,
+      message,
+      timeSent,
+    },
+    { token }
+  );
+}
