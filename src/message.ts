@@ -376,3 +376,79 @@ export function messageSendLaterDmV1(
   }, timeDelay * 1000);
   return { messageId: messageId };
 }
+
+export function messageShareV1(
+  token: string,
+  ogMessageId: number,
+  message: string,
+  channelId: number,
+  dmId: number
+) {
+  const data = getData();
+  const user = getUserByToken(token);
+  const channel = findChannelByMessageId(ogMessageId);
+  const dm = findDMbyMessageId(ogMessageId);
+  const channelTarget = findChannel(channelId);
+  const dmTarget = findDMbyId(dmId);
+  let messageIndex = -1;
+  let flags;
+
+  if (user === undefined) {
+    throw HTTPError(403, 'Invalid token');
+  }
+
+  if (channelTarget === undefined && dmTarget === undefined) {
+    throw HTTPError(400, 'Invalid channelId and dmId');
+  }
+
+  // Finds the message's location
+  if (channel === undefined && dm === undefined) {
+    throw HTTPError(400, 'Message does not exist');
+  } else if (channel !== undefined) {
+    messageIndex = findMessageIndexInChannel(channel, ogMessageId);
+    flags = channel;
+  } else {
+    messageIndex = findMessageIndexInDM(dm, ogMessageId);
+    flags = dm;
+  }
+
+  if (channelId !== -1 && dmId !== -1) {
+    throw HTTPError(400, 'Neither channelId nor dmId are -1');
+  }
+  if (message.length > 1000) {
+    throw HTTPError(400, 'Message cannot exceed 1000 characters');
+  }
+
+  const allMemberIds = getAllMemberIds(flags);
+  if (!allMemberIds.includes(user.authUserId)) {
+    throw HTTPError(403, 'User is not registered in channel');
+  }
+
+  const sharedMessageId = Math.floor(Math.random() * 1000000);
+  // Shares the message to a channel
+  if (channelId !== -1) {
+    const channelIndex = getChannelIndex(channelId);
+    const newMessage = {
+      messageId: sharedMessageId,
+      uId: user.authUserId,
+      message: flags.messages[messageIndex] + message,
+      timeSent: Math.floor(Date.now() / 1000),
+    };
+    data.channels[channelIndex].messages.push(newMessage);
+    setData(data);
+    return { sharedMessageId: sharedMessageId };
+
+    // Shares the message to a dm
+  } else {
+    const dmIndex = getDmIndex(dmId);
+    const newMessage = {
+      messageId: sharedMessageId,
+      uId: user.authUserId,
+      message: flags.messages[messageIndex] + message,
+      timeSent: Math.floor(Date.now() / 1000),
+    };
+    data.dm[dmIndex].messages.push(newMessage);
+    setData(data);
+    return { sharedMessageId: sharedMessageId };
+  }
+}
