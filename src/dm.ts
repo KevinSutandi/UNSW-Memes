@@ -74,6 +74,7 @@ export function dmCreateV1(
       handleStr: uId.handleStr,
       nameFirst: uId.nameFirst,
       nameLast: uId.nameLast,
+      profileImgUrl: uId.profileImgUrl,
     });
   }
 
@@ -89,6 +90,7 @@ export function dmCreateV1(
         handleStr: user.handleStr,
         nameFirst: user.nameFirst,
         nameLast: user.nameLast,
+        profileImgUrl: user.profileImgUrl,
       },
     ],
     allMembers: allMembers,

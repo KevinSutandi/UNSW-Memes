@@ -211,7 +211,7 @@ describe('userProfile iteration 2 testing', () => {
   });
 });
 
-describe('userProfileUploadPhoto Error Cases', () => {
+describe('userProfileUploadPhoto testing', () => {
   let user: AuthReturn;
   beforeEach(() => {
     clearV1();
@@ -223,12 +223,12 @@ describe('userProfileUploadPhoto Error Cases', () => {
     );
   });
 
-  afterEach(() => {
-    clearV1();
-  });
+  // afterEach(() => {
+  //   clearV1();
+  // });
 
   const validImgUrl = 'http://i.redd.it/v0caqchbtn741.jpg';
-  const invalidPNG = 'https://i.redd.it/v0caqchbtn741.png';
+  const invalidPNG = 'https://i.imgur.com/2SbRPiD.jpeg';
   const invalid404 = 'https://imgur.com/F9Nf9FKSLJDFHKJLx.jpg';
 
   test('userProfileUploadPhoto invalid Token', () => {
@@ -265,5 +265,11 @@ describe('userProfileUploadPhoto Error Cases', () => {
     expect(
       userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 900, 200)
     ).toStrictEqual(400);
+  });
+
+  test('userProfileUploadPhoto run success', () => {
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 200, 200)
+    ).toStrictEqual({});
   });
 });

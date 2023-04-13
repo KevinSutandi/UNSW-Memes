@@ -230,9 +230,6 @@ export function downloadImage(imgUrl?: string, name?: string) {
   }
 
   const res = request('GET', image);
-  if (res.statusCode !== 200) {
-    throw new Error('Failed to download image');
-  }
   const img = res.getBody();
 
   fs.writeFileSync(path.join(dir, name), img, { flag: 'w' });

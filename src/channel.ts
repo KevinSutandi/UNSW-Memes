@@ -127,6 +127,7 @@ export function channelJoinV1(
     nameFirst: user.nameFirst,
     nameLast: user.nameLast,
     handleStr: user.handleStr,
+    profileImgUrl: user.profileImgUrl,
   });
   setData(data);
 
@@ -186,6 +187,7 @@ export function channelInviteV1(token: string, channelId: number, uId: number) {
     nameFirst: invitedUser.nameFirst,
     nameLast: invitedUser.nameLast,
     handleStr: invitedUser.handleStr,
+    profileImgUrl: invitedUser.profileImgUrl,
   });
 
   setData(data);
@@ -332,6 +334,7 @@ export function channelAddOwnerV1(
     nameFirst: uIdfound.nameFirst,
     nameLast: uIdfound.nameLast,
     handleStr: uIdfound.handleStr,
+    profileImgUrl: uIdfound.profileImgUrl,
   });
   setData(data);
   return {};

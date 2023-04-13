@@ -11,7 +11,6 @@ import HttpError from 'http-errors';
 import { port } from './config.json';
 import request from 'sync-request';
 import sharp from 'sharp';
-import fs from 'fs';
 
 /**
  * For a valid user, userProfileV1 returns information about the user
@@ -232,7 +231,7 @@ export function userProfileUploadPhotoV1(
     .toFile(imageCroppedPath);
 
   // delete the uncropped photo
-  fs.unlinkSync(imagePath);
+  // fs.unlinkSync(imagePath);
 
   const userIndex = findUserIndex(user.authUserId);
   const data = getData();

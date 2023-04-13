@@ -170,6 +170,7 @@ describe('testing dmDetailsV1', () => {
           handleStr: 'zombieibrahim',
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user.authUserId,
@@ -177,6 +178,7 @@ describe('testing dmDetailsV1', () => {
           handleStr: 'jonahmeggs',
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user2.authUserId,
@@ -184,6 +186,7 @@ describe('testing dmDetailsV1', () => {
           handleStr: 'kevinsutandi',
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
