@@ -41,6 +41,7 @@ export function standupStartV1(
   const data = getData();
   data.channels[channelIndex].standUp.standUpActive = true;
   data.channels[channelIndex].standUp.standUpLength = timeFinish;
+  data.channels[channelIndex].standUp.standUpOwner = user.authUserId;
 
   setData(data);
 

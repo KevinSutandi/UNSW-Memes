@@ -274,3 +274,54 @@ export function messageSendDmV1(
   setData(data);
   return { messageId: messageId };
 }
+
+export function messageSendLaterV1(
+  token: string,
+  channelId: number,
+  message: string,
+  timeSent: number
+) {
+  const data = getData();
+  const user = getUserByToken(token);
+  const channel = findChannel(channelId);
+  const allMemberIds = getAllMemberIds(channel);
+
+  // Error Checking
+  if (user === undefined) {
+    throw HTTPError(403, 'Token is invalid');
+  }
+  if (channel === undefined) {
+    throw HTTPError(400, 'Channel does not exist');
+  }
+  if (allMemberIds.includes(user.authUserId) === false) {
+    throw HTTPError(403, 'User is not registered in channel');
+  }
+  if (message.length < 1) {
+    throw HTTPError(400, 'Message is too short');
+  }
+  if (message.length > 1000) {
+    throw HTTPError(400, 'Message is too long');
+  }
+
+  const currentTime = Math.floor(Date.now() / 1000);
+  if (timeSent < currentTime) {
+    throw HTTPError(400, 'Time sent cannot be a time in the past');
+  }
+
+  const channelIndex = getChannelIndex(channelId);
+  const messageId = Math.floor(Math.random() * 1000000);
+
+  const timeDelay = timeSent - currentTime;
+  setTimeout(() => {
+    const newMessage = {
+      messageId: messageId,
+      uId: user.authUserId,
+      message: message,
+      timeSent: Math.floor(Date.now() / 1000),
+    };
+    data.channels[channelIndex].messages.push(newMessage);
+    setData(data);
+  }, timeDelay * 1000);
+
+  return { messageId: messageId };
+}

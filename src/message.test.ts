@@ -10,6 +10,7 @@ import {
   dmCreate,
   messageSendDm,
   dmMessages,
+  messageSendLater,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -710,6 +711,111 @@ describe('testing messageSendDm', () => {
   test('valid message 2 ', () => {
     expect(messageSendDm(user2.token, dm1.dmId, 'hello world')).toStrictEqual({
       messageId: expect.any(Number),
+    });
+  });
+});
+
+describe('testing messageSendLater', () => {
+  let user1: AuthReturn;
+  let channel1: { channelId: number };
+  let sendTime: number;
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    channel1 = channelsCreate(user1.token, 'wego', true);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('channel does not exist', () => {
+    expect(
+      messageSendLater(
+        user1.token,
+        channel1.channelId + 200,
+        'hello world',
+        sendTime + 2000
+      )
+    ).toStrictEqual(badrequest);
+  });
+
+  test('length of message is below 1 character', () => {
+    expect(
+      messageSendLater(user1.token, channel1.channelId, '', sendTime + 2000)
+    ).toStrictEqual(badrequest);
+  });
+
+  test('length of message is above 1000 characters', () => {
+    const message = 'a'.repeat(1001);
+    expect(
+      messageSendLater(
+        user1.token,
+        channel1.channelId,
+        message,
+        sendTime + 2000
+      )
+    ).toStrictEqual(badrequest);
+  });
+
+  test('user is not in channel', () => {
+    const user2 = authRegister(
+      'kevinesutandi@gmail.com',
+      'lesgo1001',
+      'Bevin',
+      'Bongo'
+    );
+    expect(
+      messageSendLater(
+        user2.token,
+        channel1.channelId,
+        'hello world',
+        sendTime + 2000
+      )
+    ).toStrictEqual(forbidden);
+  });
+  test('token is invalid', () => {
+    expect(
+      messageSendLater(
+        'laskdjflkasdfinvalid',
+        channel1.channelId,
+        'hello world',
+        sendTime + 2000
+      )
+    ).toStrictEqual(forbidden);
+  });
+  test('timeSent is a time in the past', () => {
+    expect(
+      messageSendLater(
+        user1.token,
+        channel1.channelId,
+        'halooo',
+        sendTime - 500
+      )
+    ).toStrictEqual(badrequest);
+  });
+
+  test('valid message should return messageId', async () => {
+    const timeStamp = new Date().getTime();
+    const result = messageSendLater(
+      user1.token,
+      channel1.channelId,
+      'hello world',
+      timeStamp + 2000
+    );
+    expect(result).toStrictEqual({ messageId: expect.any(Number) });
+    // test datascript and test node messages and channel
+    await new Promise((r) => setTimeout(r, 2000));
+    // check channelmessage should contain
+    expect(channelMessage(user1.token, channel1.channelId, 0)).toStrictEqual({
+      messages: expect.any(Array),
+      start: 0,
+      end: -1,
     });
   });
 });
