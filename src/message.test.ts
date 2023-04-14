@@ -1476,9 +1476,9 @@ describe('testing notifications', () => {
     dm1 = dmCreate(user1.token, uIds1);
   });
 
-  // afterEach(() => {
-  //   clearV1();
-  // });
+  afterEach(() => {
+    clearV1();
+  });
 
   test('token is invalid', () => {
     expect(notificationsGetV1('invalidtoken')).toStrictEqual(forbidden);
