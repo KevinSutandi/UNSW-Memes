@@ -238,10 +238,36 @@ export function userProfileUploadPhotoV1(
   const data = getData();
   const PORT: number = parseInt(process.env.PORT || port);
   const HOST: string = process.env.IP || 'localhost';
+  const newUrl = `http://${HOST}:${PORT}/img/${randomString}.jpg`;
 
-  data.users[
-    userIndex
-  ].profileImgUrl = `http://${HOST}:${PORT}/img/${randomString}.jpg`;
+  data.users[userIndex].profileImgUrl = newUrl;
+
+  data.channels.forEach((channel) => {
+    channel.ownerMembers.forEach((ownerMember) => {
+      if (ownerMember.uId === user.authUserId) {
+        ownerMember.profileImgUrl = newUrl;
+      }
+    });
+    channel.allMembers.forEach((allMember) => {
+      if (allMember.uId === user.authUserId) {
+        allMember.profileImgUrl = newUrl;
+      }
+    });
+  });
+
+  data.dm.forEach((dm) => {
+    dm.ownerMembers.forEach((ownerMember) => {
+      if (ownerMember.uId === user.authUserId) {
+        ownerMember.profileImgUrl = newUrl;
+      }
+    });
+    dm.allMembers.forEach((member) => {
+      if (member.uId === user.authUserId) {
+        member.profileImgUrl = newUrl;
+      }
+    });
+  });
+
   setData(data);
 
   return {};
