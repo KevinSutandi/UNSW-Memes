@@ -259,6 +259,50 @@ export function setHandle(token: string, handleStr: string) {
   );
 }
 
+export function messagePinV1(token: string, messageId: number) {
+  return requestHelper(
+    'POST',
+    '/message/pin/v1',
+    {
+      messageId,
+    },
+    { token }
+  );
+}
+
+export function messageUnpinV1(token: string, messageId: number) {
+  return requestHelper(
+    'POST',
+    '/message/unpin/v1',
+    {
+      messageId,
+    },
+    { token }
+  );
+}
+
+export function searchV1(token: string, queryStr: string) {
+  return requestHelper(
+    'POST',
+    '/search/v1',
+    {
+      queryStr,
+    },
+    { token }
+  );
+}
+
+export function notificationsGetV1(token: string) {
+  return requestHelper(
+    'GET',
+    '/notifications/get/v1',
+    {},
+    {
+      token,
+    }
+  );
+}
+
 export function dmRemove(token: string, dmId: number) {
   return requestHelper('DELETE', '/dm/remove/v2', { dmId }, { token });
 }

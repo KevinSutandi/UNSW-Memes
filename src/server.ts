@@ -27,6 +27,10 @@ import {
   messageEditV1,
   messageSendDmV1,
   messageSendLaterV1,
+  messagePinV1,
+  messageUnpinV1,
+  searchV1,
+  notificationsGetV1,
   messageSendLaterDmV1,
   messageShareV1,
 } from './message';
@@ -248,6 +252,33 @@ app.get('/user/profile/v3', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
   const uId = parseInt(req.query.uId as string);
   const result = userProfileV2(token, uId);
+  return res.json(result);
+});
+
+app.post('/message/pin/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId } = req.body;
+  const result = messagePinV1(token, messageId);
+  return res.json(result);
+});
+
+app.post('/message/unpin/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId } = req.body;
+  const result = messageUnpinV1(token, messageId);
+  return res.json(result);
+});
+
+app.post('/search/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { queryStr } = req.body;
+  const result = searchV1(token, queryStr);
+  return res.json(result);
+});
+
+app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const result = notificationsGetV1(token);
   return res.json(result);
 });
 

@@ -10,6 +10,10 @@ import {
   dmCreate,
   messageSendDm,
   dmMessages,
+  messagePinV1,
+  messageUnpinV1,
+  searchV1,
+  notificationsGetV1,
   messageSendLater,
   messageSendLaterDm,
   messageShare,
@@ -110,6 +114,14 @@ describe('testing sendMessages', () => {
         uId: user1.authUserId,
         message: `hello world number ${numMessages - i - 1}`,
         timeSent: expect.any(Number),
+        isPinned: false,
+        reacts: [
+          {
+            reactId: 1,
+            uIds: [],
+            isThisUserReacted: false,
+          },
+        ],
       });
     }
     expect(result).toStrictEqual({
@@ -463,6 +475,14 @@ describe('testing messageEdit', () => {
           uId: user1.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
+          isPinned: false,
+          reacts: [
+            {
+              reactId: 1,
+              uIds: [],
+              isThisUserReacted: false,
+            },
+          ],
         },
       ],
       start: 0,
@@ -494,6 +514,14 @@ describe('testing messageEdit', () => {
           uId: user2.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
+          isPinned: false,
+          reacts: [
+            {
+              reactId: 1,
+              uIds: [],
+              isThisUserReacted: false,
+            },
+          ],
         },
       ],
       start: 0,
@@ -530,6 +558,14 @@ describe('testing messageEdit', () => {
           uId: user3.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
+          isPinned: false,
+          reacts: [
+            {
+              reactId: 1,
+              uIds: [],
+              isThisUserReacted: false,
+            },
+          ],
         },
       ],
       start: 0,
@@ -596,6 +632,14 @@ describe('testing messageEdit DM', () => {
           uId: user1.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
+          isPinned: false,
+          reacts: [
+            {
+              reactId: 1,
+              uIds: [],
+              isThisUserReacted: false,
+            },
+          ],
         },
       ],
       start: 0,
@@ -622,6 +666,14 @@ describe('testing messageEdit DM', () => {
           uId: user2.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
+          isPinned: false,
+          reacts: [
+            {
+              reactId: 1,
+              uIds: [],
+              isThisUserReacted: false,
+            },
+          ],
         },
       ],
       start: 0,
@@ -1069,6 +1121,500 @@ describe('testing messageShare', () => {
       messages: expect.any(Array),
       start: 0,
       end: -1,
+    });
+  });
+});
+
+describe('testing messagePin in Channels Cases', () => {
+  let user1: AuthReturn;
+  let channel1: { channelId: number };
+  let message1: { messageId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    channel1 = channelsCreate(user1.token, 'wego', true);
+    message1 = messageSend(user1.token, channel1.channelId, 'test moments');
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('token is invalid', () => {
+    expect(
+      messagePinV1('laskdjflkasdfinvalid', message1.messageId)
+    ).toStrictEqual(forbidden);
+  });
+  test('user is not in channel', () => {
+    const user2 = authRegister(
+      'kevinesutandi@gmail.com',
+      'lesgo1001',
+      'Bevin',
+      'Bongo'
+    );
+    expect(messagePinV1(user2.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
+  });
+  test('message does not exist', () => {
+    expect(messagePinV1(user1.token, message1.messageId + 200)).toStrictEqual(
+      badrequest
+    );
+  });
+
+  test('message is already pinned', () => {
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual(
+      badrequest
+    );
+  });
+
+  test('global owner can pin message', () => {
+    const user2 = authRegister('wego@g.com', 'wego1001', 'Wego', 'Wego');
+    const channel2 = channelsCreate(user2.token, 'wego', true);
+    channelJoin(user1.token, channel2.channelId);
+    const message2 = messageSend(
+      user2.token,
+      channel2.channelId,
+      'test moments'
+    );
+
+    expect(messagePinV1(user1.token, message2.messageId)).toStrictEqual({});
+  });
+
+  test('channel member cannot pin message', () => {
+    const user2 = authRegister('wego@g.com', 'wego1001', 'Wego', 'Wego');
+    channelJoin(user2.token, channel1.channelId);
+
+    expect(messagePinV1(user2.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
+  });
+
+  test('pin message and pin message is already pinned', () => {
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual(
+      badrequest
+    );
+  });
+  test('pin message', () => {
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(
+      channelMessage(user1.token, channel1.channelId, 0).messages[0].isPinned
+    ).toStrictEqual(true);
+  });
+});
+
+describe('testing messagePin in dm Cases', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let dm1: { dmId: number };
+  let dm2: { dmId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    const uIds1 = [user2.authUserId];
+    dm1 = dmCreate(user1.token, uIds1);
+    const uIds2 = [user1.authUserId];
+    dm2 = dmCreate(user2.token, uIds2);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('global owner cannot pin message', () => {
+    const message1 = messageSendDm(user2.token, dm2.dmId, 'test moments');
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
+  });
+
+  test('pin message and pin message is already pinned', () => {
+    const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual(
+      badrequest
+    );
+  });
+
+  test('pin message', () => {
+    const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(
+      dmMessages(user1.token, dm1.dmId, 0).messages[0].isPinned
+    ).toStrictEqual(true);
+  });
+});
+
+describe('testing messageUnpin in Channels Cases', () => {
+  let user1: AuthReturn;
+  let channel1: { channelId: number };
+  let message1: { messageId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    channel1 = channelsCreate(user1.token, 'wego', true);
+    message1 = messageSend(user1.token, channel1.channelId, 'test moments');
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('token is invalid', () => {
+    expect(
+      messageUnpinV1('laskdjflkasdfinvalid', message1.messageId)
+    ).toStrictEqual(forbidden);
+  });
+  test('user is not in channel', () => {
+    const user2 = authRegister(
+      'kevinesutandi@gmail.com',
+      'lesgo1001',
+      'Bevin',
+      'Bongo'
+    );
+    expect(messageUnpinV1(user2.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
+  });
+  test('message does not exist', () => {
+    expect(messageUnpinV1(user1.token, message1.messageId + 200)).toStrictEqual(
+      badrequest
+    );
+  });
+
+  test('global owner can unpin message', () => {
+    const user2 = authRegister('wego@g.com', 'wego1001', 'Wego', 'Wego');
+    const channel2 = channelsCreate(user2.token, 'wego', true);
+    channelJoin(user1.token, channel2.channelId);
+    const message2 = messageSend(
+      user2.token,
+      channel2.channelId,
+      'test moments'
+    );
+    expect(messagePinV1(user1.token, message2.messageId)).toStrictEqual({});
+    expect(messageUnpinV1(user1.token, message2.messageId)).toStrictEqual({});
+  });
+
+  test('channel member cannot unpin message', () => {
+    const user2 = authRegister('wego@g.com', 'wego1001', 'Wego', 'Wego');
+    channelJoin(user2.token, channel1.channelId);
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(messageUnpinV1(user2.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
+  });
+
+  test('unpin message and unpin message is already unpinned', () => {
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual(
+      badrequest
+    );
+  });
+  test('unpin message', () => {
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(
+      channelMessage(user1.token, channel1.channelId, 0).messages[0].isPinned
+    ).toStrictEqual(false);
+  });
+});
+
+describe('testing messageUnpin in dm Cases', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let dm1: { dmId: number };
+  let dm2: { dmId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    const uIds1 = [user2.authUserId];
+    dm1 = dmCreate(user1.token, uIds1);
+    const uIds2 = [user1.authUserId];
+    dm2 = dmCreate(user2.token, uIds2);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('global owner cannot pin message', () => {
+    const message1 = messageSendDm(user2.token, dm2.dmId, 'test moments');
+    messagePinV1(user2.token, message1.messageId);
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
+  });
+
+  test('cannot unpin message when not pinned', () => {
+    const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual(
+      badrequest
+    );
+  });
+
+  test('pin message', () => {
+    const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(
+      dmMessages(user1.token, dm1.dmId, 0).messages[0].isPinned
+    ).toStrictEqual(true);
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(
+      dmMessages(user1.token, dm1.dmId, 0).messages[0].isPinned
+    ).toStrictEqual(false);
+  });
+});
+
+describe('testing search', () => {
+  let user1: AuthReturn;
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('token is invalid', () => {
+    expect(searchV1('invalidtoken', 'test')).toStrictEqual(forbidden);
+  });
+
+  test('queryStr is invalid', () => {
+    expect(searchV1(user1.token, '')).toStrictEqual(badrequest);
+  });
+
+  test('queryStr is too long', () => {
+    expect(searchV1(user1.token, 'a'.repeat(1001))).toStrictEqual(badrequest);
+  });
+
+  test('search', () => {
+    const user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    const uIds1 = [user2.authUserId];
+    const dm1 = dmCreate(user1.token, uIds1);
+    messageSendDm(user1.token, dm1.dmId, 'test moments1');
+    messageSendDm(user1.token, dm1.dmId, 'haha moments2');
+    const channel1 = channelsCreate(user1.token, 'wego', true);
+    messageSend(user1.token, channel1.channelId, 'test moments2');
+    messageSend(user1.token, channel1.channelId, 'haha moments2');
+    expect(searchV1(user1.token, 'test')).toStrictEqual({
+      messages: expect.any(Array),
+      start: expect.any(Number),
+      end: expect.any(Number),
+    });
+    expect(searchV1(user1.token, 'test').messages.length).toStrictEqual(2);
+  });
+});
+
+describe('testing notifications', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let channel1: { channelId: number };
+  let dm1: { dmId: number };
+
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    channel1 = channelsCreate(user2.token, 'wego', true);
+    const uIds1 = [user2.authUserId];
+    dm1 = dmCreate(user1.token, uIds1);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('token is invalid', () => {
+    expect(notificationsGetV1('invalidtoken')).toStrictEqual(forbidden);
+  });
+
+  test('dmCreate user2 should receive notification', () => {
+    expect(notificationsGetV1(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage:
+            'kevinsutandi added you to kevinsutandi, soccerboy',
+        },
+      ],
+    });
+  });
+
+  test('channelInvite user2 should receive notification', () => {
+    channelInvite(user2.token, channel1.channelId, user1.authUserId);
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'soccerboy added you to wego',
+        },
+      ],
+    });
+  });
+
+  test('tagged user1 in channel should send notification', () => {
+    messageSend(user2.token, channel1.channelId, 'test moments @kevinsutandi');
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+      ],
+    });
+  });
+
+  test('tagged both users in channel should send notification', () => {
+    messageSend(
+      user2.token,
+      channel1.channelId,
+      'test moments @kevinsutandi @soccerboy'
+    );
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+      ],
+    });
+
+    expect(notificationsGetV1(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage:
+            'kevinsutandi added you to kevinsutandi, soccerboy',
+        },
+      ],
+    });
+  });
+
+  test('tagged both users in dm should send notification', () => {
+    messageSendDm(user2.token, dm1.dmId, '@kevinsutandi @soccerboy');
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage:
+            'soccerboy tagged you in kevinsutandi, soccerboy: @kevinsutandi @socce',
+        },
+      ],
+    });
+
+    expect(notificationsGetV1(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage:
+            'soccerboy tagged you in kevinsutandi, soccerboy: @kevinsutandi @socce',
+        },
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage:
+            'kevinsutandi added you to kevinsutandi, soccerboy',
+        },
+      ],
+    });
+  });
+
+  test('mulitple users in dm should send notification', () => {
+    const user3 = authRegister('kevin@gmail.com', 'wegoasu1001', 'Wego', 'Asu');
+    const uIds1 = [user1.authUserId, user3.authUserId];
+    const dm2 = dmCreate(user2.token, uIds1);
+
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm2.dmId,
+          notificationMessage:
+            'soccerboy added you to kevinsutandi, soccerboy, wegoasu',
+        },
+      ],
+    });
+
+    expect(notificationsGetV1(user3.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm2.dmId,
+          notificationMessage:
+            'soccerboy added you to kevinsutandi, soccerboy, wegoasu',
+        },
+      ],
     });
   });
 });

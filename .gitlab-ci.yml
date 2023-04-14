@@ -7,10 +7,13 @@ stages:
 before_script:
   - npm install
 
-linting: 
+linting:
   stage: lint
   script:
     - npm run lint
+  only:
+    - master
+    - merge_requests
 
 tests with coverage:
   stage: checks
@@ -28,3 +31,6 @@ tests with coverage:
       - coverage/
     expose_as: Coverage Report
     expire_in: 1 week
+  only:
+    - master
+    - merge_requests

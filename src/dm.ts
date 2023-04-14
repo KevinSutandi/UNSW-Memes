@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { findUser, getUserByToken } from './functionHelper';
+import { findUser, findUserIndex, getUserByToken } from './functionHelper';
 import {
   errorMessage,
   dmCreateReturn,
@@ -89,6 +89,16 @@ export function dmCreateV1(
     start: 0,
     end: -1,
   });
+
+  // send notification to all the users invited to the dm
+  for (const uId of uIds) {
+    const uIdIndex = findUserIndex(uId);
+    data.users[uIdIndex].notifications.push({
+      channelId: -1,
+      dmId: dmId,
+      notificationMessage: `${user.handleStr} added you to ${dmName}`,
+    });
+  }
 
   setData(data);
   return { dmId: dmId };
