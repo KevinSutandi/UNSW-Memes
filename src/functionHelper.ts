@@ -209,8 +209,7 @@ export function HashingString(string: string): string {
   return encryptedPassword;
 }
 
-export function findIdbyEmail(email: string) {
+export function findUserbyEmail(email: string) {
   const data = getData();
-  const user = data.users.find((user) => user.email === email);
-  return user.authUserId;
+  return data.users.find((user) => user.email === email);
 }
