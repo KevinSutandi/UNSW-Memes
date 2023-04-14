@@ -321,6 +321,15 @@ app.post(
   }
 );
 
+app.post(
+  '/auth/passwordreset/reset/v1',
+  (req: Request, res: Response, next) => {
+    const { resetCode, newPassword } = req.body;
+    const result = passwordResetV1(resetCode, newPassword);
+    return res.json(result);
+  }
+);
+
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
