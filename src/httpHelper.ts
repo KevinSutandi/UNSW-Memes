@@ -359,13 +359,8 @@ export function messageShare(
   );
 }
 
-export function passwordResetRequest(token: string, email: string) {
-  return requestHelper(
-    'POST',
-    '/auth/passwordreset/request/v1',
-    {
-      email,
-    },
-    { token }
-  );
+export function passwordResetRequest(email: string) {
+  return requestHelper('POST', '/auth/passwordreset/request/v1', {
+    email,
+  });
 }

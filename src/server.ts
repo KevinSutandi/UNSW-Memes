@@ -315,9 +315,8 @@ app.post('/message/share/v1', (req: Request, res: Response, next) => {
 app.post(
   '/auth/passwordreset/request/v1',
   (req: Request, res: Response, next) => {
-    const token = req.headers.token as string;
     const { email } = req.body;
-    const result = passwordResetRequestV1(token, email);
+    const result = passwordResetRequestV1(email);
     return res.json(result);
   }
 );
