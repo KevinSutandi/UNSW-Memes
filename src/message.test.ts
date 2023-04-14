@@ -911,6 +911,8 @@ describe('testing messageShare', () => {
   let user1: AuthReturn;
   let user2: AuthReturn;
   let channel1: { channelId: number };
+  let channel2: { channelId: number };
+
   let dm1: { dmId: number };
   let message1: { messageId: number };
   beforeEach(() => {
@@ -922,6 +924,7 @@ describe('testing messageShare', () => {
       'Sutandi'
     );
     user2 = authRegister('plswork@gmail.com', 'plswork', 'James', 'Bond');
+    channel2 = channelsCreate(user2.token, 'name', false);
 
     channel1 = channelsCreate(user1.token, 'wego', true);
     channelJoin(user2.token, channel1.channelId);
@@ -952,9 +955,29 @@ describe('testing messageShare', () => {
     ).toStrictEqual(400);
   });
 
-  test('ogMessageId does not refer to a valid message within a channel/DM that the authorised user has joined', () => {
+  test('ogMessageId does not refer to a valid message within a channel that the authorised user has joined', () => {
     const channel2 = channelsCreate(user2.token, 'name', false);
     const message2 = messageSend(user2.token, channel2.channelId, 'makan');
+    expect(
+      messageShare(
+        user1.token,
+        message2.messageId,
+        'ayam',
+        channel1.channelId,
+        -1
+      )
+    );
+  });
+
+  test('ogMessageId does not refer to a valid message within a dm that the authorised user has joined', () => {
+    const user3 = authRegister(
+      'johncena@gmail.com',
+      '12345567788',
+      'John',
+      'Cena'
+    );
+    const dm2 = dmCreate(user2.token, [user3.authUserId]);
+    const message2 = messageSendDm(user2.token, dm2.dmId, 'makan');
     expect(
       messageShare(
         user1.token,
@@ -979,7 +1002,6 @@ describe('testing messageShare', () => {
   });
 
   test('valid input, but the user has not joined the channel they are trying to share the message to', () => {
-    const channel2 = channelsCreate(user2.token, 'name', false);
     expect(
       messageShare(
         user1.token,
@@ -1002,5 +1024,17 @@ describe('testing messageShare', () => {
     expect(
       messageShare(user1.token, message1.messageId, 'anjay', dm2.dmId, -1)
     );
+  });
+
+  test('valid input, share to channel', () => {
+    expect(
+      messageShare(
+        user1.token,
+        message1.messageId,
+        'makan',
+        channel2.channelId,
+        -1
+      )
+    ).toStrictEqual({ sharedMessageId: expect.any(Number) });
   });
 });
