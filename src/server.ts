@@ -9,6 +9,7 @@ import {
   authLoginV1,
   authLogoutV1,
   passwordResetRequestV1,
+  passwordResetV1,
 } from './auth';
 
 import {
