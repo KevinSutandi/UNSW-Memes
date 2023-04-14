@@ -19,29 +19,6 @@ import HTTPError from 'http-errors';
  * the user object and its associated data if it exists in the dataStore
  *
  */
-export function userProfileV1(
-  authUserId: number,
-  uId: number
-): { user: userObject } | errorMessage {
-  // Gets user from the dataStore
-  const data = getData();
-  // Check that uId is valid
-  if (!isUser(uId)) {
-    return { error: 'Invalid uId' };
-  }
-  // Storing the user's data in an object to be returned
-  const userNum = data.users.findIndex((a) => a.authUserId === uId);
-  // If both conditions are met, return the userNum object information
-  return {
-    user: {
-      uId: data.users[userNum].authUserId,
-      email: data.users[userNum].email,
-      nameFirst: data.users[userNum].nameFirst,
-      nameLast: data.users[userNum].nameLast,
-      handleStr: data.users[userNum].handleStr,
-    },
-  };
-}
 
 /**
  * Get user profile based on the given token and user ID.

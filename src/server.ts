@@ -31,6 +31,8 @@ import {
   messageUnpinV1,
   searchV1,
   notificationsGetV1,
+  messageSendLaterDmV1,
+  messageShareV1,
 } from './message';
 import {
   setEmail,
@@ -322,6 +324,19 @@ app.post('/message/sendlater/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.post('/message/sendlaterdm/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { dmId, message, timeSent } = req.body;
+  const result = messageSendLaterDmV1(token, dmId, message, timeSent);
+  return res.json(result);
+});
+
+app.post('/message/share/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { ogMessageId, message, channelId, dmId } = req.body;
+  const result = messageShareV1(token, ogMessageId, message, channelId, dmId);
+  return res.json(result);
+});
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE

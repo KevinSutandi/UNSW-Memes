@@ -364,3 +364,41 @@ export function messageSendLater(
     { token }
   );
 }
+
+export function messageSendLaterDm(
+  token: string,
+  dmId: number,
+  message: string,
+  timeSent: number
+) {
+  return requestHelper(
+    'POST',
+    '/message/sendlaterdm/v1',
+    {
+      dmId,
+      message,
+      timeSent,
+    },
+    { token }
+  );
+}
+
+export function messageShare(
+  token: string,
+  ogMessageId: number,
+  message: string,
+  channelId: number,
+  dmId: number
+) {
+  return requestHelper(
+    'POST',
+    '/message/share/v1',
+    {
+      ogMessageId,
+      message,
+      channelId,
+      dmId,
+    },
+    { token }
+  );
+}

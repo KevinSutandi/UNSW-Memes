@@ -190,16 +190,14 @@ export function channelInviteV1(token: string, channelId: number, uId: number) {
   });
 
   // if user is invited send notification
-  if (invitedUser !== undefined) {
-    const notification = {
-      channelId: channelId,
-      dmId: -1,
-      notificationMessage: `${user.handleStr} added you to ${channel.name}`,
-    };
+  const notification = {
+    channelId: channelId,
+    dmId: -1,
+    notificationMessage: `${user.handleStr} added you to ${channel.name}`,
+  };
 
-    const userInvitedIndex = findUserIndex(uId);
-    data.users[userInvitedIndex].notifications.push(notification);
-  }
+  const userInvitedIndex = findUserIndex(uId);
+  data.users[userInvitedIndex].notifications.push(notification);
 
   setData(data);
   return {};

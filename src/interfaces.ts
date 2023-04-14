@@ -2,6 +2,12 @@
  * List of all interfaces that are being used in this project
  */
 
+export interface reactsObject {
+  reactId: number;
+  uIds: Array<number>;
+  isThisUserReacted: boolean;
+}
+
 /**
  * @typedef {Object} messagesObject - object for returning channel information
  * @property {number} messageId - the message Id
@@ -16,11 +22,7 @@ export interface messagesObject {
   message: string;
   timeSent: number;
   isPinned: boolean;
-  reacts: Array<{
-    reactId: number;
-    uIds: Array<number>;
-    isThisUserReacted: boolean;
-  }>;
+  reacts: Array<reactsObject>;
 }
 
 /**
