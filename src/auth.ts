@@ -6,7 +6,7 @@ import {
   makeToken,
   HashingString,
   getUserIndexByToken,
-  findIdbyEmail,
+  findUserbyEmail,
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
@@ -155,10 +155,9 @@ export function authLogoutV1(token: string): Record<string, never> {
 
 export function passwordResetRequestV1(email: string) {
   const data = getData();
-  console.log(data.resetCodes);
-  const userId = findIdbyEmail(email);
+  const user = findUserbyEmail(email);
 
-  if (userId === undefined) {
+  if (user === undefined) {
     return {};
   }
 
@@ -188,7 +187,7 @@ export function passwordResetRequestV1(email: string) {
   });
 
   data.resetCodes.push({
-    authUserId: userId,
+    authUserId: user.authUserId,
     resetCode: resetCode,
   });
 
