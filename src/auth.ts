@@ -10,7 +10,7 @@ import {
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
-import emailjs from '@emailjs/browser';
+const nodemailer = require('nodemailer');
 
 /**
  * Logs the user and then assigns a token to the user
@@ -163,11 +163,28 @@ export function passwordResetRequestV1(email: string) {
 
   const resetCode = Math.floor(Math.random() * 10000000);
 
-  const serviceId = 'service_m7di934';
-  const templateId = 'template_yj69284';
-  const publicKey = 'IjnP9uM3eqKs6O7GF';
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'memesresetpass@gmail.com',
+      pass: '{~(fFs[S]A4XJs;\\',
+    },
+  });
 
-  emailjs.send(serviceId, templateId, { resetCode }, publicKey);
+  const mailOptions = {
+    from: 'memesresetpass@gmail.com',
+    to: email,
+    subject: 'Password reset request',
+    text: 'Your reset code is ' + resetCode,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
 
   data.resetCodes.push({
     authUserId: userId,
