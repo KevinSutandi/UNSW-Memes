@@ -162,7 +162,7 @@ export function passwordResetRequestV1(email: string) {
     return {};
   }
 
-  const resetCode = Math.floor(Math.random() * 10000000);
+  const resetCode = Math.floor(Math.random() * 10000000).toString();
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -206,8 +206,9 @@ export function passwordResetRequestV1(email: string) {
   return {};
 }
 
-export function passwordResetV1(resetCode: number, newPassword: string) {
+export function passwordResetV1(resetCode: string, newPassword: string) {
   const data = getData();
+
   const codeIndex = data.resetCodes.findIndex(
     (user) => user.resetCode === resetCode
   );
@@ -221,8 +222,11 @@ export function passwordResetV1(resetCode: number, newPassword: string) {
   }
 
   const userIndex = findUserIndex(data.resetCodes[codeIndex].authUserId);
-  data.users[userIndex].password = newPassword;
+  const encryptedPassword = HashingString(newPassword);
 
-  data.resetCodes.splice(resetCode);
+  data.users[userIndex].password = encryptedPassword;
+
+  data.resetCodes.splice(codeIndex, 1);
+  setData(data);
   return {};
 }
