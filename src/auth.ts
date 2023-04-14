@@ -154,6 +154,10 @@ export function authLogoutV1(token: string): Record<string, never> {
   return {};
 }
 
+/**
+ * Sends a reset password code to the user's email
+ * @param {string} email - the user's email
+ */
 export function passwordResetRequestV1(email: string) {
   const data = getData();
   const user = findUserbyEmail(email);
@@ -206,6 +210,11 @@ export function passwordResetRequestV1(email: string) {
   return {};
 }
 
+/**
+ * Resets the user's password if the reset password code is correct
+ * @param {string} resetCode - the reset code given from the email
+ * @param {string} newPassword - the new password
+ */
 export function passwordResetV1(resetCode: string, newPassword: string) {
   const data = getData();
 
