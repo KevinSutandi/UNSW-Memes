@@ -157,6 +157,10 @@ export function passwordResetRequestV1(email: string) {
   const data = getData();
   const userId = findIdbyEmail(email);
 
+  if (userId === undefined) {
+    return {};
+  }
+
   const resetCode = Math.floor(Math.random() * 10000000);
 
   const serviceId = 'service_m7di934';
