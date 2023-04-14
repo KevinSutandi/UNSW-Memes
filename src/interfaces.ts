@@ -178,9 +178,15 @@ export interface newMessageReturn {
   messageId: number;
 }
 
+export interface resetCode {
+  authUserId: number;
+  resetCode: number;
+}
+
 export interface newData {
   users: Array<userData>;
   channels: Array<channelData>;
   dm: Array<dmData>;
   secret: string;
+  resetCodes: Array<resetCode>;
 }
