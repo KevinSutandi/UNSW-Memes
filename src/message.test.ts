@@ -576,9 +576,9 @@ describe('testing messageEdit DM', () => {
     dm2 = dmCreate(user2.token, uIds2);
   });
 
-  // afterEach(() => {
-  //   clearV1();
-  // });
+  afterEach(() => {
+    clearV1();
+  });
 
   test('dm does not exist', () => {
     expect(messageEdit(user1.token, 100000, 'hello')).toStrictEqual(badrequest);
