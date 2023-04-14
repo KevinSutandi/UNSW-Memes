@@ -419,35 +419,45 @@ export function messageShareV1(
     throw HTTPError(400, 'Message cannot exceed 1000 characters');
   }
 
-  const allMemberIds = getAllMemberIds(flags);
+  let allMemberIds = getAllMemberIds(flags);
   if (!allMemberIds.includes(user.authUserId)) {
-    throw HTTPError(403, 'User is not registered in channel');
+    throw HTTPError(400, 'You cannot share message from this');
   }
 
   const sharedMessageId = Math.floor(Math.random() * 1000000);
   // Shares the message to a channel
   if (channelId !== -1) {
-    const channelIndex = getChannelIndex(channelId);
+    // const channelIndex = getChannelIndex(channelId);
+    allMemberIds = getAllMemberIds(channelTarget);
+    if (!allMemberIds.includes(user.authUserId)) {
+      throw HTTPError(403, 'You cannot share message to this channel');
+    }
     const newMessage = {
       messageId: sharedMessageId,
       uId: user.authUserId,
       message: flags.messages[messageIndex] + message,
       timeSent: Math.floor(Date.now() / 1000),
     };
-    data.channels[channelIndex].messages.push(newMessage);
+    // data.channels[channelIndex].messages.push(newMessage);
+    channelTarget.messages.push(newMessage);
     setData(data);
     return { sharedMessageId: sharedMessageId };
 
     // Shares the message to a dm
   } else {
-    const dmIndex = getDmIndex(dmId);
+    // const dmIndex = getDmIndex(dmId);
+    allMemberIds = getAllMemberIds(dmTarget);
+    if (!allMemberIds.includes(user.authUserId)) {
+      throw HTTPError(403, 'You cannot share message to this dm');
+    }
     const newMessage = {
       messageId: sharedMessageId,
       uId: user.authUserId,
       message: flags.messages[messageIndex] + message,
       timeSent: Math.floor(Date.now() / 1000),
     };
-    data.dm[dmIndex].messages.push(newMessage);
+    // data.dm[dmIndex].messages.push(newMessage);
+    dmTarget.messages.push(newMessage);
     setData(data);
     return { sharedMessageId: sharedMessageId };
   }
