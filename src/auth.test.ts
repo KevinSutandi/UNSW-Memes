@@ -1,3 +1,4 @@
+import { getData } from './dataStore';
 import {
   authLogin,
   authRegister,
@@ -6,6 +7,8 @@ import {
   clearV1,
   authLogout,
   userProfile,
+  passwordResetRequest,
+  passwordResetReset,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -305,5 +308,59 @@ describe('/auth/logout/v1', () => {
     expect(channelsCreate(user2.token, 'general', true)).toStrictEqual({
       channelId: expect.any(Number),
     });
+  });
+});
+
+describe('password reset request', () => {
+  let user: AuthReturn;
+  beforeEach(() => {
+    clearV1();
+    user = authRegister('kevins050@gmail.com', 'kevin1001', 'Kevin', 'Sutandi');
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+  test('invalid email, does not return error', () => {
+    expect(passwordResetRequest('gunman@gmail.com')).toStrictEqual({});
+  });
+  test('valid email', () => {
+    expect(passwordResetRequest('kevins050@gmail.com')).toStrictEqual({});
+    expect(userProfile(user.token, user.authUserId)).toStrictEqual(
+      expect.any(Object)
+    );
+  });
+});
+
+describe('password reset', () => {
+  let user: AuthReturn;
+  beforeEach(() => {
+    clearV1();
+    user = authRegister('kevins050@gmail.com', 'kevin1001', 'Kevin', 'Sutandi');
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('Invalid reset code', () => {
+    expect(passwordResetReset('123456', 'newhardpassword')).toStrictEqual(400);
+  });
+
+  test('new password is too short', () => {
+    expect(passwordResetRequest('kevins050@gmail.com')).toStrictEqual({});
+    const data = getData();
+    const resetCode = data.resetCodes[0].resetCode;
+    expect(passwordResetReset(resetCode, 'new')).toStrictEqual(400);
+  });
+
+  test('valid input', () => {
+    expect(passwordResetRequest('kevins050@gmail.com')).toStrictEqual({});
+    const data = getData();
+    const resetCode = data.resetCodes[0].resetCode;
+    expect(passwordResetReset(resetCode, 'newhardpassword')).toStrictEqual({});
+    expect(userProfile(user.token, user.authUserId)).toStrictEqual(
+      expect.any(Object)
+    );
   });
 });
