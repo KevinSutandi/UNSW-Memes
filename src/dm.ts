@@ -8,6 +8,7 @@ import {
   dmData,
   dmListReturn,
 } from './interfaces';
+import HTTPError from 'http-errors';
 
 /**
  *
