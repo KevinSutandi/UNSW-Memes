@@ -6,6 +6,7 @@ import {
   makeToken,
   HashingString,
   getUserIndexByToken,
+  findIdbyEmail,
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
@@ -152,12 +153,10 @@ export function authLogoutV1(token: string): Record<string, never> {
   return {};
 }
 
-export function passwordResetRequestV1(token: string, email: string) {
+export function passwordResetRequestV1(email: string) {
   const data = getData();
-  const user = getUserByToken(token);
-  if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
-  }
+  const userId = findIdbyEmail(email);
+
   const resetCode = Math.floor(Math.random() * 10000000);
 
   const serviceId = 'service_m7di934';
@@ -167,9 +166,10 @@ export function passwordResetRequestV1(token: string, email: string) {
   emailjs.send(serviceId, templateId, { resetCode }, publicKey);
 
   data.resetCodes.push({
-    authUserId: user.authUserId,
+    authUserId: userId,
     resetCode: resetCode,
   });
+
   setData(data);
   return {};
 }
