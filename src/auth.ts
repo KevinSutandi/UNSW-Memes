@@ -9,6 +9,7 @@ import {
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
+import emailjs from '@emailjs/browser';
 
 /**
  * Logs the user and then assigns a token to the user
@@ -147,6 +148,28 @@ export function authLogoutV1(token: string): Record<string, never> {
 
   const tokenIndex = findTokenIndex(user, token);
   data.users[userIndex].token.splice(tokenIndex, 1);
+  setData(data);
+  return {};
+}
+
+export function passwordResetRequestV1(token: string, email: string) {
+  const data = getData();
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    throw HTTPError(403, 'Invalid token');
+  }
+  const resetCode = Math.floor(Math.random() * 10000000);
+
+  const serviceId = 'service_m7di934';
+  const templateId = 'template_yj69284';
+  const publicKey = 'IjnP9uM3eqKs6O7GF';
+
+  emailjs.send(serviceId, templateId, { resetCode }, publicKey);
+
+  data.resetCodes.push({
+    authUserId: user.authUserId,
+    resetCode: resetCode,
+  });
   setData(data);
   return {};
 }
