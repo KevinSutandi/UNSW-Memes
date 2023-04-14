@@ -180,7 +180,7 @@ export interface newMessageReturn {
 
 export interface resetCode {
   authUserId: number;
-  resetCode: number;
+  resetCode: string;
 }
 
 export interface newData {
