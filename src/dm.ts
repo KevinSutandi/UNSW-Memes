@@ -25,33 +25,25 @@ export function dmCreateV1(
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return {
-      error: 'Invalid token',
-    };
+    throw HTTPError(403, 'Invalid token');
   }
 
   // Make sure that owner does not invite owner
   if (uIds.includes(user.authUserId)) {
-    return {
-      error: 'Duplicate uId',
-    };
+    throw HTTPError(400, 'Duplicate uId');
   }
 
   // Use a Set to check for duplicate user IDs
   const userSet = new Set(uIds);
   if (userSet.size !== uIds.length) {
-    return {
-      error: 'Duplicate uId',
-    };
+    throw HTTPError(400, 'Duplicate uId');
   }
 
   const userArray: Array<userData> = [user];
   for (const uId of uIds) {
     const userUId = findUser(uId);
     if (userUId === undefined) {
-      return {
-        error: 'Invalid uId',
-      };
+      throw HTTPError(400, 'Invalid uId');
     }
     userArray.push(userUId);
   }
