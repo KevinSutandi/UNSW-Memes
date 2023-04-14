@@ -15,6 +15,12 @@ export interface messagesObject {
   uId: number;
   message: string;
   timeSent: number;
+  isPinned: boolean;
+  reacts: Array<{
+    reactId: number;
+    uIds: Array<number>;
+    isThisUserReacted: boolean;
+  }>;
 }
 
 /**
@@ -34,6 +40,7 @@ export interface standUp {
   standUpActive: boolean;
   standUpLength: number;
   standUpMessage: Array<messagesObject>;
+  standUpOwner: number;
 }
 
 /**
@@ -55,6 +62,11 @@ export interface userData {
   isGlobalOwner: number;
   token: Array<{
     token: string;
+  }>;
+  notifications: Array<{
+    channelId: number;
+    dmId: number;
+    notificationMessage: string;
   }>;
 }
 
@@ -184,9 +196,8 @@ export interface newData {
   secret: string;
 }
 
-
 export interface notification {
   channelId: number | -1;
   dmId: number | -1;
-  notificationMessage: string
+  notificationMessage: string;
 }

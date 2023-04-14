@@ -13,7 +13,9 @@ import {
   messagePinV1,
   messageUnpinV1,
   searchV1,
-  notificationsGetV1
+  notificationsGetV1,
+  messageSendLater,
+  channelInvite,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -110,6 +112,14 @@ describe('testing sendMessages', () => {
         uId: user1.authUserId,
         message: `hello world number ${numMessages - i - 1}`,
         timeSent: expect.any(Number),
+        isPinned: false,
+        reacts: [
+          {
+            reactId: 1,
+            uIds: [],
+            isThisUserReacted: false,
+          },
+        ],
       });
     }
     expect(result).toStrictEqual({
@@ -463,6 +473,14 @@ describe('testing messageEdit', () => {
           uId: user1.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
+          isPinned: false,
+          reacts: [
+            {
+              reactId: 1,
+              uIds: [],
+              isThisUserReacted: false,
+            },
+          ],
         },
       ],
       start: 0,
@@ -494,6 +512,14 @@ describe('testing messageEdit', () => {
           uId: user2.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
+          isPinned: false,
+          reacts: [
+            {
+              reactId: 1,
+              uIds: [],
+              isThisUserReacted: false,
+            },
+          ],
         },
       ],
       start: 0,
@@ -530,6 +556,14 @@ describe('testing messageEdit', () => {
           uId: user3.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
+          isPinned: false,
+          reacts: [
+            {
+              reactId: 1,
+              uIds: [],
+              isThisUserReacted: false,
+            },
+          ],
         },
       ],
       start: 0,
@@ -596,6 +630,14 @@ describe('testing messageEdit DM', () => {
           uId: user1.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
+          isPinned: false,
+          reacts: [
+            {
+              reactId: 1,
+              uIds: [],
+              isThisUserReacted: false,
+            },
+          ],
         },
       ],
       start: 0,
@@ -622,6 +664,14 @@ describe('testing messageEdit DM', () => {
           uId: user2.authUserId,
           message: 'hello world',
           timeSent: expect.any(Number),
+          isPinned: false,
+          reacts: [
+            {
+              reactId: 1,
+              uIds: [],
+              isThisUserReacted: false,
+            },
+          ],
         },
       ],
       start: 0,
@@ -718,6 +768,111 @@ describe('testing messageSendDm', () => {
   });
 });
 
+describe('testing messageSendLater', () => {
+  let user1: AuthReturn;
+  let channel1: { channelId: number };
+  let sendTime: number;
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    channel1 = channelsCreate(user1.token, 'wego', true);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('channel does not exist', () => {
+    expect(
+      messageSendLater(
+        user1.token,
+        channel1.channelId + 200,
+        'hello world',
+        sendTime + 2000
+      )
+    ).toStrictEqual(badrequest);
+  });
+
+  test('length of message is below 1 character', () => {
+    expect(
+      messageSendLater(user1.token, channel1.channelId, '', sendTime + 2000)
+    ).toStrictEqual(badrequest);
+  });
+
+  test('length of message is above 1000 characters', () => {
+    const message = 'a'.repeat(1001);
+    expect(
+      messageSendLater(
+        user1.token,
+        channel1.channelId,
+        message,
+        sendTime + 2000
+      )
+    ).toStrictEqual(badrequest);
+  });
+
+  test('user is not in channel', () => {
+    const user2 = authRegister(
+      'kevinesutandi@gmail.com',
+      'lesgo1001',
+      'Bevin',
+      'Bongo'
+    );
+    expect(
+      messageSendLater(
+        user2.token,
+        channel1.channelId,
+        'hello world',
+        sendTime + 2000
+      )
+    ).toStrictEqual(forbidden);
+  });
+  test('token is invalid', () => {
+    expect(
+      messageSendLater(
+        'laskdjflkasdfinvalid',
+        channel1.channelId,
+        'hello world',
+        sendTime + 2000
+      )
+    ).toStrictEqual(forbidden);
+  });
+  test('timeSent is a time in the past', () => {
+    expect(
+      messageSendLater(
+        user1.token,
+        channel1.channelId,
+        'halooo',
+        sendTime - 500
+      )
+    ).toStrictEqual(badrequest);
+  });
+
+  test('valid message should return messageId', async () => {
+    const timeStamp = new Date().getTime();
+    const result = messageSendLater(
+      user1.token,
+      channel1.channelId,
+      'hello world',
+      timeStamp + 2000
+    );
+    expect(result).toStrictEqual({ messageId: expect.any(Number) });
+    // test datascript and test node messages and channel
+    await new Promise((r) => setTimeout(r, 2000));
+    // check channelmessage should contain
+    expect(channelMessage(user1.token, channel1.channelId, 0)).toStrictEqual({
+      messages: expect.any(Array),
+      start: 0,
+      end: -1,
+    });
+  });
+});
+
 describe('testing messagePin in Channels Cases', () => {
   let user1: AuthReturn;
   let channel1: { channelId: number };
@@ -750,17 +905,26 @@ describe('testing messagePin in Channels Cases', () => {
       'Bevin',
       'Bongo'
     );
-    expect(messagePinV1(user2.token, message1.messageId))
-      .toStrictEqual(forbidden);
+    expect(messagePinV1(user2.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
   });
   test('message does not exist', () => {
-    expect(messagePinV1(user1.token, message1.messageId + 200))
-      .toStrictEqual(badrequest );
+    expect(messagePinV1(user1.token, message1.messageId + 200)).toStrictEqual(
+      badrequest
+    );
   });
   test('pin message and pin message is already pinned', () => {
     expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
-    expect(messagePinV1(user1.token, message1.messageId))
-      .toStrictEqual( badrequest );
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual(
+      badrequest
+    );
+  });
+  test('pin message', () => {
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(
+      channelMessage(user1.token, channel1.channelId, 0).messages[0].isPinned
+    ).toStrictEqual(true);
   });
 });
 
@@ -793,10 +957,20 @@ describe('testing messagePin in dm Cases', () => {
     clearV1();
   });
 
+  test('global owner cannot pin message', () => {
+    const message1 = messageSendDm(user2.token, dm2.dmId, 'test moments');
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
+  });
+
   test('pin message', () => {
     const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
     expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
-  })
+    expect(
+      dmMessages(user1.token, dm1.dmId, 0).messages[0].isPinned
+    ).toStrictEqual(true);
+  });
 });
 
 describe('testing messageUnpin in Channels Cases', () => {
@@ -831,18 +1005,28 @@ describe('testing messageUnpin in Channels Cases', () => {
       'Bevin',
       'Bongo'
     );
-    expect(messageUnpinV1(user2.token, message1.messageId))
-      .toStrictEqual(forbidden);
+    expect(messageUnpinV1(user2.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
   });
   test('message does not exist', () => {
-    expect(messageUnpinV1(user1.token, message1.messageId + 200))
-      .toStrictEqual( badrequest );
+    expect(messageUnpinV1(user1.token, message1.messageId + 200)).toStrictEqual(
+      badrequest
+    );
   });
   test('unpin message and unpin message is already unpinned', () => {
     expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
     expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({});
-    expect(messageUnpinV1(user1.token, message1.messageId))
-      .toStrictEqual(badrequest );
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual(
+      badrequest
+    );
+  });
+  test('unpin message', () => {
+    expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(
+      channelMessage(user1.token, channel1.channelId, 0).messages[0].isPinned
+    ).toStrictEqual(false);
   });
 });
 
@@ -875,11 +1059,25 @@ describe('testing messageUnpin in dm Cases', () => {
     clearV1();
   });
 
-  test('unpin message', () => {
+  test('global owner cannot pin message', () => {
+    const message1 = messageSendDm(user2.token, dm2.dmId, 'test moments');
+    messagePinV1(user2.token, message1.messageId);
+    expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual(
+      forbidden
+    );
+  });
+
+  test('pin message', () => {
     const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
     expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
+    expect(
+      dmMessages(user1.token, dm1.dmId, 0).messages[0].isPinned
+    ).toStrictEqual(true);
     expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({});
-  })
+    expect(
+      dmMessages(user1.token, dm1.dmId, 0).messages[0].isPinned
+    ).toStrictEqual(false);
+  });
 });
 
 describe('testing search', () => {
@@ -898,37 +1096,41 @@ describe('testing search', () => {
     clearV1();
   });
 
+  test('token is invalid', () => {
+    expect(searchV1('invalidtoken', 'test')).toStrictEqual(forbidden);
+  });
+
   test('queryStr is invalid', () => {
-    expect(
-      searchV1(user1.token, '')
-    ).toStrictEqual( badrequest );
+    expect(searchV1(user1.token, '')).toStrictEqual(badrequest);
   });
 
   test('search', () => {
-    let user2 = authRegister(
+    const user2 = authRegister(
       'asdwer@gmail.com',
       'welovesoccer1001',
       'Soccer',
       'Boy'
     );
     const uIds1 = [user2.authUserId];
-    let dm1 = dmCreate(user1.token, uIds1);
+    const dm1 = dmCreate(user1.token, uIds1);
     messageSendDm(user1.token, dm1.dmId, 'test moments1');
-    let channel1 = channelsCreate(user1.token, 'wego', true);
+    const channel1 = channelsCreate(user1.token, 'wego', true);
     messageSend(user1.token, channel1.channelId, 'test moments2');
-    expect(
-      searchV1(user1.token, 'test')
-    ).toStrictEqual({
-        messages: expect.any(Array),
-        start: expect.any(Number),
-        end: expect.any(Number),
-      }
-    );
+    expect(searchV1(user1.token, 'test')).toStrictEqual({
+      messages: expect.any(Array),
+      start: expect.any(Number),
+      end: expect.any(Number),
+    });
+    expect(searchV1(user1.token, 'test').messages.length).toStrictEqual(2);
   });
 });
 
-describe(' notifications get', () => {
+describe('testing notifications', () => {
   let user1: AuthReturn;
+  let user2: AuthReturn;
+  let channel1: { channelId: number };
+  let dm1: { dmId: number };
+
   beforeEach(() => {
     clearV1();
     user1 = authRegister(
@@ -937,33 +1139,97 @@ describe(' notifications get', () => {
       'Kevin',
       'Sutandi'
     );
-  });
-
-  afterEach(() => {
-    clearV1();
-  });
-
-  test('get', () => {
-    let user2 = authRegister(
+    user2 = authRegister(
       'asdwer@gmail.com',
       'welovesoccer1001',
       'Soccer',
       'Boy'
     );
+    channel1 = channelsCreate(user2.token, 'wego', true);
     const uIds1 = [user2.authUserId];
-    let dm1 = dmCreate(user1.token, uIds1);
-    let channel1 = channelsCreate(user1.token, 'wego', true);
-    for (let i = 0; i < 11; i++) {
-      messageSendDm(user1.token, dm1.dmId, 'test dm moments' + i);
+    dm1 = dmCreate(user1.token, uIds1);
+  });
 
-      messageSend(user1.token, channel1.channelId, 'test channel moments' + i);
-    }
+  // afterEach(() => {
+  //   clearV1();
+  // });
 
-    expect(
-      notificationsGetV1(user1.token)
-    ).toStrictEqual(expect.any(Array)
+  test('token is invalid', () => {
+    expect(notificationsGetV1('invalidtoken')).toStrictEqual(forbidden);
+  });
+
+  test('dmCreate user2 should receive notification', () => {
+    expect(notificationsGetV1(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage:
+            'kevinsutandi added you to kevinsutandi, soccerboy',
+        },
+      ],
+    });
+  });
+
+  test('channelInvite user2 should receive notification', () => {
+    channelInvite(user2.token, channel1.channelId, user1.authUserId);
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage: 'soccerboy added you to wego',
+        },
+      ],
+    });
+  });
+
+  test('tagged user1 in channel should send notification', () => {
+    messageSend(user2.token, channel1.channelId, 'test moments @kevinsutandi');
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+      ],
+    });
+  });
+
+  test('tagged both users in channel should send notification', () => {
+    messageSend(
+      user2.token,
+      channel1.channelId,
+      'test moments @kevinsutandi @soccerboy'
     );
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+      ],
+    });
+
+    expect(notificationsGetV1(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage:
+            'kevinsutandi added you to kevinsutandi, soccerboy',
+        },
+      ],
+    });
   });
 });
-
-

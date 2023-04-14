@@ -254,29 +254,31 @@ app.get('/user/profile/v3', (req: Request, res: Response, next) => {
 });
 
 app.post('/message/pin/v1', (req: Request, res: Response, next) => {
-  const { token, messageId } = req.body;
+  const token = req.headers.token as string;
+  const { messageId } = req.body;
   const result = messagePinV1(token, messageId);
   return res.json(result);
 });
 
 app.post('/message/unpin/v1', (req: Request, res: Response, next) => {
-  const { token, messageId } = req.body;
+  const token = req.headers.token as string;
+  const { messageId } = req.body;
   const result = messageUnpinV1(token, messageId);
   return res.json(result);
 });
 
 app.post('/search/v1', (req: Request, res: Response, next) => {
-  const { token, queryStr } = req.body;
+  const token = req.headers.token as string;
+  const { queryStr } = req.body;
   const result = searchV1(token, queryStr);
   return res.json(result);
 });
 
 app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
-  const token = req.query.token as string;
+  const token = req.headers.token as string;
   const result = notificationsGetV1(token);
   return res.json(result);
 });
-
 
 app.delete('/dm/remove/v2', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
@@ -330,4 +332,3 @@ const server = app.listen(PORT, HOST, () => {
 process.on('SIGINT', () => {
   server.close(() => console.log('Shutting down server gracefully.'));
 });
-

@@ -6,17 +6,20 @@ import {
   findDMbyMessageId,
   findMessageIndexInChannel,
   findMessageIndexInDM,
+  findUserIndex,
   getAllMemberIds,
   getAllOwnerIds,
   getChannelIndex,
   getDmIndex,
   getUserByToken,
-  isChannelMember,
 } from './functionHelper';
 import HTTPError from 'http-errors';
-import { errorMessage, messages, newMessageReturn, notification } from './interfaces';
-import { time } from 'console';
-import { channel } from 'diagnostics_channel';
+import {
+  messages,
+  messagesObject,
+  newMessageReturn,
+  notification,
+} from './interfaces';
 
 /**
  *
@@ -54,13 +57,43 @@ export function messageSendV1(
 
   const channelIndex = getChannelIndex(channelId);
   const messageId = Math.floor(Math.random() * 1000000);
+  const uIdsReact: Array<number> = [];
   const newMessage = {
     messageId: messageId,
     uId: user.authUserId,
     message: message,
     timeSent: Math.floor(Date.now() / 1000),
+    isPinned: false,
+    reacts: [
+      {
+        reactId: 1,
+        uIds: uIdsReact,
+        isThisUserReacted: false,
+      },
+    ],
   };
   data.channels[channelIndex].messages.push(newMessage);
+
+  // send notification if there are users tagged
+  // tagged: "{User’s handle} tagged you in {channel/DM name}: {first 20 characters of the message}"
+  const taggedUsers = message.match(/@([a-zA-Z0-9_]+)/g);
+  if (taggedUsers !== null) {
+    const notification: notification = {
+      channelId: channelId,
+      dmId: -1,
+      notificationMessage: `${user.handleStr} tagged you in ${
+        channel.name
+      }: ${message.slice(0, 20)}`,
+    };
+    taggedUsers.forEach((taggedUser) => {
+      // find the index of the user from handleStr
+      const taggedUserIndex = data.users.findIndex(
+        (user) => user.handleStr === taggedUser.slice(1)
+      );
+      data.users[taggedUserIndex].notifications.push(notification);
+    });
+  }
+
   setData(data);
   return { messageId: messageId };
 }
@@ -267,13 +300,41 @@ export function messageSendDmV1(
 
   const dmIndex = getDmIndex(dmId);
   const messageId = Math.floor(Math.random() * 1000000);
+  const uIdsReact: Array<number> = [];
   const newMessage = {
     messageId: messageId,
     uId: user.authUserId,
     message: message,
     timeSent: Math.floor(Date.now() / 1000),
+    isPinned: false,
+    reacts: [
+      {
+        reactId: 1,
+        uIds: uIdsReact,
+        isThisUserReacted: false,
+      },
+    ],
   };
   data.dm[dmIndex].messages.push(newMessage);
+
+  const taggedUsers = message.match(/@([a-zA-Z0-9_]+)/g);
+  if (taggedUsers !== null) {
+    const notification: notification = {
+      channelId: -1,
+      dmId: dm.dmId,
+      notificationMessage: `${user.handleStr} tagged you in ${
+        dm.name
+      }: ${message.slice(0, 20)}`,
+    };
+    taggedUsers.forEach((taggedUser) => {
+      // find the index of the user from handleStr
+      const taggedUserIndex = data.users.findIndex(
+        (user) => user.handleStr === taggedUser.slice(1)
+      );
+      data.users[taggedUserIndex].notifications.push(notification);
+    });
+  }
+
   setData(data);
   return { messageId: messageId };
 }
@@ -286,13 +347,12 @@ export function messageSendDmV1(
  */
 export function messagePinV1(
   token: string,
-  messageId: number,
-): {} {
+  messageId: number
+): Record<string, never> {
   const data = getData();
   const user = getUserByToken(token);
   const channel = findChannelByMessageId(messageId);
   const dm = findDMbyMessageId(messageId);
-  let messageToPin;
   let messageIndex = -1;
   let flags;
 
@@ -301,7 +361,7 @@ export function messagePinV1(
   }
 
   if (channel === undefined && dm === undefined) {
-    throw HTTPError(400, "Message Not Found")
+    throw HTTPError(400, 'Message Not Found');
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
@@ -310,7 +370,6 @@ export function messagePinV1(
     flags = dm;
   }
 
-
   const allMemberIds = getAllMemberIds(flags);
   const allOwnerIds = getAllOwnerIds(flags);
 
@@ -318,20 +377,34 @@ export function messagePinV1(
     throw HTTPError(403, 'User is not registered in channel');
   }
 
-  const index = flags === channel ? getChannelIndex(channel.channelId) : getDmIndex(dm.dmId);
-  messageToPin = data[flags === channel ? 'channels' : 'dm'][index].messages[messageIndex];
-  if (
-    messageToPin.uId !== user.authUserId &&
-    allOwnerIds.includes(user.authUserId) === false &&
-    (flags !== channel || user.isGlobalOwner === 2)
-  ) {
-    throw HTTPError(403, 'User is not the author of the message and not an owner');
-  }
-  if (messageToPin.isPinned === true) {
-    throw HTTPError(400, 'Message is already pinned');
+  if (flags === channel) {
+    const channelIndex = getChannelIndex(channel.channelId);
+    const messageToEdit = data.channels[channelIndex].messages[messageIndex];
+    if (messageToEdit.isPinned === true) {
+      throw HTTPError(400, 'Message is already pinned');
+    }
+    // only global owner or owner can pin message
+    if (
+      allOwnerIds.includes(user.authUserId) === false &&
+      user.isGlobalOwner === 2
+    ) {
+      throw HTTPError(403, 'User is neither a global owner nor an owner');
+    }
+
+    data.channels[channelIndex].messages[messageIndex].isPinned = true;
+  } else {
+    const dmIndex = getDmIndex(dm.dmId);
+    const messageToEdit = data.dm[dmIndex].messages[messageIndex];
+    if (messageToEdit.isPinned === true) {
+      throw HTTPError(400, 'Message is already pinned');
+    }
+    // only owner can pin message
+    if (allOwnerIds.includes(user.authUserId) === false) {
+      throw HTTPError(403, 'User is not a dm owner');
+    }
+    data.dm[dmIndex].messages[messageIndex].isPinned = true;
   }
 
-  messageToPin.isPinned = true
   setData(data);
   return {};
 }
@@ -344,13 +417,12 @@ export function messagePinV1(
  */
 export function messageUnpinV1(
   token: string,
-  messageId: number,
-): {} {
+  messageId: number
+): Record<string, never> {
   const data = getData();
   const user = getUserByToken(token);
   const channel = findChannelByMessageId(messageId);
   const dm = findDMbyMessageId(messageId);
-  let messageToPin;
   let messageIndex = -1;
   let flags;
 
@@ -359,7 +431,7 @@ export function messageUnpinV1(
   }
 
   if (channel === undefined && dm === undefined) {
-    throw HTTPError(400, "Message Not Found");
+    throw HTTPError(400, 'Message Not Found');
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
@@ -368,7 +440,6 @@ export function messageUnpinV1(
     flags = dm;
   }
 
-
   const allMemberIds = getAllMemberIds(flags);
   const allOwnerIds = getAllOwnerIds(flags);
 
@@ -376,20 +447,33 @@ export function messageUnpinV1(
     throw HTTPError(403, 'User is not registered in channel');
   }
 
-  const index = flags === channel ? getChannelIndex(channel.channelId) : getDmIndex(dm.dmId);
-  messageToPin = data[flags === channel ? 'channels' : 'dm'][index].messages[messageIndex];
-  if (
-    messageToPin.uId !== user.authUserId &&
-    allOwnerIds.includes(user.authUserId) === false &&
-    flags !== channel || user.isGlobalOwner === 2
-  ) {
-    throw HTTPError(403, 'User is not the author of the message and not an owner');
-  }
-  if (messageToPin.isPinned === undefined || messageToPin.isPinned === false) {
-    throw HTTPError(400, 'Message is already unpinned');
-  }
+  if (flags === channel) {
+    const channelIndex = getChannelIndex(channel.channelId);
+    const messageToEdit = data.channels[channelIndex].messages[messageIndex];
+    if (messageToEdit.isPinned === false) {
+      throw HTTPError(400, 'Message is not pinned');
+    }
+    // only global owner or owner can pin message
+    if (
+      allOwnerIds.includes(user.authUserId) === false &&
+      user.isGlobalOwner === 2
+    ) {
+      throw HTTPError(403, 'User is neither a global owner nor an owner');
+    }
 
-  messageToPin.isPinned = false;
+    data.channels[channelIndex].messages[messageIndex].isPinned = false;
+  } else {
+    const dmIndex = getDmIndex(dm.dmId);
+    const messageToEdit = data.dm[dmIndex].messages[messageIndex];
+    if (messageToEdit.isPinned === false) {
+      throw HTTPError(400, 'Message is not pinned');
+    }
+    // only owner can pin message
+    if (allOwnerIds.includes(user.authUserId) === false) {
+      throw HTTPError(403, 'User is not a dm owner');
+    }
+    data.dm[dmIndex].messages[messageIndex].isPinned = false;
+  }
   setData(data);
   return {};
 }
@@ -399,88 +483,123 @@ export function messageUnpinV1(
  * @param token - The token of the user sending the message.
  * @param queryStr - queryStr
  */
-export function searchV1(
-  token: string,
-  queryStr: string
-): messages {
-  if (queryStr.length < 1 || queryStr.length > 1000) {
-    throw HTTPError(400, "queryStr is invalid");
+export function searchV1(token: string, queryStr: string): messages {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    throw HTTPError(403, 'Token is invalid');
+  }
+
+  if (queryStr.length < 1) {
+    throw HTTPError(400, 'Query is too short');
+  } else if (queryStr.length > 1000) {
+    throw HTTPError(400, 'Query is too long');
   }
 
   const data = getData();
-  const user = getUserByToken(token);
-  let res = { messages: [], start: 0, end: 0 } as messages;
+  // search through all channels or dms that the user is part of
+  const allChannels = data.channels;
+  const allDms = data.dm;
+  const allMessages: messagesObject[] = [];
 
-
-  data.channels.forEach(channel => {
-    const allMemberIds = getAllMemberIds(channel);
-    if (allMemberIds.includes(user.authUserId)) {
-      channel.messages.forEach(m => {
-        if (m.message.toLowerCase().includes(queryStr)) {
-          res.messages.push(m)
-        }
-      })
+  for (const channel of allChannels) {
+    for (const message of channel.messages) {
+      if (message.message.includes(queryStr)) {
+        // put message in array
+        allMessages.push(message);
+      }
     }
-  })
+  }
 
-  data.dm.forEach(dm => {
-    const allMemberIds = getAllMemberIds(dm);
-    if (allMemberIds.includes(user.authUserId)) {
-      dm.messages.forEach(m => {
-        if (m.message.toLowerCase().includes(queryStr)) {
-          res.messages.push(m)
-        }
-      })
+  for (const dm of allDms) {
+    for (const message of dm.messages) {
+      if (message.message.includes(queryStr)) {
+        // put message in array
+        allMessages.push(message);
+      }
     }
-  })
-  res.end = res.messages.length
-  return res;
+  }
+
+  const start = 0;
+  const end = allMessages.length;
+  const allMessagesObject: messages = {
+    start,
+    end,
+    messages: allMessages,
+  };
+
+  return allMessagesObject;
 }
 
-export function notificationsGetV1(
-  token: string
-): Array<notification> {
-  let result = [] as Array<notification>;
+export function notificationsGetV1(token: string) {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    throw HTTPError(403, 'Token is invalid');
+  }
+
+  const data = getData();
+  const userIndex = findUserIndex(user.authUserId);
+  const notifications = data.users[userIndex].notifications;
+  notifications.reverse();
+  const notificationsSliced = notifications.slice(0, 20);
+  return { notifications: notificationsSliced };
+}
+
+export function messageSendLaterV1(
+  token: string,
+  channelId: number,
+  message: string,
+  timeSent: number
+) {
   const data = getData();
   const user = getUserByToken(token);
-  let res: any[] = []
+  const channel = findChannel(channelId);
+  const allMemberIds = getAllMemberIds(channel);
 
-  data.channels.forEach(channel => {
-    const allMemberIds = getAllMemberIds(channel);
-    if (allMemberIds.includes(user.authUserId)) {
-      channel.messages.forEach(m => {
-        res.push({
-          channelId: channel.channelId,
-          name: channel.name,
-          messageSub: m.message.substring(0, 20),
-          timeSent: m.timeSent
-        })
-      })
-    }
-  })
-
-  data.dm.forEach(dm => {
-    const allMemberIds = getAllMemberIds(dm);
-    if (allMemberIds.includes(user.authUserId)) {
-      dm.messages.forEach(m => {
-        res.push({
-          dmId: dm.dmId,
-          name: dm.name,
-          messageSub: m.message.substring(0, 20),
-          timeSent: m.timeSent
-        })
-      })
-    }
-  })
-
-  res = res.sort((a, b) => a.timeSent - b.timeSent)
-  for (let i = 0; i < res.length && i < 20; i++) {
-    result.push({
-      channelId: res[i].channelId ? res[i].channelId : -1,
-      dmId: res[i].dmId ? res[i].channelId : -1,
-      notificationMessage: `target:"${user.handleStr} tagged you in ${res[i].name}:${res[i].messageSub}"  reacted message: "${user.handleStr} reacted to your message in ${res[i].name}"  added to a channel/DM: "${user.handleStr} added you to ${res[i].name}"`
-    }
-    )
+  // Error Checking
+  if (user === undefined) {
+    throw HTTPError(403, 'Token is invalid');
   }
-  return result;
+  if (channel === undefined) {
+    throw HTTPError(400, 'Channel does not exist');
+  }
+  if (allMemberIds.includes(user.authUserId) === false) {
+    throw HTTPError(403, 'User is not registered in channel');
+  }
+  if (message.length < 1) {
+    throw HTTPError(400, 'Message is too short');
+  }
+  if (message.length > 1000) {
+    throw HTTPError(400, 'Message is too long');
+  }
+
+  const currentTime = Math.floor(Date.now() / 1000);
+  if (timeSent < currentTime) {
+    throw HTTPError(400, 'Time sent cannot be a time in the past');
+  }
+
+  const channelIndex = getChannelIndex(channelId);
+  const messageId = Math.floor(Math.random() * 1000000);
+  const uIdsReact = [] as Array<number>;
+
+  const timeDelay = timeSent - currentTime;
+  setTimeout(() => {
+    const newMessage = {
+      messageId: messageId,
+      uId: user.authUserId,
+      message: message,
+      timeSent: Math.floor(Date.now() / 1000),
+      isPinned: false,
+      reacts: [
+        {
+          reactId: 1,
+          uIds: uIdsReact,
+          isThisUserReacted: false,
+        },
+      ],
+    };
+    data.channels[channelIndex].messages.push(newMessage);
+    setData(data);
+  }, timeDelay * 1000);
+
+  return { messageId: messageId };
 }
