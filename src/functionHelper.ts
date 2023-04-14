@@ -1,4 +1,5 @@
 import { getData } from './dataStore';
+import request from 'sync-request';
 import { channelData, dmData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 // import { data } from './dataStore';
@@ -207,4 +208,29 @@ export function HashingString(string: string): string {
     'KEVINHINDIEALMINAELSHIBO2394850-92840)_(*%&)_($#&()*'
   );
   return encryptedPassword;
+}
+
+// make a function where user passes in imgUrl and stores in /img/ folder
+export function downloadImage(imgUrl?: string, name?: string) {
+  let image = imgUrl;
+  if (name === undefined && imgUrl === undefined) {
+    image = 'https://i.imgur.com/NtfLP7K.jpg';
+    name = 'default.jpg';
+  }
+
+  const path = require('path');
+  const fs = require('fs');
+
+  const dir = path.join(__dirname, '../img');
+
+  const filePath = path.join(dir, 'default.jpg');
+
+  if (fs.existsSync(filePath) && name === 'default.jpg') {
+    return;
+  }
+
+  const res = request('GET', image);
+  const img = res.getBody();
+
+  fs.writeFileSync(path.join(dir, name), img, { flag: 'w' });
 }

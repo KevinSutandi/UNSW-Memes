@@ -1,8 +1,16 @@
 import { getData, setData } from './dataStore';
 import { userObject, errorMessage, allUsers } from './interfaces';
-import { isUser, getUserByToken, findUserIndex } from './functionHelper';
+import {
+  isUser,
+  getUserByToken,
+  findUserIndex,
+  downloadImage,
+} from './functionHelper';
 import validator from 'validator';
 import HTTPError from 'http-errors';
+import { port } from './config.json';
+import request from 'sync-request';
+import sharp from 'sharp';
 
 /**
  * For a valid user, userProfileV1 returns information about the user
@@ -51,6 +59,7 @@ export function userProfileV2(
       nameFirst: data.users[userNum].nameFirst,
       nameLast: data.users[userNum].nameLast,
       handleStr: data.users[userNum].handleStr,
+      profileImgUrl: data.users[userNum].profileImgUrl,
     },
   };
 }
@@ -164,6 +173,102 @@ export function getAllUsers(token: string): allUsers | errorMessage {
       nameFirst: a.nameFirst,
       nameLast: a.nameLast,
       handleStr: a.handleStr,
+      profileImgUrl: a.profileImgUrl,
     })),
   };
+}
+
+export function userProfileUploadPhotoV1(
+  token: string,
+  imgUrl: string,
+  xStart: number,
+  yStart: number,
+  xEnd: number,
+  yEnd: number
+) {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    throw HTTPError(403, 'Invalid token');
+  }
+
+  const res = request('GET', imgUrl);
+  if (res.statusCode !== 200) {
+    throw HTTPError(400, 'Invalid image URL');
+  }
+
+  // check if image is a jpg
+  if (!imgUrl.endsWith('.jpg')) {
+    throw HTTPError(400, 'Invalid image type');
+  }
+
+  downloadImage(imgUrl, `${user.authUserId}.jpg`);
+
+  const imagePath = `img/${user.authUserId}.jpg`;
+
+  const sizeOf = require('image-size');
+  const dimensions = sizeOf(imagePath);
+
+  if (
+    xStart < 0 ||
+    yStart < 0 ||
+    xEnd > dimensions.width ||
+    yEnd > dimensions.height ||
+    xStart >= xEnd ||
+    yStart >= yEnd
+  ) {
+    throw HTTPError(400, 'Invalid image dimensions');
+  }
+
+  // crop photo
+  const randomString = Math.random().toString(36).substring(5);
+  const imageCroppedPath = `img/${randomString}.jpg`;
+  sharp(imagePath)
+    .extract({
+      left: xStart,
+      top: yStart,
+      width: xEnd - xStart,
+      height: yEnd - yStart,
+    })
+    .toFile(imageCroppedPath);
+
+  // delete the uncropped photo
+  // fs.unlinkSync(imagePath);
+
+  const userIndex = findUserIndex(user.authUserId);
+  const data = getData();
+  const PORT: number = parseInt(process.env.PORT || port);
+  const HOST: string = process.env.IP || 'localhost';
+  const newUrl = `http://${HOST}:${PORT}/img/${randomString}.jpg`;
+
+  data.users[userIndex].profileImgUrl = newUrl;
+
+  data.channels.forEach((channel) => {
+    channel.ownerMembers.forEach((ownerMember) => {
+      if (ownerMember.uId === user.authUserId) {
+        ownerMember.profileImgUrl = newUrl;
+      }
+    });
+    channel.allMembers.forEach((allMember) => {
+      if (allMember.uId === user.authUserId) {
+        allMember.profileImgUrl = newUrl;
+      }
+    });
+  });
+
+  data.dm.forEach((dm) => {
+    dm.ownerMembers.forEach((ownerMember) => {
+      if (ownerMember.uId === user.authUserId) {
+        ownerMember.profileImgUrl = newUrl;
+      }
+    });
+    dm.allMembers.forEach((member) => {
+      if (member.uId === user.authUserId) {
+        member.profileImgUrl = newUrl;
+      }
+    });
+  });
+
+  setData(data);
+
+  return {};
 }
