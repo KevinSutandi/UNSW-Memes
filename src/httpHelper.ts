@@ -365,7 +365,7 @@ export function passwordResetRequest(email: string) {
   });
 }
 
-export function passwordResetReset(resetCode: number, newPassword: string) {
+export function passwordResetReset(resetCode: string, newPassword: string) {
   return requestHelper('POST', '/auth/passwordreset/reset/v1', {
     resetCode,
     newPassword,
