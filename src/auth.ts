@@ -155,6 +155,7 @@ export function authLogoutV1(token: string): Record<string, never> {
 
 export function passwordResetRequestV1(email: string) {
   const data = getData();
+  console.log(data.resetCodes);
   const userId = findIdbyEmail(email);
 
   if (userId === undefined) {
@@ -167,7 +168,7 @@ export function passwordResetRequestV1(email: string) {
     service: 'gmail',
     auth: {
       user: 'memesresetpass@gmail.com',
-      pass: '{~(fFs[S]A4XJs;\\',
+      pass: 'flntujulglazqoju',
     },
   });
 
@@ -178,11 +179,11 @@ export function passwordResetRequestV1(email: string) {
     text: 'Your reset code is ' + resetCode,
   };
 
-  transporter.sendMail(mailOptions, function (error, info) {
+  transporter.sendMail(mailOptions, function (error: string) {
     if (error) {
       console.log(error);
     } else {
-      console.log('Email sent: ' + info.response);
+      console.log('Email sent');
     }
   });
 
