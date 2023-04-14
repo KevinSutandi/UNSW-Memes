@@ -129,6 +129,7 @@ export function authRegisterV1(
     nameLast: nameLast,
     isGlobalOwner: isGlobalOwner,
     token: [{ token: token }],
+    notifications: [],
   });
 
   setData(dataStore);

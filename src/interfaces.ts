@@ -2,6 +2,12 @@
  * List of all interfaces that are being used in this project
  */
 
+export interface reactsObject {
+  reactId: number;
+  uIds: Array<number>;
+  isThisUserReacted: boolean;
+}
+
 /**
  * @typedef {Object} messagesObject - object for returning channel information
  * @property {number} messageId - the message Id
@@ -15,6 +21,8 @@ export interface messagesObject {
   uId: number;
   message: string;
   timeSent: number;
+  isPinned: boolean;
+  reacts: Array<reactsObject>;
 }
 
 /**
@@ -56,6 +64,11 @@ export interface userData {
   isGlobalOwner: number;
   token: Array<{
     token: string;
+  }>;
+  notifications: Array<{
+    channelId: number;
+    dmId: number;
+    notificationMessage: string;
   }>;
 }
 
@@ -189,4 +202,10 @@ export interface newData {
   dm: Array<dmData>;
   secret: string;
   resetCodes: Array<resetCode>;
+}
+
+export interface notification {
+  channelId: number | -1;
+  dmId: number | -1;
+  notificationMessage: string;
 }

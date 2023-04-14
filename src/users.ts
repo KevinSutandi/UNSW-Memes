@@ -2,6 +2,7 @@ import { getData, setData } from './dataStore';
 import { userObject, errorMessage, allUsers } from './interfaces';
 import { isUser, getUserByToken, findUserIndex } from './functionHelper';
 import validator from 'validator';
+import HTTPError from 'http-errors';
 
 /**
  * For a valid user, userProfileV1 returns information about the user
@@ -18,15 +19,27 @@ import validator from 'validator';
  * the user object and its associated data if it exists in the dataStore
  *
  */
-export function userProfileV1(
-  authUserId: number,
+
+/**
+ * Get user profile based on the given token and user ID.
+ *
+ * @param {string} token - The user's access token.
+ * @param {number} uId - The user ID to retrieve the profile for.
+ * @return {Object} Returns a user object if successful, or an error message if unsuccessful.
+ */
+export function userProfileV2(
+  token: string,
   uId: number
-): { user: userObject } | errorMessage {
-  // Gets user from the dataStore
+): { user: userObject } {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    throw HTTPError(403, 'Invalid token');
+  }
+
   const data = getData();
   // Check that uId is valid
   if (!isUser(uId)) {
-    return { error: 'Invalid uId' };
+    throw HTTPError(400, 'Invalid uId');
   }
   // Storing the user's data in an object to be returned
   const userNum = data.users.findIndex((a) => a.authUserId === uId);
@@ -43,45 +56,25 @@ export function userProfileV1(
 }
 
 /**
- * Get user profile based on the given token and user ID.
- *
- * @param {string} token - The user's access token.
- * @param {number} uId - The user ID to retrieve the profile for.
- * @return {Object | errorMessage} Returns a user object if successful, or an error message if unsuccessful.
- */
-export function userProfileV2(
-  token: string,
-  uId: number
-): { user: userObject } | errorMessage {
-  const user = getUserByToken(token);
-  if (user === undefined) {
-    return { error: 'Invalid token' };
-  }
-
-  const getUser = userProfileV1(user.authUserId, uId);
-  return getUser;
-}
-
-/**
  * Set the email address of the authenticated user.
  *
  * @param {string} token - The user's access token.
  * @param {string} email - The new email address to set for the user.
- * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
+ * @return {{}} Returns an empty object if successful, or an error message if unsuccessful.
  */
 export function setEmail(token: string, email: string) {
   const user = getUserByToken(token);
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
 
   if (!validator.isEmail(email)) {
-    return { error: 'invalid email' };
+    throw HTTPError(400, 'invalid email');
   }
 
   const data = getData();
   if (data.users.some((user) => user.email === email)) {
-    return { error: 'email address is already being used by another user' };
+    throw HTTPError(400, 'email address is already being used by another user');
   }
   const userIndex = findUserIndex(user.authUserId);
   data.users[userIndex].email = email;
@@ -95,13 +88,13 @@ export function setEmail(token: string, email: string) {
  * @param {string} token - The user's access token.
  * @param {string} nameFirst - The user's new first name.
  * @param {string} nameLast - The user's new last name.
- * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
+ * @return {{}} Returns an empty object if successful, or an error message if unsuccessful.
  */
 export function setName(token: string, nameFirst: string, nameLast: string) {
   const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
 
   if (
@@ -110,7 +103,7 @@ export function setName(token: string, nameFirst: string, nameLast: string) {
     nameLast.length < 1 ||
     nameLast.length > 50
   ) {
-    return { error: 'name length should in range of 1 to 50' };
+    throw HTTPError(400, 'name length should in range of 1 to 50');
   }
   const userIndex = findUserIndex(user.authUserId);
   data.users[userIndex].nameFirst = nameFirst;
@@ -124,23 +117,32 @@ export function setName(token: string, nameFirst: string, nameLast: string) {
  *
  * @param {string} token - The user's access token.
  * @param {string} handleStr - The new handle for the user.
- * @return {{} | errorMessage} Returns an empty object if successful, or an error message if unsuccessful.
+ * @return {{}} Returns an empty object if successful, or an error message if unsuccessful.
  */
-export function setHandle(token: string, handleStr: string) {
+export function setHandle(
+  token: string,
+  handleStr: string
+): Record<string, never> {
   const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
 
-  if (handleStr.length > 3 && handleStr.length < 20) {
-    const userIndex = findUserIndex(user.authUserId);
-    data.users[userIndex].handleStr = handleStr;
-    setData(data);
-    return {};
+  if (
+    handleStr.length < 3 ||
+    handleStr.length > 20 ||
+    !/^[a-zA-Z0-9]+$/.test(handleStr)
+  ) {
+    throw HTTPError(400, 'handle is invalid');
   }
-
-  return { error: 'handle length should in range of 3 to 20' };
+  if (data.users.some((user) => user.handleStr === handleStr)) {
+    throw HTTPError(400, 'handle is already had');
+  }
+  const userIndex = findUserIndex(user.authUserId);
+  data.users[userIndex].handleStr = handleStr;
+  setData(data);
+  return {};
 }
 
 /**
@@ -153,7 +155,7 @@ export function getAllUsers(token: string): allUsers | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   return {
     users: data.users.map((a) => ({
