@@ -187,10 +187,20 @@ export function passwordResetRequestV1(email: string) {
     }
   });
 
-  data.resetCodes.push({
-    authUserId: user.authUserId,
-    resetCode: resetCode,
-  });
+  const codeIndex = data.resetCodes.findIndex(
+    (a) => a.authUserId === user.authUserId
+  );
+
+  // If the user hasnt requested a password reset before, just push the resetCode
+  // if the user has requested a password reset before, change the previous resetCode
+  if (codeIndex === -1) {
+    data.resetCodes.push({
+      authUserId: user.authUserId,
+      resetCode: resetCode,
+    });
+  } else {
+    data.resetCodes[codeIndex].resetCode = resetCode;
+  }
 
   setData(data);
   return {};
