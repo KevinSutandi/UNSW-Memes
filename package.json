@@ -16,6 +16,7 @@
     "image-downloader": "^4.3.0",
     "image-size": "^1.0.2",
     "jimp": "^0.22.7",
+    "http-errors-middleware": "^0.2.2",
     "jsonwebtoken": "^9.0.0",
     "middleware-http-errors": "^0.1.1",
     "morgan": "^1.10.0",

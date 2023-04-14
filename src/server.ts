@@ -27,6 +27,12 @@ import {
   messageEditV1,
   messageSendDmV1,
   messageSendLaterV1,
+  messagePinV1,
+  messageUnpinV1,
+  searchV1,
+  notificationsGetV1,
+  messageSendLaterDmV1,
+  messageShareV1,
 } from './message';
 import {
   setEmail,
@@ -252,6 +258,33 @@ app.get('/user/profile/v3', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.post('/message/pin/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId } = req.body;
+  const result = messagePinV1(token, messageId);
+  return res.json(result);
+});
+
+app.post('/message/unpin/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId } = req.body;
+  const result = messageUnpinV1(token, messageId);
+  return res.json(result);
+});
+
+app.post('/search/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { queryStr } = req.body;
+  const result = searchV1(token, queryStr);
+  return res.json(result);
+});
+
+app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const result = notificationsGetV1(token);
+  return res.json(result);
+});
+
 app.delete('/dm/remove/v2', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
   const dmId = parseInt(req.query.dmId as string);
@@ -310,6 +343,19 @@ app.post('/message/sendlater/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.post('/message/sendlaterdm/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { dmId, message, timeSent } = req.body;
+  const result = messageSendLaterDmV1(token, dmId, message, timeSent);
+  return res.json(result);
+});
+
+app.post('/message/share/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { ogMessageId, message, channelId, dmId } = req.body;
+  const result = messageShareV1(token, ogMessageId, message, channelId, dmId);
+  return res.json(result);
+});
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE

@@ -1,18 +1,19 @@
 import {
   authRegister,
-  userProfile,
   usersAll,
-  setName,
-  setEmail,
-  setHandle,
   clearV1,
   userProfileUploadPhoto,
+  setHandle,
+  setEmail,
+  setName,
+  userProfile,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
-const ERROR = { error: expect.any(String) };
+const badrequest = 400;
+const forbidden = 403;
 
-describe('userProfile iteration 2 testing', () => {
+describe('userProfile iteration 3 testing', () => {
   let user: AuthReturn, user2: AuthReturn;
   beforeEach(() => {
     clearV1();
@@ -33,106 +34,19 @@ describe('userProfile iteration 2 testing', () => {
     clearV1();
   });
 
-  test('userProfile invalid Token', () => {
-    expect(userProfile('wrong token', 1)).toStrictEqual(ERROR);
-  });
+  test('userProfile setHandlerv2', () => {
+    expect(setHandle('', 'Batman')).toStrictEqual(forbidden);
+    expect(setHandle(user2.token, '')).toStrictEqual(badrequest);
+    expect(setHandle(user2.token, '@@@')).toStrictEqual(badrequest);
+    expect(
+      setHandle(
+        user2.token,
+        '111111111111111111111111111111111111111111111111111111'
+      )
+    ).toStrictEqual(badrequest);
 
-  test('userProfile invalid uId', () => {
-    expect(userProfile(user.token, 10000)).toStrictEqual(ERROR);
-  });
-
-  test('userProfile run success', () => {
-    expect(userProfile(user.token, user.authUserId)).toStrictEqual({
-      user: {
-        uId: user.authUserId,
-        email: 'onlyfortestttt06@gmail.com',
-        nameFirst: 'Jonah',
-        nameLast: 'Meggs',
-        handleStr: expect.any(String),
-        profileImgUrl: expect.any(String),
-      },
-    });
-  });
-
-  test('userProfile run success', () => {
-    expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
-      user: {
-        uId: user2.authUserId,
-        email: 'testing12347@gmail.com',
-        nameFirst: 'Almina',
-        nameLast: 'Kova',
-        handleStr: expect.any(String),
-        profileImgUrl: expect.any(String),
-      },
-    });
-  });
-
-  test('setEmail invalid Token', () => {
-    expect(setEmail('wrong token', 'email')).toStrictEqual(ERROR);
-  });
-
-  test('setEmail invalid email', () => {
-    expect(setEmail(user.token, '123')).toStrictEqual(ERROR);
-  });
-
-  test('setEmail email address is already being used by another user', () => {
-    expect(setEmail(user.token, 'onlyfortestttt06@gmail.com')).toStrictEqual(
-      ERROR
-    );
-  });
-
-  test('setEmail run success', () => {
-    setEmail(user.token, 'onlyfortestttt9@gmail.com');
-    expect(userProfile(user.token, user.authUserId)).toStrictEqual({
-      user: {
-        uId: user.authUserId,
-        email: 'onlyfortestttt9@gmail.com',
-        nameFirst: 'Jonah',
-        nameLast: 'Meggs',
-        handleStr: expect.any(String),
-        profileImgUrl: expect.any(String),
-      },
-    });
-  });
-
-  test('setEmail run success', () => {
-    setEmail(user2.token, 'testing1234@gmail.com');
-    expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
-      user: {
-        uId: user2.authUserId,
-        email: 'testing1234@gmail.com',
-        nameFirst: 'Almina',
-        nameLast: 'Kova',
-        handleStr: expect.any(String),
-        profileImgUrl: expect.any(String),
-      },
-    });
-  });
-
-  test('setHandle invalid Token', () => {
-    expect(setHandle('wrong token', 'handle')).toStrictEqual(ERROR);
-  });
-
-  test('setHandle handle length should in range of 3 to 20', () => {
-    expect(setHandle(user.token, '0')).toStrictEqual(ERROR);
-  });
-
-  test('setHandle run success', () => {
-    setHandle(user.token, 'Hello Kitty');
-    expect(userProfile(user.token, user.authUserId)).toStrictEqual({
-      user: {
-        uId: user.authUserId,
-        email: 'onlyfortestttt06@gmail.com',
-        nameFirst: 'Jonah',
-        nameLast: 'Meggs',
-        handleStr: 'Hello Kitty',
-        profileImgUrl: expect.any(String),
-      },
-    });
-  });
-
-  test('setHandle  run success', () => {
     setHandle(user2.token, 'Batman');
+    expect(setHandle(user2.token, 'Batman')).toStrictEqual(badrequest);
     expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
       user: {
         uId: user2.authUserId,
@@ -145,32 +59,31 @@ describe('userProfile iteration 2 testing', () => {
     });
   });
 
-  test('setName invalid Token', () => {
-    expect(setName('wrong token', 'name first', 'name last')).toStrictEqual(
-      ERROR
+  test('userProfile setEmail', () => {
+    expect(setEmail('', '12')).toStrictEqual(forbidden);
+    expect(setEmail(user2.token, '12')).toStrictEqual(badrequest);
+
+    setEmail(user.token, 'onlyfortestttt9@gmail.com');
+    expect(setEmail(user2.token, 'onlyfortestttt9@gmail.com')).toStrictEqual(
+      badrequest
     );
-  });
-
-  test('setName name length should in range of 1 to 50', () => {
-    expect(setName(user.token, '', '')).toStrictEqual(ERROR);
-  });
-
-  test('setName run success', () => {
-    setName(user.token, 'Almina', 'Kova');
     expect(userProfile(user.token, user.authUserId)).toStrictEqual({
       user: {
         uId: user.authUserId,
-        email: 'onlyfortestttt06@gmail.com',
-        nameFirst: 'Almina',
-        nameLast: 'Kova',
+        email: 'onlyfortestttt9@gmail.com',
+        nameFirst: 'Jonah',
+        nameLast: 'Meggs',
         handleStr: expect.any(String),
         profileImgUrl: expect.any(String),
       },
     });
   });
 
-  test('setName  run success', () => {
-    setName(user2.token, 'Jonah', 'Meggs');
+  test('userProfile setName', () => {
+    expect(setName('', '12', '12')).toStrictEqual(forbidden);
+    expect(setName(user2.token, '', '')).toStrictEqual(badrequest);
+
+    expect(setName(user2.token, 'Jonah', 'Meggs')).toStrictEqual({});
     expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
       user: {
         uId: user2.authUserId,
@@ -183,8 +96,24 @@ describe('userProfile iteration 2 testing', () => {
     });
   });
 
+  test('userProfile userprofile', () => {
+    expect(userProfile('', user.authUserId)).toStrictEqual(forbidden);
+    expect(userProfile(user.token, 1000000)).toStrictEqual(badrequest);
+
+    expect(userProfile(user.token, user.authUserId)).toStrictEqual({
+      user: {
+        uId: user.authUserId,
+        email: 'onlyfortestttt06@gmail.com',
+        nameFirst: 'Jonah',
+        nameLast: 'Meggs',
+        handleStr: expect.any(String),
+        profileImgUrl: expect.any(String),
+      },
+    });
+  });
+
   test('getAllUsers invalid Token', () => {
-    expect(usersAll('wrong token')).toStrictEqual(ERROR);
+    expect(usersAll('wrong token')).toStrictEqual(forbidden);
   });
 
   test('getAllUsers  run success', () => {
@@ -223,9 +152,9 @@ describe('userProfileUploadPhoto testing', () => {
     );
   });
 
-  // afterEach(() => {
-  //   clearV1();
-  // });
+  afterEach(() => {
+    clearV1();
+  });
 
   const validImgUrl = 'http://i.redd.it/v0caqchbtn741.jpg';
   const invalidPNG = 'https://i.imgur.com/2SbRPiD.jpeg';

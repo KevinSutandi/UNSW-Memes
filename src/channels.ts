@@ -68,6 +68,7 @@ export function channelsCreateV1(
       standUpActive: false,
       standUpLength: 0,
       standUpMessage: [],
+      standUpOwner: -1,
     },
     start: 0,
     end: 0,

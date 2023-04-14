@@ -10,6 +10,7 @@ import {
   getUserByToken,
   isChannelOwner,
   findOwnerIndex,
+  findUserIndex,
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
 import HTTPError from 'http-errors';
@@ -189,6 +190,16 @@ export function channelInviteV1(token: string, channelId: number, uId: number) {
     handleStr: invitedUser.handleStr,
     profileImgUrl: invitedUser.profileImgUrl,
   });
+
+  // if user is invited send notification
+  const notification = {
+    channelId: channelId,
+    dmId: -1,
+    notificationMessage: `${user.handleStr} added you to ${channel.name}`,
+  };
+
+  const userInvitedIndex = findUserIndex(uId);
+  data.users[userInvitedIndex].notifications.push(notification);
 
   setData(data);
   return {};

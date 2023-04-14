@@ -134,6 +134,7 @@ export function authRegisterV1(
     isGlobalOwner: isGlobalOwner,
     profileImgUrl: `http://${HOST}:${PORT}/img/default.jpg`,
     token: [{ token: token }],
+    notifications: [],
   });
 
   setData(dataStore);
