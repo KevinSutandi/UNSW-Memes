@@ -62,6 +62,7 @@ export interface userData {
   nameFirst: string;
   nameLast: string;
   isGlobalOwner: number;
+  profileImgUrl: string;
   token: Array<{
     token: string;
   }>;
@@ -87,6 +88,7 @@ export interface userObject {
   email: string;
   nameFirst: string;
   nameLast: string;
+  profileImgUrl: string;
 }
 
 /**

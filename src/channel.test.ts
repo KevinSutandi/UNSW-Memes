@@ -204,6 +204,7 @@ describe('/channel/details/v3', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -213,6 +214,7 @@ describe('/channel/details/v3', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -299,6 +301,7 @@ describe('testing channelJoinV2', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -308,6 +311,7 @@ describe('testing channelJoinV2', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user1.authUserId,
@@ -315,6 +319,7 @@ describe('testing channelJoinV2', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -332,6 +337,7 @@ describe('testing channelJoinV2', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -341,6 +347,7 @@ describe('testing channelJoinV2', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user3.authUserId,
@@ -348,6 +355,7 @@ describe('testing channelJoinV2', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -364,6 +372,7 @@ describe('testing channelJoinV2', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -373,6 +382,7 @@ describe('testing channelJoinV2', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user1.authUserId,
@@ -380,6 +390,7 @@ describe('testing channelJoinV2', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -488,6 +499,7 @@ describe('testing channelLeaveV1', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -497,6 +509,7 @@ describe('testing channelLeaveV1', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -517,6 +530,7 @@ describe('testing channelLeaveV1', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -660,6 +674,7 @@ describe('testing channelAddowner', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user2.authUserId,
@@ -667,6 +682,7 @@ describe('testing channelAddowner', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -676,6 +692,7 @@ describe('testing channelAddowner', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user1.authUserId,
@@ -683,6 +700,7 @@ describe('testing channelAddowner', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user2.authUserId,
@@ -690,6 +708,7 @@ describe('testing channelAddowner', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -709,6 +728,7 @@ describe('testing channelAddowner', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user3.authUserId,
@@ -716,6 +736,7 @@ describe('testing channelAddowner', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -725,6 +746,7 @@ describe('testing channelAddowner', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user3.authUserId,
@@ -732,6 +754,7 @@ describe('testing channelAddowner', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -837,6 +860,7 @@ describe('/channel/invite/v3', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -846,6 +870,7 @@ describe('/channel/invite/v3', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user3.authUserId,
@@ -853,6 +878,7 @@ describe('/channel/invite/v3', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -869,6 +895,7 @@ describe('/channel/invite/v3', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -878,6 +905,7 @@ describe('/channel/invite/v3', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user1.authUserId,
@@ -885,6 +913,7 @@ describe('/channel/invite/v3', () => {
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
           handleStr: 'kevinsutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -1036,6 +1065,7 @@ describe('testing removing owner from channel', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -1045,6 +1075,7 @@ describe('testing removing owner from channel', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user3.authUserId,
@@ -1052,6 +1083,7 @@ describe('testing removing owner from channel', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -1072,6 +1104,7 @@ describe('testing removing owner from channel', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -1081,6 +1114,7 @@ describe('testing removing owner from channel', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user3.authUserId,
@@ -1088,6 +1122,7 @@ describe('testing removing owner from channel', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
+          profileImgUrl: expect.any(String),
         },
       ],
     });

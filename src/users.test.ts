@@ -2,12 +2,19 @@ import {
   authRegister,
   usersAll,
   clearV1,
+  userProfileUploadPhoto,
   setHandle,
   setEmail,
   setName,
   userProfile,
+  channelsCreate,
+  dmCreate,
+  channelJoin,
+  channelDetails,
+  dmDetails,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
+import { port } from './config.json';
 
 const badrequest = 400;
 const forbidden = 403;
@@ -53,6 +60,7 @@ describe('userProfile iteration 3 testing', () => {
         nameFirst: 'Almina',
         nameLast: 'Kova',
         handleStr: 'Batman',
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -72,6 +80,7 @@ describe('userProfile iteration 3 testing', () => {
         nameFirst: 'Jonah',
         nameLast: 'Meggs',
         handleStr: expect.any(String),
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -88,6 +97,7 @@ describe('userProfile iteration 3 testing', () => {
         nameFirst: 'Jonah',
         nameLast: 'Meggs',
         handleStr: expect.any(String),
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -103,6 +113,7 @@ describe('userProfile iteration 3 testing', () => {
         nameFirst: 'Jonah',
         nameLast: 'Meggs',
         handleStr: expect.any(String),
+        profileImgUrl: expect.any(String),
       },
     });
   });
@@ -120,6 +131,7 @@ describe('userProfile iteration 3 testing', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: expect.any(String),
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user2.authUserId,
@@ -127,8 +139,109 @@ describe('userProfile iteration 3 testing', () => {
           nameFirst: 'Almina',
           nameLast: 'Kova',
           handleStr: expect.any(String),
+          profileImgUrl: expect.any(String),
         },
       ],
     });
+  });
+});
+
+describe('userProfileUploadPhoto testing', () => {
+  let user: AuthReturn;
+  beforeEach(() => {
+    clearV1();
+    user = authRegister(
+      'onlyfortestttt06@gmail.com',
+      'testpw0005',
+      'Jonah',
+      'Meggs'
+    );
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  const validImgUrl = 'http://i.redd.it/v0caqchbtn741.jpg';
+  const invalidPNG = 'https://i.imgur.com/2SbRPiD.jpeg';
+  const invalid404 = 'https://imgur.com/F9Nf9FKSLJDFHKJLx.jpg';
+
+  test('userProfileUploadPhoto invalid Token', () => {
+    expect(
+      userProfileUploadPhoto('wrong token', validImgUrl, 0, 0, 200, 200)
+    ).toStrictEqual(403);
+  });
+
+  test('userProfileUploadPhoto invalid image url (not jpg)', () => {
+    expect(
+      userProfileUploadPhoto(user.token, invalidPNG, 0, 0, 200, 200)
+    ).toStrictEqual(400);
+  });
+
+  test('userProfileUploadPhoto invalid image url (404)', () => {
+    expect(
+      userProfileUploadPhoto(user.token, invalid404, 0, 0, 200, 200)
+    ).toStrictEqual(400);
+  });
+
+  test('invalid dimensions', () => {
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 0, 0)
+    ).toStrictEqual(400);
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 300, 300, 0, 0)
+    ).toStrictEqual(400);
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 900, 900)
+    ).toStrictEqual(400);
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 200, 900)
+    ).toStrictEqual(400);
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 900, 200)
+    ).toStrictEqual(400);
+  });
+
+  test('userProfileUploadPhoto run success', () => {
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 200, 200)
+    ).toStrictEqual({});
+  });
+
+  test('userProfileUploadPhoto run success and updates in channels and dm', () => {
+    const user2: AuthReturn = authRegister(
+      'wego@gm.com',
+      'testpw0005',
+      'Almina',
+      'Kova'
+    );
+    const channel1 = channelsCreate(user.token, 'channel1', true);
+    channelJoin(user2.token, channel1.channelId);
+    const dm1 = dmCreate(user.token, [user2.authUserId]);
+    // const dm2 = dmCreate(user2.token, [user.authUserId]);
+    const PORT: number = parseInt(process.env.PORT || port);
+    const HOST: string = process.env.IP || 'localhost';
+
+    expect(
+      userProfileUploadPhoto(user.token, validImgUrl, 0, 0, 200, 200)
+    ).toStrictEqual({});
+
+    expect(
+      channelDetails(user.token, channel1.channelId).ownerMembers[0]
+        .profileImgUrl
+    ).not.toStrictEqual(`http://${HOST}:${PORT}/img/default.jpg`);
+    expect(
+      channelDetails(user.token, channel1.channelId).allMembers[0].profileImgUrl
+    ).not.toStrictEqual(`http://${HOST}:${PORT}/img/default.jpg`);
+    expect(
+      channelDetails(user.token, channel1.channelId).allMembers[1].profileImgUrl
+    ).toStrictEqual(`http://${HOST}:${PORT}/img/default.jpg`);
+
+    expect(
+      dmDetails(user.token, dm1.dmId).members[0].profileImgUrl
+    ).not.toStrictEqual(`http://${HOST}:${PORT}/img/default.jpg`);
+    expect(
+      dmDetails(user.token, dm1.dmId).members[1].profileImgUrl
+    ).toStrictEqual(`http://${HOST}:${PORT}/img/default.jpg`);
   });
 });

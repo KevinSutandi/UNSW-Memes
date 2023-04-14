@@ -1,5 +1,6 @@
 import validator from 'validator';
 import HTTPError from 'http-errors';
+import { port } from './config.json';
 import {
   findTokenIndex,
   getUserByToken,
@@ -8,6 +9,7 @@ import {
   getUserIndexByToken,
   findUserbyEmail,
   findUserIndex,
+  downloadImage,
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
@@ -120,6 +122,11 @@ export function authRegisterV1(
     isGlobalOwner = 1;
   }
 
+  downloadImage();
+
+  const PORT: number = parseInt(process.env.PORT || port);
+  const HOST: string = process.env.IP || 'localhost';
+
   dataStore.users.push({
     authUserId: authId,
     handleStr: handlestring,
@@ -128,6 +135,7 @@ export function authRegisterV1(
     nameFirst: nameFirst,
     nameLast: nameLast,
     isGlobalOwner: isGlobalOwner,
+    profileImgUrl: `http://${HOST}:${PORT}/img/default.jpg`,
     token: [{ token: token }],
     notifications: [],
   });
