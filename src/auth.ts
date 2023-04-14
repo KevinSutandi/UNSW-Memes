@@ -7,6 +7,7 @@ import {
   HashingString,
   getUserIndexByToken,
   findUserbyEmail,
+  findUserIndex,
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
@@ -192,5 +193,26 @@ export function passwordResetRequestV1(email: string) {
   });
 
   setData(data);
+  return {};
+}
+
+export function passwordResetV1(resetCode: number, newPassword: string) {
+  const data = getData();
+  const codeIndex = data.resetCodes.findIndex(
+    (user) => user.resetCode === resetCode
+  );
+
+  if (codeIndex === -1) {
+    throw HTTPError(400, 'Invalid reset code');
+  }
+
+  if (newPassword.length < 6) {
+    throw HTTPError(400, 'Password is too short');
+  }
+
+  const userIndex = findUserIndex(data.resetCodes[codeIndex].authUserId);
+  data.users[userIndex].password = newPassword;
+
+  data.resetCodes.splice(resetCode);
   return {};
 }
