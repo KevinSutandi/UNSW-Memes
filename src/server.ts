@@ -4,7 +4,12 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import errorHandler from 'middleware-http-errors';
-import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
+import {
+  authRegisterV1,
+  authLoginV1,
+  authLogoutV1,
+  passwordResetRequestV1,
+} from './auth';
 
 import {
   channelsCreateV1,
@@ -306,6 +311,17 @@ app.post('/message/share/v1', (req: Request, res: Response, next) => {
   const result = messageShareV1(token, ogMessageId, message, channelId, dmId);
   return res.json(result);
 });
+
+app.post(
+  '/auth/passwordreset/request/v1',
+  (req: Request, res: Response, next) => {
+    const token = req.headers.token as string;
+    const { email } = req.body;
+    const result = passwordResetRequestV1(token, email);
+    return res.json(result);
+  }
+);
+
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
