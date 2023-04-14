@@ -14,6 +14,7 @@ import {
   messageSendLater,
   messageSendLaterDm,
   messageShare,
+  channelInvite,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -576,9 +577,9 @@ describe('testing messageEdit DM', () => {
     dm2 = dmCreate(user2.token, uIds2);
   });
 
-  afterEach(() => {
-    clearV1();
-  });
+  // afterEach(() => {
+  //   clearV1();
+  // });
 
   test('dm does not exist', () => {
     expect(messageEdit(user1.token, 100000, 'hello')).toStrictEqual(badrequest);
@@ -1022,11 +1023,12 @@ describe('testing messageShare', () => {
     );
     const dm2 = dmCreate(user2.token, [user3.authUserId]);
     expect(
-      messageShare(user1.token, message1.messageId, 'anjay', dm2.dmId, -1)
+      messageShare(user1.token, message1.messageId, 'anjay', -1, dm2.dmId)
     ).toStrictEqual(403);
   });
 
   test('valid input, share to channel', () => {
+    channelInvite(user2.token, channel2.channelId, user1.authUserId);
     expect(
       messageShare(
         user1.token,
@@ -1036,5 +1038,21 @@ describe('testing messageShare', () => {
         -1
       )
     ).toStrictEqual({ sharedMessageId: expect.any(Number) });
+    expect(channelMessage(user1.token, channel2.channelId, 0)).toStrictEqual({
+      messages: expect.any(Array),
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('valid input, share to dm', () => {
+    expect(
+      messageShare(user1.token, message1.messageId, 'makan', -1, dm1.dmId)
+    ).toStrictEqual({ sharedMessageId: expect.any(Number) });
+    expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
+      messages: expect.any(Array),
+      start: 0,
+      end: -1,
+    });
   });
 });
