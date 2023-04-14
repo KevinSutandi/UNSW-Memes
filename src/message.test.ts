@@ -1,4 +1,3 @@
-import { channel } from 'diagnostics_channel';
 import {
   authRegister,
   channelMessage,
@@ -938,10 +937,27 @@ describe('testing messageShare', () => {
     clearV1();
   });
 
+  test('invalid token', () => {
+    expect(
+      messageShare('vroom', message1.messageId, '', channel1.channelId, -1)
+    ).toStrictEqual(forbidden);
+  });
+
+  test('message does not exist', () => {
+    expect(
+      messageShare(
+        user1.token,
+        message1.messageId + 1,
+        ',',
+        channel1.channelId,
+        -1
+      )
+    ).toStrictEqual(badrequest);
+  });
   test('both channelId and dmId are invalid', () => {
     expect(
       messageShare(user1.token, message1.messageId, 'mantap', 15, 16)
-    ).toStrictEqual(400);
+    ).toStrictEqual(badrequest);
   });
 
   test('neither channelId nor dmId are -1', () => {
@@ -953,7 +969,7 @@ describe('testing messageShare', () => {
         channel1.channelId,
         dm1.dmId
       )
-    ).toStrictEqual(400);
+    ).toStrictEqual(badrequest);
   });
 
   test('ogMessageId does not refer to a valid message within a channel that the authorised user has joined', () => {
@@ -967,7 +983,7 @@ describe('testing messageShare', () => {
         channel1.channelId,
         -1
       )
-    ).toStrictEqual(400);
+    ).toStrictEqual(badrequest);
   });
 
   test('ogMessageId does not refer to a valid message within a dm that the authorised user has joined', () => {
@@ -987,7 +1003,7 @@ describe('testing messageShare', () => {
         channel1.channelId,
         -1
       )
-    ).toStrictEqual(400);
+    ).toStrictEqual(badrequest);
   });
 
   test('length of optional message is more than 1000 characters', () => {
@@ -999,7 +1015,7 @@ describe('testing messageShare', () => {
         channel1.channelId,
         -1
       )
-    );
+    ).toStrictEqual(badrequest);
   });
 
   test('valid input, but the user has not joined the channel they are trying to share the message to', () => {
@@ -1011,7 +1027,7 @@ describe('testing messageShare', () => {
         channel2.channelId,
         -1
       )
-    ).toStrictEqual(403);
+    ).toStrictEqual(forbidden);
   });
 
   test('valid input, but the user has not joined the dm they are trying to share the message to', () => {
@@ -1024,7 +1040,7 @@ describe('testing messageShare', () => {
     const dm2 = dmCreate(user2.token, [user3.authUserId]);
     expect(
       messageShare(user1.token, message1.messageId, 'anjay', -1, dm2.dmId)
-    ).toStrictEqual(403);
+    ).toStrictEqual(forbidden);
   });
 
   test('valid input, share to channel', () => {
