@@ -388,8 +388,8 @@ export function messageShareV1(
   const user = getUserByToken(token);
   const channel = findChannelByMessageId(ogMessageId);
   const dm = findDMbyMessageId(ogMessageId);
-  const channelTarget = findChannel(channelId);
-  const dmTarget = findDMbyId(dmId);
+  const channelTargetIndex = getChannelIndex(channelId);
+  const dmTargetIndex = getDmIndex(dmId);
   let messageIndex = -1;
   let flags;
 
@@ -397,7 +397,7 @@ export function messageShareV1(
     throw HTTPError(403, 'Invalid token');
   }
 
-  if (channelTarget === undefined && dmTarget === undefined) {
+  if (channelTargetIndex === -1 && dmTargetIndex === -1) {
     throw HTTPError(400, 'Invalid channelId and dmId');
   }
 
@@ -428,7 +428,7 @@ export function messageShareV1(
   // Shares the message to a channel
   if (channelId !== -1) {
     // const channelIndex = getChannelIndex(channelId);
-    allMemberIds = getAllMemberIds(channelTarget);
+    allMemberIds = getAllMemberIds(data.channels[channelTargetIndex]);
     if (!allMemberIds.includes(user.authUserId)) {
       throw HTTPError(403, 'You cannot share message to this channel');
     }
@@ -439,14 +439,14 @@ export function messageShareV1(
       timeSent: Math.floor(Date.now() / 1000),
     };
     // data.channels[channelIndex].messages.push(newMessage);
-    channelTarget.messages.push(newMessage);
+    data.channels[channelTargetIndex].messages.push(newMessage);
     setData(data);
     return { sharedMessageId: sharedMessageId };
 
     // Shares the message to a dm
   } else {
     // const dmIndex = getDmIndex(dmId);
-    allMemberIds = getAllMemberIds(dmTarget);
+    allMemberIds = getAllMemberIds(data.dm[dmTargetIndex]);
     if (!allMemberIds.includes(user.authUserId)) {
       throw HTTPError(403, 'You cannot share message to this dm');
     }
@@ -457,7 +457,7 @@ export function messageShareV1(
       timeSent: Math.floor(Date.now() / 1000),
     };
     // data.dm[dmIndex].messages.push(newMessage);
-    dmTarget.messages.push(newMessage);
+    data.dm[dmTargetIndex].messages.push(newMessage);
     setData(data);
     return { sharedMessageId: sharedMessageId };
   }
