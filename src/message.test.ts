@@ -1,3 +1,4 @@
+import { channel } from 'diagnostics_channel';
 import {
   authRegister,
   channelMessage,
@@ -12,6 +13,7 @@ import {
   dmMessages,
   messageSendLater,
   messageSendLaterDm,
+  messageShare,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -902,5 +904,77 @@ describe('testing messageSendLaterDm', () => {
       start: 0,
       end: -1,
     });
+  });
+});
+
+describe('testing messageShare', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let channel1: { channelId: number };
+  let dm1: { dmId: number };
+  let message1: { messageId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister('plswork@gmail.com', 'plswork', 'James', 'Bond');
+
+    channel1 = channelsCreate(user1.token, 'wego', true);
+    channelJoin(user2.token, channel1.channelId);
+
+    dm1 = dmCreate(user1.token, [user2.authUserId]);
+    message1 = messageSend(user1.token, channel1.channelId, 'halo');
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('both channelId and dmId are invalid', () => {
+    expect(
+      messageShare(user1.token, message1.messageId, 'mantap', 15, 16)
+    ).toStrictEqual(400);
+  });
+
+  test('neither channelId nor dmId are -1', () => {
+    expect(
+      messageShare(
+        user1.token,
+        message1.messageId,
+        'mantap',
+        channel1.channelId,
+        dm1.dmId
+      )
+    ).toStrictEqual(400);
+  });
+
+  test('ogMessageId does not refer to a valid message within a channel/DM that the authorised user has joined', () => {
+    const channel2 = channelsCreate(user2.token, 'name', false);
+    const message2 = messageSend(user2.token, channel2.channelId, 'makan');
+    expect(
+      messageShare(
+        user1.token,
+        message2.messageId,
+        'ayam',
+        channel1.channelId,
+        -1
+      )
+    );
+  });
+
+  test('length of optional message is more than 1000 characters', () => {
+    expect(
+      messageShare(
+        user2.token,
+        message1.messageId,
+        '6'.repeat(1001),
+        channel1.channelId,
+        -1
+      )
+    );
   });
 });
