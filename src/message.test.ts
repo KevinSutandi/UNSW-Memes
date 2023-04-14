@@ -12,6 +12,8 @@ import {
   dmMessages,
   messageSendLater,
   messageSendLaterDm,
+  messageShare,
+  channelInvite,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 
@@ -897,6 +899,172 @@ describe('testing messageSendLaterDm', () => {
       messageId: expect.any(Number),
     });
     await new Promise((r) => setTimeout(r, 2000));
+    expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
+      messages: expect.any(Array),
+      start: 0,
+      end: -1,
+    });
+  });
+});
+
+describe('testing messageShare', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let channel1: { channelId: number };
+  let channel2: { channelId: number };
+
+  let dm1: { dmId: number };
+  let message1: { messageId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister('plswork@gmail.com', 'plswork', 'James', 'Bond');
+    channel2 = channelsCreate(user2.token, 'name', false);
+
+    channel1 = channelsCreate(user1.token, 'wego', true);
+    channelJoin(user2.token, channel1.channelId);
+
+    dm1 = dmCreate(user1.token, [user2.authUserId]);
+    message1 = messageSend(user1.token, channel1.channelId, 'halo');
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('invalid token', () => {
+    expect(
+      messageShare('vroom', message1.messageId, '', channel1.channelId, -1)
+    ).toStrictEqual(forbidden);
+  });
+
+  test('message does not exist', () => {
+    expect(
+      messageShare(
+        user1.token,
+        message1.messageId + 1,
+        ',',
+        channel1.channelId,
+        -1
+      )
+    ).toStrictEqual(badrequest);
+  });
+  test('both channelId and dmId are invalid', () => {
+    expect(
+      messageShare(user1.token, message1.messageId, 'mantap', 15, 16)
+    ).toStrictEqual(badrequest);
+  });
+
+  test('neither channelId nor dmId are -1', () => {
+    expect(
+      messageShare(
+        user1.token,
+        message1.messageId,
+        'mantap',
+        channel1.channelId,
+        dm1.dmId
+      )
+    ).toStrictEqual(badrequest);
+  });
+
+  test('ogMessageId does not refer to a valid message within a channel that the authorised user has joined', () => {
+    const channel2 = channelsCreate(user2.token, 'name', false);
+    const message2 = messageSend(user2.token, channel2.channelId, 'makan');
+    expect(
+      messageShare(
+        user1.token,
+        message2.messageId,
+        'ayam',
+        channel1.channelId,
+        -1
+      )
+    ).toStrictEqual(badrequest);
+  });
+
+  test('ogMessageId does not refer to a valid message within a dm that the authorised user has joined', () => {
+    const user3 = authRegister(
+      'johncena@gmail.com',
+      '12345567788',
+      'John',
+      'Cena'
+    );
+    const dm2 = dmCreate(user2.token, [user3.authUserId]);
+    const message2 = messageSendDm(user2.token, dm2.dmId, 'makan');
+    expect(
+      messageShare(
+        user1.token,
+        message2.messageId,
+        'ayam',
+        channel1.channelId,
+        -1
+      )
+    ).toStrictEqual(badrequest);
+  });
+
+  test('length of optional message is more than 1000 characters', () => {
+    expect(
+      messageShare(
+        user2.token,
+        message1.messageId,
+        '6'.repeat(1001),
+        channel1.channelId,
+        -1
+      )
+    ).toStrictEqual(badrequest);
+  });
+
+  test('valid input, but the user has not joined the channel they are trying to share the message to', () => {
+    expect(
+      messageShare(
+        user1.token,
+        message1.messageId,
+        'anjay',
+        channel2.channelId,
+        -1
+      )
+    ).toStrictEqual(forbidden);
+  });
+
+  test('valid input, but the user has not joined the dm they are trying to share the message to', () => {
+    const user3 = authRegister(
+      'johncena@gmail.com',
+      '12345567788',
+      'John',
+      'Cena'
+    );
+    const dm2 = dmCreate(user2.token, [user3.authUserId]);
+    expect(
+      messageShare(user1.token, message1.messageId, 'anjay', -1, dm2.dmId)
+    ).toStrictEqual(forbidden);
+  });
+
+  test('valid input, share to channel', () => {
+    channelInvite(user2.token, channel2.channelId, user1.authUserId);
+    expect(
+      messageShare(
+        user1.token,
+        message1.messageId,
+        'makan',
+        channel2.channelId,
+        -1
+      )
+    ).toStrictEqual({ sharedMessageId: expect.any(Number) });
+    expect(channelMessage(user1.token, channel2.channelId, 0)).toStrictEqual({
+      messages: expect.any(Array),
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('valid input, share to dm', () => {
+    expect(
+      messageShare(user1.token, message1.messageId, 'makan', -1, dm1.dmId)
+    ).toStrictEqual({ sharedMessageId: expect.any(Number) });
     expect(dmMessages(user1.token, dm1.dmId, 0)).toStrictEqual({
       messages: expect.any(Array),
       start: 0,

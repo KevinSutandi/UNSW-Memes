@@ -376,3 +376,85 @@ export function messageSendLaterDmV1(
   }, timeDelay * 1000);
   return { messageId: messageId };
 }
+
+export function messageShareV1(
+  token: string,
+  ogMessageId: number,
+  message: string,
+  channelId: number,
+  dmId: number
+) {
+  const data = getData();
+  const user = getUserByToken(token);
+  const channel = findChannelByMessageId(ogMessageId);
+  const dm = findDMbyMessageId(ogMessageId);
+  const channelTargetIndex = getChannelIndex(channelId);
+  const dmTargetIndex = getDmIndex(dmId);
+  let messageIndex = -1;
+  let flags;
+
+  if (user === undefined) {
+    throw HTTPError(403, 'Invalid token');
+  }
+
+  if (channelTargetIndex === -1 && dmTargetIndex === -1) {
+    throw HTTPError(400, 'Invalid channelId and dmId');
+  }
+
+  // Finds the message's location
+  if (channel === undefined && dm === undefined) {
+    throw HTTPError(400, 'Message does not exist');
+  } else if (channel !== undefined) {
+    messageIndex = findMessageIndexInChannel(channel, ogMessageId);
+    flags = channel;
+  } else {
+    messageIndex = findMessageIndexInDM(dm, ogMessageId);
+    flags = dm;
+  }
+
+  if (channelId !== -1 && dmId !== -1) {
+    throw HTTPError(400, 'Neither channelId nor dmId are -1');
+  }
+  if (message.length > 1000) {
+    throw HTTPError(400, 'Message cannot exceed 1000 characters');
+  }
+
+  let allMemberIds = getAllMemberIds(flags);
+  if (!allMemberIds.includes(user.authUserId)) {
+    throw HTTPError(400, 'You cannot share message from this');
+  }
+
+  const sharedMessageId = Math.floor(Math.random() * 1000000);
+  // Shares the message to a channel
+  if (channelId !== -1) {
+    allMemberIds = getAllMemberIds(data.channels[channelTargetIndex]);
+    if (!allMemberIds.includes(user.authUserId)) {
+      throw HTTPError(403, 'You cannot share message to this channel');
+    }
+    const newMessage = {
+      messageId: sharedMessageId,
+      uId: user.authUserId,
+      message: flags.messages[messageIndex].message + ' ' + message,
+      timeSent: Math.floor(Date.now() / 1000),
+    };
+    data.channels[channelTargetIndex].messages.push(newMessage);
+    setData(data);
+    return { sharedMessageId: sharedMessageId };
+
+    // Shares the message to a dm
+  } else {
+    allMemberIds = getAllMemberIds(data.dm[dmTargetIndex]);
+    if (!allMemberIds.includes(user.authUserId)) {
+      throw HTTPError(403, 'You cannot share message to this dm');
+    }
+    const newMessage = {
+      messageId: sharedMessageId,
+      uId: user.authUserId,
+      message: flags.messages[messageIndex].message + ' ' + message,
+      timeSent: Math.floor(Date.now() / 1000),
+    };
+    data.dm[dmTargetIndex].messages.push(newMessage);
+    setData(data);
+    return { sharedMessageId: sharedMessageId };
+  }
+}

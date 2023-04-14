@@ -338,3 +338,23 @@ export function messageSendLaterDm(
     { token }
   );
 }
+
+export function messageShare(
+  token: string,
+  ogMessageId: number,
+  message: string,
+  channelId: number,
+  dmId: number
+) {
+  return requestHelper(
+    'POST',
+    '/message/share/v1',
+    {
+      ogMessageId,
+      message,
+      channelId,
+      dmId,
+    },
+    { token }
+  );
+}
