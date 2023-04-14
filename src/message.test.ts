@@ -977,4 +977,30 @@ describe('testing messageShare', () => {
       )
     );
   });
+
+  test('valid input, but the user has not joined the channel they are trying to share the message to', () => {
+    const channel2 = channelsCreate(user2.token, 'name', false);
+    expect(
+      messageShare(
+        user1.token,
+        message1.messageId,
+        'anjay',
+        channel2.channelId,
+        -1
+      )
+    );
+  });
+
+  test('valid input, but the user has not joined the dm they are trying to share the message to', () => {
+    const user3 = authRegister(
+      'johncena@gmail.com',
+      '12345567788',
+      'John',
+      'Cena'
+    );
+    const dm2 = dmCreate(user2.token, [user3.authUserId]);
+    expect(
+      messageShare(user1.token, message1.messageId, 'anjay', dm2.dmId, -1)
+    );
+  });
 });
