@@ -1,8 +1,6 @@
 import HTTPError from 'http-errors';
 import { getData, setData } from './dataStore';
-import {
-  getUserByToken,
-} from './functionHelper';
+import { getUserByToken } from './functionHelper';
 
 /**
  * User with permissionId == 1 can change the user with uId
@@ -13,7 +11,11 @@ import {
  */
 
 // the global owner value should be set as what permissionId set
-export function adminuserPermissionChangeV1(token: string, uId: number, permissionId: number) {
+export function adminuserPermissionChangeV1(
+  token: string,
+  uId: number,
+  permissionId: number
+) {
   const data = getData();
   const tokenFound = getUserByToken(token);
   const uIdfound = data.users.find((user) => user.authUserId === uId);
@@ -28,7 +30,7 @@ export function adminuserPermissionChangeV1(token: string, uId: number, permissi
 
   // user with the token is not global owner
   if (tokenFound.isGlobalOwner !== 1) {
-    throw HTTPError(403, tokenFound.authUserId + 'is not authorised');
+    throw HTTPError(403, tokenFound.authUserId + ' is not authorised');
   }
 
   // user with uId is the only global, and Uid ===
@@ -40,20 +42,19 @@ export function adminuserPermissionChangeV1(token: string, uId: number, permissi
     }
   }, 0);
 
-  if (globalOwnernum === 1 && permissionId === 2) {
+  if (
+    globalOwnernum === 1 &&
+    permissionId === 2 &&
+    uIdfound.isGlobalOwner === 1
+  ) {
     throw HTTPError(400, 'You are the only global owner!');
   }
 
   if (permissionId !== 1 && permissionId !== 2) {
     throw HTTPError(400, 'Invalid permissionId');
   }
-  if (uIdfound.isglobalowner === permissionId) {
+  if (uIdfound.isGlobalOwner === permissionId) {
     throw HTTPError(400, 'User already in permission level');
-  }
-
-  // user with the token is not global owner
-  if (tokenFound.isGlobalOwner !== 1) {
-    throw HTTPError(403, token.authUserId + 'is not authorised');
   }
 
   // set the globalowner property same as the permissionId

@@ -120,11 +120,7 @@ export function channelJoinV1(
 
   // channel
   if (channel.isPublic === false && user.isGlobalOwner === 2) {
-    if (channel.isPublic === false) {
-      throw HTTPError(403, 'Channel is not public');
-    } else {
-      throw HTTPError(403, 'User is not global owner');
-    }
+    throw HTTPError(403, 'Channel is not public');
   }
   const channelNum = getChannelIndex(channelId);
 
