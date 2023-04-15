@@ -118,6 +118,7 @@ describe('/channels/create/v2', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
       ],
       allMembers: [
@@ -127,6 +128,7 @@ describe('/channels/create/v2', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
         },
       ],
     });

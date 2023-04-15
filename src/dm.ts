@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { findUser, getUserByToken } from './functionHelper';
+import { findUser, findUserIndex, getUserByToken } from './functionHelper';
 import {
   errorMessage,
   dmCreateReturn,
@@ -26,33 +26,25 @@ export function dmCreateV1(
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return {
-      error: 'Invalid token',
-    };
+    throw HTTPError(403, 'Invalid token');
   }
 
   // Make sure that owner does not invite owner
   if (uIds.includes(user.authUserId)) {
-    return {
-      error: 'Duplicate uId',
-    };
+    throw HTTPError(400, 'Duplicate uId');
   }
 
   // Use a Set to check for duplicate user IDs
   const userSet = new Set(uIds);
   if (userSet.size !== uIds.length) {
-    return {
-      error: 'Duplicate uId',
-    };
+    throw HTTPError(400, 'Duplicate uId');
   }
 
   const userArray: Array<userData> = [user];
   for (const uId of uIds) {
     const userUId = findUser(uId);
     if (userUId === undefined) {
-      return {
-        error: 'Invalid uId',
-      };
+      throw HTTPError(400, 'Invalid uId');
     }
     userArray.push(userUId);
   }
@@ -75,6 +67,7 @@ export function dmCreateV1(
       handleStr: uId.handleStr,
       nameFirst: uId.nameFirst,
       nameLast: uId.nameLast,
+      profileImgUrl: uId.profileImgUrl,
     });
   }
 
@@ -90,6 +83,7 @@ export function dmCreateV1(
         handleStr: user.handleStr,
         nameFirst: user.nameFirst,
         nameLast: user.nameLast,
+        profileImgUrl: user.profileImgUrl,
       },
     ],
     allMembers: allMembers,
@@ -97,6 +91,16 @@ export function dmCreateV1(
     start: 0,
     end: -1,
   });
+
+  // send notification to all the users invited to the dm
+  for (const uId of uIds) {
+    const uIdIndex = findUserIndex(uId);
+    data.users[uIdIndex].notifications.push({
+      channelId: -1,
+      dmId: dmId,
+      notificationMessage: `${user.handleStr} added you to ${dmName}`,
+    });
+  }
 
   setData(data);
   return { dmId: dmId };
@@ -186,17 +190,18 @@ export function dmMessagesV1(token: string, dmId: number, start: number) {
     return { error: 'Invalid token' };
   }
   if (!isDm(dmId)) {
-    throw HTTPError(400, 'dmId does not refer to a valid DM');
+    return { error: 'dmId does not refer to a valid DM' };
   }
   if (!isDmMember(dmId, user.authUserId)) {
-    throw HTTPError(403, 'User is not a member of the DM');
+    return { error: 'User is not a member of the DM' };
   }
   const dmIndex = data.dm.findIndex((a) => a.dmId === dmId);
   const dmMessages = data.dm[dmIndex].messages.length;
   if (start > data.dm[dmIndex].messages.length) {
-    throw HTTPError(400,
-      'start is greater than the total number of messages in the channel'
-    );
+    return {
+      error:
+        'start is greater than the total number of messages in the channel',
+    };
   }
 
   const dm = findDm(dmId);
@@ -290,16 +295,16 @@ export function dmRemoveV1(token: string, dmId: number) {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   const dmIndex = data.dm.findIndex((item) => item.dmId === dmId);
   if (dmIndex === -1) {
-    return { error: 'dmId does not refer to a valid DM' };
+    throw HTTPError(400, 'dmId does not refer to a valid DM');
   }
   if (
     !data.dm[dmIndex].ownerMembers.some((item) => item.uId === user.authUserId)
   ) {
-    return { error: 'User is not the original creator' };
+    throw HTTPError(403, 'User is not the original creator');
   }
   data.dm.splice(dmIndex, 1);
   setData(data);
