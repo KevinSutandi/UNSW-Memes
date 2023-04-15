@@ -1,10 +1,13 @@
 import validator from 'validator';
 import HTTPError from 'http-errors';
+import { port } from './config.json';
 import {
   findTokenIndex,
   getUserByToken,
   makeToken,
   HashingString,
+  getUserIndexByToken,
+  downloadImage,
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
@@ -116,6 +119,11 @@ export function authRegisterV1(
     isGlobalOwner = 1;
   }
 
+  downloadImage();
+
+  const PORT: number = parseInt(process.env.PORT || port);
+  const HOST: string = process.env.IP || 'localhost';
+
   dataStore.users.push({
     authUserId: authId,
     handleStr: handlestring,
@@ -124,7 +132,9 @@ export function authRegisterV1(
     nameFirst: nameFirst,
     nameLast: nameLast,
     isGlobalOwner: isGlobalOwner,
+    profileImgUrl: `http://${HOST}:${PORT}/img/default.jpg`,
     token: [{ token: token }],
+    notifications: [],
   });
 
   setData(dataStore);
@@ -136,14 +146,16 @@ export function authRegisterV1(
  * @param {string} token - the user's token
  * @returns { error : string } error - different error strings for different situations
  */
-export function authLogoutV1(token: string) {
+export function authLogoutV1(token: string): Record<string, never> {
   const data = getData();
   const user = getUserByToken(token);
+  const userIndex = getUserIndexByToken(token);
   if (user === undefined) {
-    return { error: 'Token is invalid' };
+    throw HTTPError(403, 'Token is not valid');
   }
+
   const tokenIndex = findTokenIndex(user, token);
-  data.users[tokenIndex].token.splice(tokenIndex, 1);
+  data.users[userIndex].token.splice(tokenIndex, 1);
   setData(data);
   return {};
 }

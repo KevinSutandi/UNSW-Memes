@@ -54,7 +54,7 @@ export function adminuserPermissionChangeV1(token: string, uId: number, permissi
 
   // user with the token is not global owner
   if (tokenFound.isGlobalOwner !== 1) {
-    throw HTTPError(403, tokenFound.authUserId + 'is not authorised');
+    throw HTTPError(403, token.authUserId + 'is not authorised');
   }
 
   // set the globalowner property same as the permissionId

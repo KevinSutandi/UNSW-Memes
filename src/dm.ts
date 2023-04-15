@@ -1,5 +1,5 @@
 import { getData, setData } from './dataStore';
-import { findUser, getUserByToken } from './functionHelper';
+import { findUser, findUserIndex, getUserByToken } from './functionHelper';
 import {
   errorMessage,
   dmCreateReturn,
@@ -8,6 +8,7 @@ import {
   dmData,
   dmListReturn,
 } from './interfaces';
+import HTTPError from 'http-errors';
 
 /**
  *
@@ -25,33 +26,25 @@ export function dmCreateV1(
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return {
-      error: 'Invalid token',
-    };
+    throw HTTPError(403, 'Invalid token');
   }
 
   // Make sure that owner does not invite owner
   if (uIds.includes(user.authUserId)) {
-    return {
-      error: 'Duplicate uId',
-    };
+    throw HTTPError(400, 'Duplicate uId');
   }
 
   // Use a Set to check for duplicate user IDs
   const userSet = new Set(uIds);
   if (userSet.size !== uIds.length) {
-    return {
-      error: 'Duplicate uId',
-    };
+    throw HTTPError(400, 'Duplicate uId');
   }
 
   const userArray: Array<userData> = [user];
   for (const uId of uIds) {
     const userUId = findUser(uId);
     if (userUId === undefined) {
-      return {
-        error: 'Invalid uId',
-      };
+      throw HTTPError(400, 'Invalid uId');
     }
     userArray.push(userUId);
   }
@@ -74,6 +67,7 @@ export function dmCreateV1(
       handleStr: uId.handleStr,
       nameFirst: uId.nameFirst,
       nameLast: uId.nameLast,
+      profileImgUrl: uId.profileImgUrl,
     });
   }
 
@@ -89,6 +83,7 @@ export function dmCreateV1(
         handleStr: user.handleStr,
         nameFirst: user.nameFirst,
         nameLast: user.nameLast,
+        profileImgUrl: user.profileImgUrl,
       },
     ],
     allMembers: allMembers,
@@ -96,6 +91,16 @@ export function dmCreateV1(
     start: 0,
     end: -1,
   });
+
+  // send notification to all the users invited to the dm
+  for (const uId of uIds) {
+    const uIdIndex = findUserIndex(uId);
+    data.users[uIdIndex].notifications.push({
+      channelId: -1,
+      dmId: dmId,
+      notificationMessage: `${user.handleStr} added you to ${dmName}`,
+    });
+  }
 
   setData(data);
   return { dmId: dmId };

@@ -41,6 +41,7 @@ export function standupStartV1(
   const data = getData();
   data.channels[channelIndex].standUp.standUpActive = true;
   data.channels[channelIndex].standUp.standUpLength = timeFinish;
+  data.channels[channelIndex].standUp.standUpOwner = user.authUserId;
 
   setData(data);
 
@@ -119,6 +120,14 @@ export function standupSendV1(
     uId: user.authUserId,
     message: message,
     timeSent: timeNow,
+    isPinned: false,
+    reacts: [
+      {
+        reactId: 1,
+        uIds: [] as number[],
+        isThisUserReacted: false,
+      },
+    ],
   };
 
   data.channels[channelIndex].standUp.standUpMessage.push(newMessage);
@@ -157,6 +166,14 @@ function standUpEnd(token: string, channelId: number) {
     uId: user.authUserId,
     message: message,
     timeSent: Math.floor(Date.now() / 1000),
+    isPinned: false,
+    reacts: [
+      {
+        reactId: 1,
+        uIds: [] as number[],
+        isThisUserReacted: false,
+      },
+    ],
   };
 
   data.channels[channelIndex].messages.push(newMessage);

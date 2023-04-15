@@ -31,12 +31,12 @@ describe('testing dmCreateV1', () => {
 
   test('any uId does not refer to a valid user', () => {
     const uIds = [2032];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
+    expect(dmCreate(user.token, uIds)).toStrictEqual(400);
   });
 
   test('user token is not valid', () => {
     const uIds = [user.authUserId];
-    expect(dmCreate('alminaaaaascnj', uIds)).toStrictEqual(ERROR);
+    expect(dmCreate('alminaaaaascnj', uIds)).toStrictEqual(403);
   });
 
   test('dm is successful with just owner', () => {
@@ -54,12 +54,12 @@ describe('testing dmCreateV1', () => {
       'levin'
     );
     const uIds = [user2.authUserId, user2.authUserId];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
+    expect(dmCreate(user.token, uIds)).toStrictEqual(400);
   });
 
   test('owner invites owner to dm result error', () => {
     const uIds: number[] = [user.authUserId];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
+    expect(dmCreate(user.token, uIds)).toStrictEqual(400);
   });
 
   test('dm is successful with multiple users', () => {
@@ -77,7 +77,7 @@ describe('testing dmCreateV1', () => {
 
   test('dm has one valid user and the second entry is invalid', () => {
     const uIds = [7586];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
+    expect(dmCreate(user.token, uIds)).toStrictEqual(400);
   });
 
   test('dm has two duplicate users', () => {
@@ -88,7 +88,7 @@ describe('testing dmCreateV1', () => {
       'Meggs'
     );
     const uIds = [user2.authUserId, user2.authUserId];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(ERROR);
+    expect(dmCreate(user.token, uIds)).toStrictEqual(400);
   });
 
   test('dm is successful with multiple users 2', () => {
@@ -170,6 +170,7 @@ describe('testing dmDetailsV1', () => {
           handleStr: 'zombieibrahim',
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user.authUserId,
@@ -177,6 +178,7 @@ describe('testing dmDetailsV1', () => {
           handleStr: 'jonahmeggs',
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user2.authUserId,
@@ -184,6 +186,7 @@ describe('testing dmDetailsV1', () => {
           handleStr: 'kevinsutandi',
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
