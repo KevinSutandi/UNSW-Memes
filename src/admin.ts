@@ -14,7 +14,6 @@ import {
 
 // the global owner value should be set as what permissionId set
 export function adminuserPermissionChangeV1(token: string, uId: number, permissionId: number) {
-  // error
   const data = getData();
   const tokenFound = getUserByToken(token);
   const uIdfound = data.users.find((user) => user.authUserId === uId);
