@@ -329,6 +329,15 @@ export function adminuserPermissionChange(token: string, uId: number, permission
   );
 }
 
+export function adminuserRemove(token: string, uId: number) {
+  return requestHelper('DELETE', '/admin/user/remove/v1',
+    {
+      uId,
+    },
+    { token }
+  );
+}
+
 export function standUpStart(token: string, channelId: number, length: number) {
   return requestHelper(
     'POST',

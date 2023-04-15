@@ -53,7 +53,7 @@ import {
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 import { standupActiveV1, standupSendV1, standupStartV1 } from './standup';
-import { adminuserPermissionChangeV1 } from './admin';
+import { adminuserPermissionChangeV1, adminuserRemoveV1 } from './admin';
 
 // Set up web app
 const app = express();
@@ -362,6 +362,14 @@ app.post('/admin/userpermission/change/v1', (req: Request, res: Response, next) 
   const token = req.headers.token as string;
   const { uId, permissionId } = req.body;
   const result = adminuserPermissionChangeV1(token, uId, permissionId);
+  return res.json(result);
+});
+
+app.delete('/admin/user/remove/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const uId = parseInt(req.query.uId as string);
+  const uId = req.body;
+  const result = adminuserRemoveV1(token, uId);
   return res.json(result);
 });
 

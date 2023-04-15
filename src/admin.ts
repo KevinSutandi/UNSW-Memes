@@ -6,6 +6,7 @@ import {
 
 /**
  * User with permissionId == 1 can change the user with uId
+ * @param {string} token
  * @param {number} uId - user Id
  * @param {number} permissionId - permissionId
  * @returns { error : string } error - different error strings for different situations
@@ -62,5 +63,17 @@ export function adminuserPermissionChangeV1(token: string, uId: number, permissi
   // uIdfound.isGlobalOwner = permissionId;
   uIdfound.isGlobalOwner = permissionId;
   setData(data);
+  return {};
+}
+
+/**
+ * User with permissionId == 1 can change the user with uId
+ * @param {string} token
+ * @param {number} uId - user Id
+ * @param {number} permissionId - permissionId
+ * @returns { error : string } error - different error strings for different situations
+ * @returns {} - returns {} when successful
+ */
+export function adminuserRemoveV1(token: string, uId: number) {
   return {};
 }
