@@ -187,21 +187,18 @@ export function dmMessagesV1(token: string, dmId: number, start: number) {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   if (!isDm(dmId)) {
-    return { error: 'dmId does not refer to a valid DM' };
+    throw HTTPError(400, 'dmId does not refer to a valid DM');
   }
   if (!isDmMember(dmId, user.authUserId)) {
-    return { error: 'User is not a member of the DM' };
+    throw HTTPError(403, 'User is not a member of the DM');
   }
   const dmIndex = data.dm.findIndex((a) => a.dmId === dmId);
   const dmMessages = data.dm[dmIndex].messages.length;
   if (start > data.dm[dmIndex].messages.length) {
-    return {
-      error:
-        'start is greater than the total number of messages in the channel',
-    };
+    throw HTTPError(400, 'start is greater than the total number of messages in the channel');
   }
 
   const dm = findDm(dmId);
