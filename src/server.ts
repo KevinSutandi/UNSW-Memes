@@ -45,6 +45,7 @@ import {
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 import { standupActiveV1, standupSendV1, standupStartV1 } from './standup';
+import { adminuserPermissionChangeV1 } from './admin';
 
 // Set up web app
 const app = express();
@@ -165,6 +166,7 @@ app.get('/dm/messages/v1', (req: Request, res: Response, next) => {
   const result = dmMessagesV1(token, dmId, start);
   return res.json(result);
 });
+
 app.get('/dm/list/v1', (req: Request, res: Response, next) => {
   const token = req.query.token as string;
   const result = dmListV1(token);
@@ -273,6 +275,13 @@ app.post('/standup/send/v1', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
   const { channelId, message } = req.body;
   const result = standupSendV1(token, channelId, message);
+  return res.json(result);
+});
+
+app.post('/admin/userpermission/change/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { uId, permissionId } = req.body;
+  const result = adminuserPermissionChangeV1(token, uId, permissionId);
   return res.json(result);
 });
 

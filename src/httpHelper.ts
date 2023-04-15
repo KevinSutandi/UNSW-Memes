@@ -275,3 +275,13 @@ export function standUpSend(token: string, channelId: number, message: string) {
     { token }
   );
 }
+
+export function adminuserPermissionChange(token: string, uId: number, permissionId: number) {
+  return requestHelper('POST', '/admin/userpermission/change/v1',
+    {
+      uId,
+      permissionId,
+    },
+    { token }
+  );
+}
