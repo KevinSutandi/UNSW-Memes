@@ -258,7 +258,7 @@ describe('testing dmListV1', () => {
 
 // Remove an existing DM, so all members are no longer in the DM. This can only be done by the original creator of the DM.
 
-describe('testing dm remove', () => {
+describe('testing dmRemoveV1', () => {
   // test when token is invalid
   let user: AuthReturn, user2: AuthReturn, user3: AuthReturn;
   let dm: dmCreateReturn, dm2: dmCreateReturn;
@@ -284,16 +284,16 @@ describe('testing dm remove', () => {
     dm2 = dmCreate(user2.token, uIds2);
   });
   test('token is invalid', () => {
-    expect(dmRemove('asasd', dm.dmId)).toStrictEqual(ERROR);
+    expect(dmRemove('asasd', dm.dmId)).toStrictEqual(403);
   });
 
   // test when dmId isnt a valid DM
   test('invalid dmId', () => {
-    expect(dmRemove(user.token, dm.dmId + 1)).toStrictEqual(ERROR);
+    expect(dmRemove(user.token, dm.dmId + 1)).toStrictEqual(400);
   });
 
   test('valid dmId but user is not the creator', () => {
-    expect(dmRemove(user2.token, dm.dmId)).toStrictEqual(ERROR);
+    expect(dmRemove(user2.token, dm.dmId)).toStrictEqual(403);
   });
 
   test('valid input', () => {
