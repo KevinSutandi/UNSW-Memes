@@ -179,6 +179,14 @@ describe('Test error cases for standup with async', () => {
           uId: user1.authUserId,
           message: messageSent,
           timeSent: expect.any(Number),
+          isPinned: false,
+          reacts: [
+            {
+              reactId: 1,
+              uIds: [],
+              isThisUserReacted: false,
+            },
+          ],
         },
       ],
       start: 0,

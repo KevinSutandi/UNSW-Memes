@@ -259,6 +259,50 @@ export function setHandle(token: string, handleStr: string) {
   );
 }
 
+export function messagePinV1(token: string, messageId: number) {
+  return requestHelper(
+    'POST',
+    '/message/pin/v1',
+    {
+      messageId,
+    },
+    { token }
+  );
+}
+
+export function messageUnpinV1(token: string, messageId: number) {
+  return requestHelper(
+    'POST',
+    '/message/unpin/v1',
+    {
+      messageId,
+    },
+    { token }
+  );
+}
+
+export function searchV1(token: string, queryStr: string) {
+  return requestHelper(
+    'POST',
+    '/search/v1',
+    {
+      queryStr,
+    },
+    { token }
+  );
+}
+
+export function notificationsGetV1(token: string) {
+  return requestHelper(
+    'GET',
+    '/notifications/get/v1',
+    {},
+    {
+      token,
+    }
+  );
+}
+
 export function dmRemove(token: string, dmId: number) {
   return requestHelper('DELETE', '/dm/remove/v2', { dmId }, { token });
 }
@@ -298,6 +342,84 @@ export function standUpSend(token: string, channelId: number, message: string) {
     {
       channelId,
       message,
+    },
+    { token }
+  );
+}
+
+export function userProfileUploadPhoto(
+  token: string,
+  imgUrl: string,
+  xStart: number,
+  yStart: number,
+  xEnd: number,
+  yEnd: number
+) {
+  return requestHelper(
+    'POST',
+    '/user/profile/uploadphoto/v1',
+    {
+      imgUrl,
+      xStart,
+      yStart,
+      xEnd,
+      yEnd,
+    },
+    { token }
+  );
+}
+
+export function messageSendLater(
+  token: string,
+  channelId: number,
+  message: string,
+  timeSent: number
+) {
+  return requestHelper(
+    'POST',
+    '/message/sendlater/v1',
+    {
+      channelId,
+      message,
+      timeSent,
+    },
+    { token }
+  );
+}
+
+export function messageSendLaterDm(
+  token: string,
+  dmId: number,
+  message: string,
+  timeSent: number
+) {
+  return requestHelper(
+    'POST',
+    '/message/sendlaterdm/v1',
+    {
+      dmId,
+      message,
+      timeSent,
+    },
+    { token }
+  );
+}
+
+export function messageShare(
+  token: string,
+  ogMessageId: number,
+  message: string,
+  channelId: number,
+  dmId: number
+) {
+  return requestHelper(
+    'POST',
+    '/message/share/v1',
+    {
+      ogMessageId,
+      message,
+      channelId,
+      dmId,
     },
     { token }
   );
