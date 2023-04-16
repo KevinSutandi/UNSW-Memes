@@ -4,7 +4,13 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import errorHandler from 'middleware-http-errors';
-import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
+import {
+  authRegisterV1,
+  authLoginV1,
+  authLogoutV1,
+  passwordResetRequestV1,
+  passwordResetV1,
+} from './auth';
 
 import {
   channelsCreateV1,
@@ -27,6 +33,12 @@ import {
   messageEditV1,
   messageSendDmV1,
   messageSendLaterV1,
+  messagePinV1,
+  messageUnpinV1,
+  searchV1,
+  notificationsGetV1,
+  messageSendLaterDmV1,
+  messageShareV1,
 } from './message';
 import {
   setEmail,
@@ -34,6 +46,7 @@ import {
   setHandle,
   getAllUsers,
   userProfileV2,
+  userProfileUploadPhotoV1,
 } from './users';
 import {
   dmCreateV1,
@@ -55,6 +68,8 @@ app.use(json());
 app.use(cors());
 // for logging errors (print to terminal)
 app.use(morgan('dev'));
+
+app.use('/img', express.static('img'));
 
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
@@ -249,6 +264,33 @@ app.get('/user/profile/v3', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.post('/message/pin/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId } = req.body;
+  const result = messagePinV1(token, messageId);
+  return res.json(result);
+});
+
+app.post('/message/unpin/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId } = req.body;
+  const result = messageUnpinV1(token, messageId);
+  return res.json(result);
+});
+
+app.post('/search/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { queryStr } = req.body;
+  const result = searchV1(token, queryStr);
+  return res.json(result);
+});
+
+app.get('/notifications/get/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const result = notificationsGetV1(token);
+  return res.json(result);
+});
+
 app.delete('/dm/remove/v2', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
   const dmId = parseInt(req.query.dmId as string);
@@ -284,12 +326,60 @@ app.post('/standup/send/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.post(
+  '/user/profile/uploadphoto/v1',
+  (req: Request, res: Response, next) => {
+    const token = req.headers.token as string;
+    const { imgUrl, xStart, yStart, xEnd, yEnd } = req.body;
+    const result = userProfileUploadPhotoV1(
+      token,
+      imgUrl,
+      xStart,
+      yStart,
+      xEnd,
+      yEnd
+    );
+    return res.json(result);
+  }
+);
 app.post('/message/sendlater/v1', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
   const { channelId, message, timeSent } = req.body;
   const result = messageSendLaterV1(token, channelId, message, timeSent);
   return res.json(result);
 });
+
+app.post('/message/sendlaterdm/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { dmId, message, timeSent } = req.body;
+  const result = messageSendLaterDmV1(token, dmId, message, timeSent);
+  return res.json(result);
+});
+
+app.post('/message/share/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { ogMessageId, message, channelId, dmId } = req.body;
+  const result = messageShareV1(token, ogMessageId, message, channelId, dmId);
+  return res.json(result);
+});
+
+app.post(
+  '/auth/passwordreset/request/v1',
+  (req: Request, res: Response, next) => {
+    const { email } = req.body;
+    const result = passwordResetRequestV1(email);
+    return res.json(result);
+  }
+);
+
+app.post(
+  '/auth/passwordreset/reset/v1',
+  (req: Request, res: Response, next) => {
+    const { resetCode, newPassword } = req.body;
+    const result = passwordResetV1(resetCode, newPassword);
+    return res.json(result);
+  }
+);
 
 // start server
 const server = app.listen(PORT, HOST, () => {

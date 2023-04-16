@@ -1,14 +1,19 @@
 import validator from 'validator';
 import HTTPError from 'http-errors';
+import { port } from './config.json';
 import {
   findTokenIndex,
   getUserByToken,
   makeToken,
   HashingString,
   getUserIndexByToken,
+  findUserbyEmail,
+  findUserIndex,
+  downloadImage,
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
+const nodemailer = require('nodemailer');
 
 /**
  * Logs the user and then assigns a token to the user
@@ -117,6 +122,11 @@ export function authRegisterV1(
     isGlobalOwner = 1;
   }
 
+  downloadImage();
+
+  const PORT: number = parseInt(process.env.PORT || port);
+  const HOST: string = process.env.IP || 'localhost';
+
   dataStore.users.push({
     authUserId: authId,
     handleStr: handlestring,
@@ -125,7 +135,9 @@ export function authRegisterV1(
     nameFirst: nameFirst,
     nameLast: nameLast,
     isGlobalOwner: isGlobalOwner,
+    profileImgUrl: `http://${HOST}:${PORT}/img/default.jpg`,
     token: [{ token: token }],
+    notifications: [],
   });
 
   setData(dataStore);
@@ -147,6 +159,92 @@ export function authLogoutV1(token: string): Record<string, never> {
 
   const tokenIndex = findTokenIndex(user, token);
   data.users[userIndex].token.splice(tokenIndex, 1);
+  setData(data);
+  return {};
+}
+
+/**
+ * Sends a reset password code to the user's email
+ * @param {string} email - the user's email
+ */
+export function passwordResetRequestV1(email: string) {
+  const data = getData();
+  const user = findUserbyEmail(email);
+
+  if (user === undefined) {
+    return {};
+  }
+
+  const resetCode = Math.floor(Math.random() * 10000000).toString();
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'memesresetpass@gmail.com',
+      pass: 'flntujulglazqoju',
+    },
+  });
+
+  const mailOptions = {
+    from: 'memesresetpass@gmail.com',
+    to: email,
+    subject: 'Password reset request',
+    text: 'Your reset code is ' + resetCode,
+  };
+
+  transporter.sendMail(mailOptions, function (error: string) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent');
+    }
+  });
+
+  const codeIndex = data.resetCodes.findIndex(
+    (a) => a.authUserId === user.authUserId
+  );
+
+  // If the user hasnt requested a password reset before, just push the resetCode
+  // if the user has requested a password reset before, change the previous resetCode
+  if (codeIndex === -1) {
+    data.resetCodes.push({
+      authUserId: user.authUserId,
+      resetCode: resetCode,
+    });
+  } else {
+    data.resetCodes[codeIndex].resetCode = resetCode;
+  }
+
+  setData(data);
+  return {};
+}
+
+/**
+ * Resets the user's password if the reset password code is correct
+ * @param {string} resetCode - the reset code given from the email
+ * @param {string} newPassword - the new password
+ */
+export function passwordResetV1(resetCode: string, newPassword: string) {
+  const data = getData();
+
+  const codeIndex = data.resetCodes.findIndex(
+    (user) => user.resetCode === resetCode
+  );
+
+  if (codeIndex === -1) {
+    throw HTTPError(400, 'Invalid reset code');
+  }
+
+  if (newPassword.length < 6) {
+    throw HTTPError(400, 'Password is too short');
+  }
+
+  const userIndex = findUserIndex(data.resetCodes[codeIndex].authUserId);
+  const encryptedPassword = HashingString(newPassword);
+
+  data.users[userIndex].password = encryptedPassword;
+
+  data.resetCodes.splice(codeIndex, 1);
   setData(data);
   return {};
 }

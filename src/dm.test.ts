@@ -147,17 +147,17 @@ describe('testing dmDetailsV1', () => {
   });
 
   test('user token is not valid', () => {
-    expect(dmDetails('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmDetails('alminaaaaascnj', dm2.dmId)).toStrictEqual(403);
   });
 
   // test when dmId does not refer to valid dm
   test('dmId doesnt refer to a valid user', () => {
-    expect(dmDetails(user.token, dm1.dmId + 10)).toStrictEqual(ERROR);
+    expect(dmDetails(user.token, dm1.dmId + 10)).toStrictEqual(400);
   });
 
   // test when dmId is valid but authUser is not a member of dm
   test('dmId is valid but authUser is not member of DM', () => {
-    expect(dmDetails(user3.token, dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmDetails(user3.token, dm2.dmId)).toStrictEqual(403);
   });
 
   test('valid dm with one user', () => {
@@ -170,6 +170,7 @@ describe('testing dmDetailsV1', () => {
           handleStr: 'zombieibrahim',
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user.authUserId,
@@ -177,6 +178,7 @@ describe('testing dmDetailsV1', () => {
           handleStr: 'jonahmeggs',
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
+          profileImgUrl: expect.any(String),
         },
         {
           uId: user2.authUserId,
@@ -184,6 +186,7 @@ describe('testing dmDetailsV1', () => {
           handleStr: 'kevinsutandi',
           nameFirst: 'Kevin',
           nameLast: 'Sutandi',
+          profileImgUrl: expect.any(String),
         },
       ],
     });
@@ -255,7 +258,7 @@ describe('testing dmListV1', () => {
 
 // Remove an existing DM, so all members are no longer in the DM. This can only be done by the original creator of the DM.
 
-describe('testing dm remove', () => {
+describe('testing dmRemoveV1', () => {
   // test when token is invalid
   let user: AuthReturn, user2: AuthReturn, user3: AuthReturn;
   let dm: dmCreateReturn, dm2: dmCreateReturn;
@@ -281,16 +284,16 @@ describe('testing dm remove', () => {
     dm2 = dmCreate(user2.token, uIds2);
   });
   test('token is invalid', () => {
-    expect(dmRemove('asasd', dm.dmId)).toStrictEqual(ERROR);
+    expect(dmRemove('asasd', dm.dmId)).toStrictEqual(403);
   });
 
   // test when dmId isnt a valid DM
   test('invalid dmId', () => {
-    expect(dmRemove(user.token, dm.dmId + 1)).toStrictEqual(ERROR);
+    expect(dmRemove(user.token, dm.dmId + 1)).toStrictEqual(400);
   });
 
   test('valid dmId but user is not the creator', () => {
-    expect(dmRemove(user2.token, dm.dmId)).toStrictEqual(ERROR);
+    expect(dmRemove(user2.token, dm.dmId)).toStrictEqual(403);
   });
 
   test('valid input', () => {
@@ -446,15 +449,15 @@ describe('testing dmLeaveV1', () => {
   });
 
   test('dmId doesnt refer to a valid user', () => {
-    expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(ERROR);
+    expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(400);
   });
 
   test('dmId is valid but authUser is not member of DM', () => {
-    expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(403);
   });
 
   test('user token is not valid', () => {
-    expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(403);
   });
 
   test('One user leaves the DM, not the owner', () => {
