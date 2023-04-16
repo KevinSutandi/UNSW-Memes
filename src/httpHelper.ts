@@ -424,3 +424,16 @@ export function messageShare(
     { token }
   );
 }
+
+export function passwordResetRequest(email: string) {
+  return requestHelper('POST', '/auth/passwordreset/request/v1', {
+    email,
+  });
+}
+
+export function passwordResetReset(resetCode: string, newPassword: string) {
+  return requestHelper('POST', '/auth/passwordreset/reset/v1', {
+    resetCode,
+    newPassword,
+  });
+}

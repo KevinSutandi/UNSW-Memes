@@ -5,6 +5,7 @@ export function clearV1(): Record<string, never> {
   data.users = [];
   data.channels = [];
   data.dm = [];
+  data.resetCodes = [];
   removeImages();
   setData(data);
 

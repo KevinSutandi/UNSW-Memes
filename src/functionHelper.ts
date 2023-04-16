@@ -210,6 +210,10 @@ export function HashingString(string: string): string {
   return encryptedPassword;
 }
 
+export function findUserbyEmail(email: string) {
+  const data = getData();
+  return data.users.find((user) => user.email === email);
+}
 // make a function where user passes in imgUrl and stores in /img/ folder
 export function downloadImage(imgUrl?: string, name?: string) {
   let image = imgUrl;
