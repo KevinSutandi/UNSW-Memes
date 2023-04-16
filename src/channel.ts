@@ -105,20 +105,22 @@ export function channelJoinV1(
   const allMemberIds = getAllMemberIds(channel);
 
   if (user === undefined) {
-    return { error: 'Invalid user token' };
+    throw HTTPError(403, 'Invalid user token');
   }
 
   if (channel === undefined) {
-    return { error: 'Channel Not Found' };
+    throw HTTPError(400, 'Channel Not Found');
   }
 
   const uId = user.authUserId;
 
   if (allMemberIds.includes(uId) === true) {
-    return { error: 'User is already in channel' };
+    throw HTTPError(400, 'User is already in channel');
   }
+
+  // channel
   if (channel.isPublic === false && user.isGlobalOwner === 2) {
-    return { error: 'Channel is not public' };
+    throw HTTPError(403, 'Channel is not public');
   }
   const channelNum = getChannelIndex(channelId);
 
@@ -261,21 +263,20 @@ export function channelDetailsV1(token: string, channelId: number) {
  *                                    | user is not the channel member
  *                                    | User token is invalid
  */
-export function channelLeaveV1(
-  token: string,
-  channelId: number
-): object | errorMessage {
+export function channelLeaveV1(token: string, channelId: number) {
   const data = getData();
   const user = getUserByToken(token);
   if (!isChannel(channelId)) {
-    return { error: 'channelId does not refer to a valid channel' };
+    throw HTTPError(400, 'channelId does not refer to a valid channel');
   }
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
+  // if the user with auth is the
+
   // If the user is not a member of the channel
   if (!isChannelMember(channelId, user.authUserId)) {
-    return { error: user.authUserId + ' is not a member of the channel' };
+    throw HTTPError(403, user.authUserId + ' is not a member of the channel');
   }
 
   const channelIndex = data.channels.findIndex(
@@ -292,7 +293,6 @@ export function channelLeaveV1(
   }
 
   data.channels[channelIndex].allMembers.splice(userMemberIndex, 1);
-
   setData(data);
   return {};
 }
@@ -314,27 +314,27 @@ export function channelAddOwnerV1(
 
   // Error checking
   if (!isChannel(channelId)) {
-    return { error: 'channelId does not refer to a valid channel' };
+    throw HTTPError(400, 'channelId does not refer to a valid channel');
   }
 
   if (uIdfound === undefined) {
-    return { error: 'Invalid uId' };
+    throw HTTPError(400, 'Invalid uId');
   }
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
 
   if (!isChannelMember(channelId, uId)) {
-    return { error: ' is not a member of the channel' };
+    throw HTTPError(400, 'User is not a member of the channel');
   }
 
   if (isChannelOwner(uId, channelId)) {
-    return { error: user.authUserId + ' is already owner of this channel' };
+    throw HTTPError(400, user.authUserId + ' is already owner of this channel');
   }
 
   if (!isChannelOwner(user.authUserId, channelId) && user.isGlobalOwner === 2) {
-    return { error: user.authUserId + 'has no owner permission' };
+    throw HTTPError(403, user.authUserId + 'has no owner permission');
   }
 
   // owner adds the user with uId to the ownermembers and allmembers of the channel
@@ -369,34 +369,34 @@ export function channelRemoveOwnerV1(
   const channelfound = data.channels.find((a) => a.channelId === channelId);
 
   if (!isChannel(channelId)) {
-    return { error: 'channelId does not refer to a valid channel' };
+    throw HTTPError(400, 'channelId does not refer to a valid channel');
   }
   // invalid uId
   if (uIdfound === undefined) {
-    return { error: 'Invalid uId' };
+    throw HTTPError(400, 'Invalid uId');
   }
   // invalid token
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
 
-  // Check if user is in the channel
-  if (!isChannelMember(channelId, uId)) {
-    return { error: ' is not a member of the channel' };
-  }
+  // // Check if user is in the channel
+  // if (!isChannelMember(channelId, uId)) {
+  //   throw HTTPError(400, ' is not a member of the channel');
+  // }
 
   // uId user is not owner of the channel
   if (!isChannelOwner(uId, channelId)) {
-    return { error: user.authUserId + ' is not owner of this channel' };
+    throw HTTPError(400, user.authUserId + ' is not owner of this channel');
   }
   // user with token is neither channel owner nor the global owner
   // global owner if 1
   if (!isChannelOwner(user.authUserId, channelId) && user.isGlobalOwner !== 1) {
-    return { error: user.authUserId + ' has no owner permission' };
+    throw HTTPError(403, user.authUserId + ' has no owner permission');
   }
   // the owner is the only one in the channel
   if (channelfound.ownerMembers.length === 1) {
-    return { error: user.authUserId + 'is the only owner' };
+    throw HTTPError(400, user.authUserId + 'is the only owner');
   }
 
   // owner removes the other owner with uId from channel
