@@ -159,9 +159,9 @@ describe('userProfileUploadPhoto testing', () => {
     );
   });
 
-  // afterEach(() => {
-  //   clearV1();
-  // });
+  afterEach(() => {
+    clearV1();
+  });
 
   const validImgUrl = 'http://i.redd.it/v0caqchbtn741.jpg';
   const invalidPNG = 'https://i.imgur.com/2SbRPiD.jpeg';
