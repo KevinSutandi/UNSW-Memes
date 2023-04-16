@@ -11,8 +11,6 @@ import {
 } from './httpHelper';
 import { AuthReturn, dmCreateReturn } from './interfaces';
 
-const ERROR = { error: expect.any(String) };
-
 describe('testing dmCreateV1', () => {
   let user: AuthReturn;
   beforeEach(() => {
