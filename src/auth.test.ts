@@ -363,4 +363,15 @@ describe('password reset', () => {
       expect.any(Object)
     );
   });
+
+  test('valid input, user requested twice', () => {
+    expect(passwordResetRequest('kevins050@gmail.com')).toStrictEqual({});
+    expect(passwordResetRequest('kevins050@gmail.com')).toStrictEqual({});
+    const data = getData();
+    const resetCode = data.resetCodes[0].resetCode;
+    expect(passwordResetReset(resetCode, 'newhardpassword')).toStrictEqual({});
+    expect(userProfile(user.token, user.authUserId)).toStrictEqual(
+      expect.any(Object)
+    );
+  });
 });
