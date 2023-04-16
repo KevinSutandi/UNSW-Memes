@@ -276,7 +276,7 @@ export function dmListV1(token: string): dmListReturn | errorMessage {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
 
   const authUserIdToFind = user.authUserId;
