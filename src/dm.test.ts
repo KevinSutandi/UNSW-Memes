@@ -147,17 +147,17 @@ describe('testing dmDetailsV1', () => {
   });
 
   test('user token is not valid', () => {
-    expect(dmDetails('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmDetails('alminaaaaascnj', dm2.dmId)).toStrictEqual(403);
   });
 
   // test when dmId does not refer to valid dm
   test('dmId doesnt refer to a valid user', () => {
-    expect(dmDetails(user.token, dm1.dmId + 10)).toStrictEqual(ERROR);
+    expect(dmDetails(user.token, dm1.dmId + 10)).toStrictEqual(400);
   });
 
   // test when dmId is valid but authUser is not a member of dm
   test('dmId is valid but authUser is not member of DM', () => {
-    expect(dmDetails(user3.token, dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmDetails(user3.token, dm2.dmId)).toStrictEqual(403);
   });
 
   test('valid dm with one user', () => {
@@ -212,7 +212,7 @@ describe('testing dmListV1', () => {
   });
   // test when there are multiple dms in the list
   test('the token taken is invalid', () => {
-    expect(dmList('alminaaaaascnj')).toStrictEqual(ERROR);
+    expect(dmList('alminaaaaascnj')).toStrictEqual(403);
   });
 
   test('valid user but there are no dms in the list', () => {
@@ -449,15 +449,15 @@ describe('testing dmLeaveV1', () => {
   });
 
   test('dmId doesnt refer to a valid user', () => {
-    expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(ERROR);
+    expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(400);
   });
 
   test('dmId is valid but authUser is not member of DM', () => {
-    expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(403);
   });
 
   test('user token is not valid', () => {
-    expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(ERROR);
+    expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(403);
   });
 
   test('One user leaves the DM, not the owner', () => {
