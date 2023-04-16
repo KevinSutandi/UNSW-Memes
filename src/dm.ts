@@ -240,13 +240,13 @@ export function dmDetailsV1(token: string, dmId: number) {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   if (!isDm(dmId)) {
-    return { error: 'dmId does not refer to a valid DM' };
+    throw HTTPError(400, 'dmId does not refer to a valid DM');
   }
   if (!isDmMember(dmId, user.authUserId)) {
-    return { error: user.authUserId + ' is not a member of the DM' };
+    throw HTTPError(403, user.authUserId + ' is not a member of the DM');
   }
 
   const dmObject = findDm(dmId);
@@ -273,7 +273,7 @@ export function dmListV1(token: string): dmListReturn | errorMessage {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
 
   const authUserIdToFind = user.authUserId;
@@ -292,16 +292,16 @@ export function dmRemoveV1(token: string, dmId: number) {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   const dmIndex = data.dm.findIndex((item) => item.dmId === dmId);
   if (dmIndex === -1) {
-    return { error: 'dmId does not refer to a valid DM' };
+    throw HTTPError(400, 'dmId does not refer to a valid DM');
   }
   if (
     !data.dm[dmIndex].ownerMembers.some((item) => item.uId === user.authUserId)
   ) {
-    return { error: 'User is not the original creator' };
+    throw HTTPError(403, 'User is not the original creator');
   }
   data.dm.splice(dmIndex, 1);
   setData(data);
@@ -328,13 +328,13 @@ export function dmLeaveV1(token: string, dmId: number) {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   if (!isDm(dmId)) {
-    return { error: 'dmId does not refer to a valid DM' };
+    throw HTTPError(400, 'dmId does not refer to a valid DM');
   }
   if (!isDmMember(dmId, user.authUserId)) {
-    return { error: user.authUserId + ' is not a member of the DM' };
+    throw HTTPError(403, user.authUserId + ' is not a member of the DM');
   }
 
   const dmIndex = data.dm.findIndex((item) => item.dmId === dmId);
