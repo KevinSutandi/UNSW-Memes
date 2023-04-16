@@ -50,6 +50,7 @@ export function channelsCreateV1(
         email: user.email,
         nameFirst: user.nameFirst,
         nameLast: user.nameLast,
+        profileImgUrl: user.profileImgUrl,
       },
     ],
     allMembers: [
@@ -59,6 +60,7 @@ export function channelsCreateV1(
         email: user.email,
         nameFirst: user.nameFirst,
         nameLast: user.nameLast,
+        profileImgUrl: user.profileImgUrl,
       },
     ],
     messages: [],
@@ -66,6 +68,7 @@ export function channelsCreateV1(
       standUpActive: false,
       standUpLength: 0,
       standUpMessage: [],
+      standUpOwner: -1,
     },
     start: 0,
     end: 0,

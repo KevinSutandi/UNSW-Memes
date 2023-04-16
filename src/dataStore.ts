@@ -1,16 +1,24 @@
 import fs from 'fs';
-import { newData, userData, channelData, dmData } from './interfaces';
+import {
+  newData,
+  userData,
+  channelData,
+  dmData,
+  resetCode,
+} from './interfaces';
 
 export let data: {
   users: userData[];
   channels: channelData[];
   dm: dmData[];
   secret: string;
+  resetCodes: resetCode[];
 } = {
   users: [],
   channels: [],
   dm: [],
   secret: 'KEVINHINDIEALMINAELSHIBO2394850-92840)_(*%&)_($#&()*',
+  resetCodes: [],
 };
 
 // YOU SHOULDNT NEED TO MODIFY THE FUNCTIONS BELOW IN ITERATION 1
