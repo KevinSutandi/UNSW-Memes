@@ -331,13 +331,13 @@ export function dmLeaveV1(token: string, dmId: number) {
   const user = getUserByToken(token);
 
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   if (!isDm(dmId)) {
-    return { error: 'dmId does not refer to a valid DM' };
+    throw HTTPError(400, 'dmId does not refer to a valid DM');
   }
   if (!isDmMember(dmId, user.authUserId)) {
-    return { error: user.authUserId + ' is not a member of the DM' };
+    throw HTTPError(403, user.authUserId + ' is not a member of the DM');
   }
 
   const dmIndex = data.dm.findIndex((item) => item.dmId === dmId);
