@@ -33,6 +33,7 @@ import {
   notificationsGetV1,
   messageSendLaterDmV1,
   messageShareV1,
+  messageReactV1
 } from './message';
 import {
   setEmail,
@@ -370,6 +371,13 @@ app.delete('/admin/user/remove/v1', (req: Request, res: Response, next) => {
   const uId = parseInt(req.query.uId as string);
   const uId = req.body;
   const result = adminuserRemoveV1(token, uId);
+  return res.json(result);
+});
+
+app.post('/message/react/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId, reactId } = req.body;
+  const result = messageReactV1(token, messageId, reactId);
   return res.json(result);
 });
 

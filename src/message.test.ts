@@ -18,8 +18,9 @@ import {
   messageSendLaterDm,
   messageShare,
   channelInvite,
+  messageReact,
 } from './httpHelper';
-import { AuthReturn } from './interfaces';
+import { AuthReturn, newMessageReturn } from './interfaces';
 
 const badrequest = 400;
 const forbidden = 403;
@@ -27,6 +28,7 @@ const forbidden = 403;
 describe('testing sendMessages', () => {
   let user1: AuthReturn;
   let channel1: { channelId: number };
+  let message1: newMessageReturn;
   beforeEach(() => {
     clearV1();
     user1 = authRegister(
@@ -1616,5 +1618,43 @@ describe('testing notifications', () => {
         },
       ],
     });
+  });
+});
+
+// givenn a message within a channels or DM the authorised user, adding react to that message
+describe('testing message react', () => {
+  let user1: AuthReturn;
+  let channel1: { channelId: number };
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    channel1 = channelsCreate(user1.token, 'wego', true);
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('token is invalid', () => {
+    expect(messageReactV1(user1.token + 2, message1.messageId, reactId)).toBe(403);
+  });
+
+  test('messageId is invalid', () => {
+    expect(messageReactV1(user1.token, message1.messageId + 1, reactId)).toBe(400);
+  });
+
+  test('reactId is invalid', () => {
+    expect(messageReactV1(user1.token, message1.messageId, reactId + 3)).toBe(400);
+  });
+
+  // message already contained the react that sent from the authorised user
+  test('react already sent', () => {
+    messageReactV1(user1.token, message1.messageId, reactId);
+    expect(messageReactV1(user1.token, message1.messageId, reactId)).toBe(400);
   });
 });

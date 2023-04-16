@@ -48,7 +48,7 @@ export function adminuserPermissionChangeV1(token: string, uId: number, permissi
   if (permissionId !== 1 && permissionId !== 2) {
     throw HTTPError(400, 'Invalid permissionId');
   }
-  if (uIdfound.isglobalowner === permissionId) {
+  if (uIdfound.isGlobalOwner === permissionId) {
     throw HTTPError(400, 'User already in permission level');
   }
 

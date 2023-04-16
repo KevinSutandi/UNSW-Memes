@@ -338,6 +338,16 @@ export function adminuserRemove(token: string, uId: number) {
   );
 }
 
+export function messageReact(token: string, messageId: number, reactId: number) {
+  return requestHelper('POST', '/message/react/v1',
+    {
+      messageId,
+      reactId,
+    },
+    { token }
+  );
+}
+
 export function standUpStart(token: string, channelId: number, length: number) {
   return requestHelper(
     'POST',
@@ -442,4 +452,17 @@ export function messageShare(
     },
     { token }
   );
+}
+
+export function passwordResetRequest(email: string) {
+  return requestHelper('POST', '/auth/passwordreset/request/v1', {
+    email,
+  });
+}
+
+export function passwordResetReset(resetCode: string, newPassword: string) {
+  return requestHelper('POST', '/auth/passwordreset/reset/v1', {
+    resetCode,
+    newPassword,
+  });
 }
