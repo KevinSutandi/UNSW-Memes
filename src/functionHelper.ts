@@ -218,7 +218,8 @@ export function findUserbyEmail(email: string) {
 export function downloadImage(imgUrl?: string, name?: string) {
   let image = imgUrl;
   if (name === undefined && imgUrl === undefined) {
-    image = 'https://i.imgur.com/NtfLP7K.jpg';
+    image =
+      'https://static.wikia.nocookie.net/joke-battles/images/b/b5/The_Screaming_Cat.jpg';
     name = 'default.jpg';
   }
 
