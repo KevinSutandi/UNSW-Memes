@@ -22,7 +22,7 @@ export interface messagesObject {
   message: string;
   timeSent: number;
   isPinned: boolean;
-  reacts?: Array<reactsObject>;
+  reacts: Array<reactsObject>;
 }
 
 /**
