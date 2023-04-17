@@ -319,6 +319,16 @@ export function messageSendDm(token: string, dmId: number, message: string) {
   );
 }
 
+export function adminuserPermissionChange(token: string, uId: number, permissionId: number) {
+  return requestHelper('POST', '/admin/userpermission/change/v1',
+    {
+      uId,
+      permissionId,
+    },
+    { token }
+  );
+}
+
 export function standUpStart(token: string, channelId: number, length: number) {
   return requestHelper(
     'POST',
