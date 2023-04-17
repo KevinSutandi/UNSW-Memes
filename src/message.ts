@@ -12,8 +12,6 @@ import {
   getChannelIndex,
   getDmIndex,
   getUserByToken,
-  findMessageInChannel,
-  findMessageInDm,
 } from './functionHelper';
 import HTTPError from 'http-errors';
 import {
@@ -752,20 +750,16 @@ export function messageReactV1(token: string, messageId: number, reactId: number
   const data = getData();
   const tokenFound = getUserByToken(token);
 
-  const reactedChannel = findMessageInChannel(messageId);
-  const reactedDm = findMessageInDm(messageId);
+  const reactedChannel = findChannelByMessageId(messageId);
+  const reactedDm = findDMbyMessageId(messageId);
 
   if (tokenFound === undefined) {
     throw HTTPError(403, 'Invalid token');
   }
-  // message id
-  // const messageIdFound = data.channels.some(channel => {
-  //   return channel.messages.some((message) => message.messageId === messageId);
-  // });
 
-  // if (reactedChannel === undefined && reactedDm === undefined) {
-  //  throw HTTPError(400, 'Invalid messageid');
-  // }
+  if (reactedChannel === undefined && reactedDm === undefined) {
+   throw HTTPError(400, 'Invalid messageid');
+  }
 
   // react id
   if (reactId !== 1) {
@@ -773,67 +767,54 @@ export function messageReactV1(token: string, messageId: number, reactId: number
   }
 
   if (reactedChannel !== undefined) {
-    if (reactedChannel.messages.reacts && reactedChannel.messages.reacts.uIds.includes(tokenFound.authUserId)) {
+    const reactedChannelId = reactedChannel.channelId;
+    const messageObj = findMessageInChannel(messageId, reactedChannelId);
+    // Reaction ID maps to index in array
+    if (messageObj.reacts && messageObj.reacts[reactId - 1].uIds.includes(tokenFound.authUserId)) {
       throw HTTPError(400, 'User has already reacted in channel!');
-    } else if (reactedChannel.messages.reacts) {
-      reactedChannel.messages.reacts.uIds.push(tokenFound);
+    } 
+    else if (messageObj.reacts) {
+      messageObj.reacts[reactId - 1].uIds.push(tokenFound.authUserId);
       const notification: notification = {
         dmId: -1,
         channelId: reactedChannel.channelId,
         notificationMessage: `${tokenFound.handleStr} reacted to your message in ${
           reactedChannel.name
-        }: ${reactedChannel.messages.message.slice(0, 20)}`,
+        }: ${messageObj.message.slice(0, 20)}`,
       };
       tokenFound.notifications.push(notification);
-    } else {
-      reactedChannel.messages.reacts = [];
-      reactedChannel.messages.reacts.push({
+    } 
+    else {
+      messageObj.reacts = [];
+      messageObj.reacts[reactId - 1].uIds.push(tokenFound.authUserId);
+      messageObj.reacts.push({
         reactId: reactId,
-        uIds: [tokenFound],
+        uIds: [tokenFound.authUserId],
         isThisUserReacted: false,
       });
-      const notification: notification = {
-        dmId: -1,
-        channelId: reactedChannel.channelId,
-        notificationMessage: `${tokenFound.handleStr} reacted to your message in ${
-          reactedChannel.name
-        }: ${reactedChannel.messages.message.slice(0, 20)}`,
-      };
-      tokenFound.notifications.push(notification);
-    }
-  }
 
-  if (reactedDm !== undefined) {
-    if (reactedDm.messages.reacts && reactedDm.messages.reacts.uIds.includes(tokenFound)) {
-      throw HTTPError(400, 'User has already reacted in dm!');
-    } else if (reactedDm.messages.reacts) {
-      reactedDm.messages.reacts.uIds.push(tokenFound);
       const notification: notification = {
-        channelId: -1,
-        dmId: reactedDm.dmId,
+        dmId: -1,
+        channelId: reactedChannel.channelId,
         notificationMessage: `${tokenFound.handleStr} reacted to your message in ${
-          reactedDm.name
-        }: ${reactedChannel.messages.message.slice(0, 20)}`,
+          reactedChannel.name
+        }: ${messageObj.message.slice(0, 20)}`,
       };
-      tokenFound.notifications.push(notification);
-    } else {
-      messages.reacts = [];
-      messages.reacts.push({
-        reactId: reactId,
-        uIds: [tokenFound],
-        isThisUserReacted: false,
-      });
-      const notification: notification = {
-        channelId: -1,
-        dmId: reactedDm.dmId,
-        notificationMessage: `${tokenFound.handleStr} reacted to your message in ${
-          reactedDm.name
-        }: ${reactedChannel.messages.message.slice(0, 20)}`,
-      };
+
       tokenFound.notifications.push(notification);
     }
   }
 
   setData(data);
   return {};
+}
+
+function findMessageInChannel(
+  messageId: number,
+  channelId: number,
+): messages {
+  const data = getData();
+  const channelFound = data.channels.find((channel) => channel.channelId === channelId);
+  const messageFound = channelFound.messages.find((message) => message.messageId === messageId);
+  return messageFound;
 }

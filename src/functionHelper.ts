@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import request from 'sync-request';
-import { channelData, dmData, userData } from './interfaces';
+import { channelData, dmData, messagesObject, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 // import { data } from './dataStore';
 
@@ -240,23 +240,24 @@ export function downloadImage(imgUrl?: string, name?: string) {
   fs.writeFileSync(path.join(dir, name), img, { flag: 'w' });
 }
 
-export function findMessageInChannel(
-  messageId: number
-): channelData | undefined {
-  const data = getData();
-  data.channels.forEach(channel => {
-    return channel.messages.find((message) => message.messageId === messageId);
-  });
-}
+// export function findMessageInChannel(
+//   messageId: number,
+//   channelId: number,
+// ): messagesObject | undefined {
+//   const data = getData();
+//   const channelFound = data.channels.find(channel => channel.channelId === channelId);
+//   const messageFound = channelFound.messages.find(message => message.messageId === messageId);
+//   return messageFound;
+// }
 
-export function findMessageInDm(
-  messageId: number
-): dmData | undefined {
-  const data = getData();
-  data.dm.forEach(dm => {
-    return dm.messages.find((message) => message.messageId === messageId);
-  });
-}
+// export function findMessageInDm(
+//   messageId: number
+// ): dmData | undefined {
+//   const data = getData();
+//   data.dm.forEach(dm => {
+//     return dm.messages.find((message) => message.messageId === messageId);
+//   });
+// }
 
 export function updateAllData(
   dataPoint: string,
