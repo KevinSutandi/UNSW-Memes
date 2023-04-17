@@ -929,6 +929,9 @@ export function messageUnreactV1(
 
   if (flags === channel) {
     // if user is not in the uids array
+    if (data.channels[index].messages[messageIndex].reacts.length === 0) {
+      throw HTTPError(400, 'There is no reaction to remove');
+    }
     if (
       !data.channels[index].messages[messageIndex].reacts[0].uIds.includes(
         tokenFound.authUserId
@@ -966,6 +969,10 @@ export function messageUnreactV1(
       data.channels[index].messages[messageIndex].reacts = [];
     }
   } else {
+    if (data.dm[index].messages[messageIndex].reacts.length === 0) {
+      throw HTTPError(400, 'There is no reaction to remove');
+    }
+
     // if user is not in the uids array
     if (
       !data.dm[index].messages[messageIndex].reacts[0].uIds.includes(
