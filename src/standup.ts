@@ -8,6 +8,13 @@ import {
   getUserByToken,
 } from './functionHelper';
 
+/**
+ *
+ * @param token - token of user starting standup
+ * @param channelId - channel id of channel to start standup in
+ * @param length - length of standup in seconds
+ * @returns {timeFinish: number} - timeFinish is the time the standup will finish
+ */
 export function standupStartV1(
   token: string,
   channelId: number,
@@ -53,6 +60,13 @@ export function standupStartV1(
   return { timeFinish: timeFinish };
 }
 
+/**
+ *
+ * @param token - token of user making request
+ * @param channelId - channel id of channel to check standup in
+ * @returns {isActive: boolean, timeFinish: number} - isActive is true if standup is active, false otherwise,
+ *                                                    timeFinish is the time the standup will finish
+ */
 export function standupActiveV1(token: string, channelId: number) {
   const user = getUserByToken(token);
   const channel = findChannel(channelId);
@@ -79,6 +93,13 @@ export function standupActiveV1(token: string, channelId: number) {
   };
 }
 
+/**
+ *
+ * @param token - token of user sending message
+ * @param channelId - channel id of channel to send message in
+ * @param message - message to send
+ * @returns {}
+ */
 export function standupSendV1(
   token: string,
   channelId: number,
@@ -136,6 +157,12 @@ export function standupSendV1(
   return {};
 }
 
+/**
+ *
+ * @param token - token of user
+ * @param channelId - id of channel
+ * @returns
+ */
 function standUpEnd(token: string, channelId: number) {
   const channelIndex = getChannelIndex(channelId);
   const user = getUserByToken(token);

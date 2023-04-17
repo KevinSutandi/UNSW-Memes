@@ -71,7 +71,7 @@ app.use(json());
 app.use(cors());
 // for logging errors (print to terminal)
 app.use(morgan('dev'));
-
+// for image use
 app.use('/img', express.static('img'));
 
 const PORT: number = parseInt(process.env.PORT || config.port);

@@ -534,6 +534,14 @@ export function notificationsGetV1(token: string) {
   return { notifications: notificationsSliced };
 }
 
+/**
+ *
+ * @param token - The token of the user sending the message.
+ * @param channelId - The ID of the channel to which the message is being sent.
+ * @param message - The message to be sent.
+ * @param timeSent - The time at which the message is to be sent.
+ * @returns {messageId: number}
+ */
 export function messageSendLaterV1(
   token: string,
   channelId: number,
@@ -587,6 +595,14 @@ export function messageSendLaterV1(
   return { messageId: messageId };
 }
 
+/**
+ *
+ * @param token - The token of the user sending the message.
+ * @param dmId - The ID of the DM to which the message is being sent.
+ * @param message - The message to be sent.
+ * @param timeSent - The time at which the message is to be sent.
+ * @returns {messageId: number} - The ID of the message that was sent.
+ */
 export function messageSendLaterDmV1(
   token: string,
   dmId: number,
@@ -638,6 +654,15 @@ export function messageSendLaterDmV1(
   return { messageId: messageId };
 }
 
+/**
+ *
+ * @param token - The token of the user sending the message.
+ * @param ogMessageId - The ID of the message being shared.
+ * @param message - The message to be sent.
+ * @param channelId - The ID of the channel to which the message is being sent or -1 if DM
+ * @param dmId - The ID of the DM to which the message is being sent or -1 if channel
+ * @returns {sharedMessageId: number}
+ */
 export function messageShareV1(
   token: string,
   ogMessageId: number,
@@ -723,7 +748,13 @@ export function messageShareV1(
     return { sharedMessageId: sharedMessageId };
   }
 }
-
+/**
+ *
+ * @param token - The token of the user sending the message.
+ * @param messageId - The ID of the message being reacted to.
+ * @param reactId - The ID of the react.
+ * @returns
+ */
 export function messageReactV1(
   token: string,
   messageId: number,
@@ -884,6 +915,13 @@ export function messageReactV1(
   return {};
 }
 
+/**
+ *
+ * @param token - user token making request
+ * @param messageId - message id of message to unreact to
+ * @param reactId - react id of react to unreact to
+ * @returns
+ */
 export function messageUnreactV1(
   token: string,
   messageId: number,
