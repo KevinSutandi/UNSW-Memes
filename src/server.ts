@@ -373,6 +373,20 @@ app.delete('/admin/user/remove/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
+app.post('/message/react/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId, reactId } = req.body;
+  const result = messageReactV1(token, messageId, reactId);
+  return res.json(result);
+});
+
+app.post('/message/unreact/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId, reactId } = req.body;
+  const result = messageUnreactV1(token, messageId, reactId);
+  return res.json(result);
+});
+
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE

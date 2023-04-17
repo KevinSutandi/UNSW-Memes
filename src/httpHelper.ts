@@ -350,6 +350,33 @@ export function standUpStart(token: string, channelId: number, length: number) {
   );
 }
 
+export function messageReact(token: string, messageId: number, reactId: number) {
+  return requestHelper('POST', '/message/react/v1',
+    {
+      messageId,
+      reactId,
+    },
+    { token }
+  );
+}
+
+export function messageUnReact(
+  token: string,
+  messageId: number,
+  reactId: number
+) {
+  return requestHelper(
+    'POST',
+    '/message/unreact/v1',
+    {
+      messageId,
+      reactId,
+    },
+    { token }
+  );
+}
+
+
 export function standUpActive(token: string, channelId: number) {
   return requestHelper('GET', '/standup/active/v1', { channelId }, { token });
 }

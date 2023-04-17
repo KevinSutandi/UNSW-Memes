@@ -741,3 +741,12 @@ export function messageShareV1(
     return { sharedMessageId: sharedMessageId };
   }
 }
+
+export function messageUnreactV1(
+  token: string,
+  messageId: number,
+  reactId: number
+) {
+
+return {};
+}
