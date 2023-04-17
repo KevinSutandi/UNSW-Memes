@@ -4,7 +4,13 @@ import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import errorHandler from 'middleware-http-errors';
-import { authRegisterV1, authLoginV1, authLogoutV1 } from './auth';
+import {
+  authRegisterV1,
+  authLoginV1,
+  authLogoutV1,
+  passwordResetRequestV1,
+  passwordResetV1,
+} from './auth';
 
 import {
   channelsCreateV1,
@@ -75,10 +81,6 @@ app.get('/echo', (req: Request, res: Response, next) => {
   const data = req.query.echo as string;
   return res.json(echo(data));
 });
-
-// Keep this BENEATH route definitions
-// handles errors nicely
-app.use(errorHandler());
 
 app.post('/auth/login/v3', (req: Request, res: Response, next) => {
   const { email, password } = req.body;
@@ -359,12 +361,37 @@ app.post('/message/share/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.post('/admin/userpermission/change/v1', (req: Request, res: Response, next) => {
-  const token = req.headers.token as string;
-  const { uId, permissionId } = req.body;
-  const result = adminuserPermissionChangeV1(token, uId, permissionId);
-  return res.json(result);
-});
+app.post(
+  '/admin/userpermission/change/v1',
+  (req: Request, res: Response, next) => {
+    const token = req.headers.token as string;
+    const { uId, permissionId } = req.body;
+    const result = adminuserPermissionChangeV1(token, uId, permissionId);
+    return res.json(result);
+  }
+);
+
+app.post(
+  '/auth/passwordreset/request/v1',
+  (req: Request, res: Response, next) => {
+    const { email } = req.body;
+    const result = passwordResetRequestV1(email);
+    return res.json(result);
+  }
+);
+
+app.post(
+  '/auth/passwordreset/reset/v1',
+  (req: Request, res: Response, next) => {
+    const { resetCode, newPassword } = req.body;
+    const result = passwordResetV1(resetCode, newPassword);
+    return res.json(result);
+  }
+);
+
+// Keep this BENEATH route definitions
+// handles errors nicely
+app.use(errorHandler());
 
 app.delete('/admin/user/remove/v1', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;

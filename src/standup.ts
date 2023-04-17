@@ -181,6 +181,7 @@ function standUpEnd(token: string, channelId: number) {
   standUp.standUpActive = false;
   standUp.standUpLength = 0;
   standUp.standUpMessage = [];
+  standUp.standUpOwner = -1;
 
   setData(data);
 }

@@ -1,4 +1,4 @@
-import { getData } from './dataStore';
+import { getData, setData } from './dataStore';
 import request from 'sync-request';
 import { channelData, dmData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
@@ -210,11 +210,16 @@ export function HashingString(string: string): string {
   return encryptedPassword;
 }
 
+export function findUserbyEmail(email: string) {
+  const data = getData();
+  return data.users.find((user) => user.email === email);
+}
 // make a function where user passes in imgUrl and stores in /img/ folder
 export function downloadImage(imgUrl?: string, name?: string) {
   let image = imgUrl;
   if (name === undefined && imgUrl === undefined) {
-    image = 'https://i.imgur.com/NtfLP7K.jpg';
+    image =
+      'https://static.wikia.nocookie.net/joke-battles/images/b/b5/The_Screaming_Cat.jpg';
     name = 'default.jpg';
   }
 
@@ -251,4 +256,42 @@ export function findMessageInDm(
   data.dm.forEach(dm => {
     return dm.messages.find((message) => message.messageId === messageId);
   });
+}
+
+export function updateAllData(
+  dataPoint: string,
+  authUserId: number,
+  flags: string
+) {
+  const data = getData();
+
+  data.channels.forEach((channel) => {
+    channel.ownerMembers.forEach((ownerMember) => {
+      if (ownerMember.uId === authUserId) {
+        ownerMember[flags] = dataPoint;
+      }
+    });
+    channel.allMembers.forEach((allMember) => {
+      if (allMember.uId === authUserId) {
+        allMember[flags] = dataPoint;
+      }
+    });
+  });
+
+  data.dm.forEach((dm) => {
+    dm.ownerMembers.forEach((ownerMember) => {
+      if (ownerMember.uId === authUserId) {
+        ownerMember[flags] = dataPoint;
+      }
+    });
+    dm.allMembers.forEach((member) => {
+      if (member.uId === authUserId) {
+        console.log(member[flags]);
+        member[flags] = dataPoint;
+        console.log(member[flags]);
+      }
+    });
+  });
+
+  setData(data);
 }

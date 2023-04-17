@@ -12,6 +12,7 @@ import {
   channelJoin,
   channelDetails,
   dmDetails,
+  channelAddOwner,
 } from './httpHelper';
 import { AuthReturn } from './interfaces';
 import { port } from './config.json';
@@ -217,8 +218,9 @@ describe('userProfileUploadPhoto testing', () => {
     );
     const channel1 = channelsCreate(user.token, 'channel1', true);
     channelJoin(user2.token, channel1.channelId);
+    channelAddOwner(user.token, channel1.channelId, user2.authUserId);
     const dm1 = dmCreate(user.token, [user2.authUserId]);
-    // const dm2 = dmCreate(user2.token, [user.authUserId]);
+    const dm2 = dmCreate(user2.token, [user.authUserId]);
     const PORT: number = parseInt(process.env.PORT || port);
     const HOST: string = process.env.IP || 'localhost';
 
@@ -230,6 +232,10 @@ describe('userProfileUploadPhoto testing', () => {
       channelDetails(user.token, channel1.channelId).ownerMembers[0]
         .profileImgUrl
     ).not.toStrictEqual(`http://${HOST}:${PORT}/img/default.jpg`);
+    expect(
+      channelDetails(user.token, channel1.channelId).ownerMembers[1]
+        .profileImgUrl
+    ).toStrictEqual(`http://${HOST}:${PORT}/img/default.jpg`);
     expect(
       channelDetails(user.token, channel1.channelId).allMembers[0].profileImgUrl
     ).not.toStrictEqual(`http://${HOST}:${PORT}/img/default.jpg`);
@@ -243,5 +249,13 @@ describe('userProfileUploadPhoto testing', () => {
     expect(
       dmDetails(user.token, dm1.dmId).members[1].profileImgUrl
     ).toStrictEqual(`http://${HOST}:${PORT}/img/default.jpg`);
+
+    expect(
+      dmDetails(user2.token, dm2.dmId).members[0].profileImgUrl
+    ).toStrictEqual(`http://${HOST}:${PORT}/img/default.jpg`);
+
+    expect(
+      dmDetails(user2.token, dm2.dmId).members[1].profileImgUrl
+    ).not.toStrictEqual(`http://${HOST}:${PORT}/img/default.jpg`);
   });
 });

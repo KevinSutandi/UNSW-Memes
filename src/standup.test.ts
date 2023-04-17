@@ -1,5 +1,6 @@
 import {
   channelJoin,
+  channelLeave,
   channelMessage,
   standUpActive,
   standUpSend,
@@ -102,6 +103,9 @@ describe('Test error cases for standup with async', () => {
     expect(
       standUpSend(user1.token, channel1.channelId, 'a'.repeat(1001))
     ).toStrictEqual(400);
+
+    // standup owner cannot leave while standup running
+    expect(channelLeave(user1.token, channel1.channelId)).toStrictEqual(400);
 
     // wait for standup to end
     await sleep(2);

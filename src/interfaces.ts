@@ -193,11 +193,17 @@ export interface newMessageReturn {
   messageId: number;
 }
 
+export interface resetCode {
+  authUserId: number;
+  resetCode: string;
+}
+
 export interface newData {
   users: Array<userData>;
   channels: Array<channelData>;
   dm: Array<dmData>;
   secret: string;
+  resetCodes: Array<resetCode>;
 }
 
 export interface notification {

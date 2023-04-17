@@ -50,42 +50,64 @@ describe('testing adminPermissionChangeV1', () => {
   });
 
   test('invalid token test 1', () => {
-    expect(adminuserPermissionChange(user1.token + 4, user2.authUserId, 1)).toBe(403);
+    expect(
+      adminuserPermissionChange(user1.token + 4, user2.authUserId, 1)
+    ).toBe(403);
   });
   test('invalid token test 2', () => {
-    expect(adminuserPermissionChange(user1.token + 10, user2.authUserId, 1)).toBe(403);
+    expect(
+      adminuserPermissionChange(user1.token + 10, user2.authUserId, 1)
+    ).toBe(403);
   });
 
   test('invalid uId test 1', () => {
-    expect(adminuserPermissionChange(user1.token, user1.authUserId + 4, 1)).toBe(400);
+    expect(
+      adminuserPermissionChange(user1.token, user1.authUserId + 4, 1)
+    ).toBe(400);
   });
   test('invalid uId test 2', () => {
-    expect(adminuserPermissionChange(user1.token, user1.authUserId + 10, 1)).toBe(400);
+    expect(
+      adminuserPermissionChange(user1.token, user1.authUserId + 10, 1)
+    ).toBe(400);
   });
 
   test('user with uId is the only global owner', () => {
-    expect(adminuserPermissionChange(user1.token, user1.authUserId, 2)).toBe(400);
+    expect(adminuserPermissionChange(user1.token, user1.authUserId, 2)).toBe(
+      400
+    );
   });
 
   test('invalid permissionId test 1', () => {
-    expect(adminuserPermissionChange(user1.token, user3.authUserId, 3)).toBe(400);
+    expect(adminuserPermissionChange(user1.token, user3.authUserId, 3)).toBe(
+      400
+    );
   });
   test('invalid permissionId test 2', () => {
-    expect(adminuserPermissionChange(user1.token, user2.authUserId, 4)).toBe(400);
+    expect(adminuserPermissionChange(user1.token, user2.authUserId, 4)).toBe(
+      400
+    );
   });
 
   test('user already has the permission level test 1', () => {
-    expect(adminuserPermissionChange(user1.token, user3.authUserId, 2)).toBe(400);
+    expect(adminuserPermissionChange(user1.token, user3.authUserId, 2)).toBe(
+      400
+    );
   });
   test('user already has the permission level test 2', () => {
-    expect(adminuserPermissionChange(user1.token, user2.authUserId, 2)).toBe(400);
+    expect(adminuserPermissionChange(user1.token, user2.authUserId, 2)).toBe(
+      400
+    );
   });
 
   test('authorised user is not the global owner test 1', () => {
-    expect(adminuserPermissionChange(user3.token, user1.authUserId, 2)).toBe(403);
+    expect(adminuserPermissionChange(user3.token, user1.authUserId, 2)).toBe(
+      403
+    );
   });
   test('authorised user is not the global owner test 2', () => {
-    expect(adminuserPermissionChange(user2.token, user3.authUserId, 1)).toBe(403);
+    expect(adminuserPermissionChange(user2.token, user3.authUserId, 1)).toBe(
+      403
+    );
   });
 
   test('user1 sets user2 to global owner', () => {
@@ -97,7 +119,9 @@ describe('testing adminPermissionChangeV1', () => {
     adminuserPermissionChange(user1.token, user2.authUserId, 1);
     adminuserPermissionChange(user1.token, user3.authUserId, 1);
     adminuserPermissionChange(user2.token, user1.authUserId, 2);
-    expect(adminuserPermissionChange(user1.token, user2.authUserId, 2)).toBe(403);
+    expect(adminuserPermissionChange(user1.token, user2.authUserId, 2)).toBe(
+      403
+    );
   });
 });
 

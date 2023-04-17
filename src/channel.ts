@@ -14,6 +14,7 @@ import {
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
 import HTTPError from 'http-errors';
+import { standupActiveV1 } from './standup';
 
 /**
  *
@@ -120,11 +121,7 @@ export function channelJoinV1(
 
   // channel
   if (channel.isPublic === false && user.isGlobalOwner === 2) {
-    if (channel.isPublic === false) {
-      throw HTTPError(403, 'Channel is not public');
-    } else {
-      throw HTTPError(403, 'User is not global owner');
-    }
+    throw HTTPError(403, 'Channel is not public');
   }
   const channelNum = getChannelIndex(channelId);
 
@@ -276,11 +273,17 @@ export function channelLeaveV1(token: string, channelId: number) {
   if (user === undefined) {
     throw HTTPError(403, 'Invalid token');
   }
-  // if the user with auth is the
 
-  // If the user is not a member of the channel
   if (!isChannelMember(channelId, user.authUserId)) {
     throw HTTPError(403, user.authUserId + ' is not a member of the channel');
+  }
+
+  // if standup active and user is standup, throw error
+  const channel = findChannel(channelId);
+  const standupActive = standupActiveV1(token, channelId).isActive;
+  const standupUser = channel.standUp.standUpOwner;
+  if (standupActive && standupUser === user.authUserId) {
+    throw HTTPError(400, 'Cannot leave channel while standup is active');
   }
 
   const channelIndex = data.channels.findIndex(
@@ -338,7 +341,7 @@ export function channelAddOwnerV1(
   }
 
   if (!isChannelOwner(user.authUserId, channelId) && user.isGlobalOwner === 2) {
-    throw HTTPError(403, user.authUserId + 'has no owner permission');
+    throw HTTPError(403, user.authUserId + ' has no owner permission');
   }
 
   // owner adds the user with uId to the ownermembers and allmembers of the channel
@@ -400,7 +403,7 @@ export function channelRemoveOwnerV1(
   }
   // the owner is the only one in the channel
   if (channelfound.ownerMembers.length === 1) {
-    throw HTTPError(400, user.authUserId + 'is the only owner');
+    throw HTTPError(400, user.authUserId + ' is the only owner');
   }
 
   // owner removes the other owner with uId from channel
