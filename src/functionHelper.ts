@@ -240,22 +240,6 @@ export function downloadImage(imgUrl?: string, name?: string) {
   fs.writeFileSync(path.join(dir, name), img, { flag: 'w' });
 }
 
-export function findMessageInChannel(
-  messageId: number
-): channelData | undefined {
-  const data = getData();
-  return data.channels.find((channel) =>
-    channel.messages.find((message) => message.messageId === messageId)
-  );
-}
-
-export function findMessageInDm(messageId: number): dmData | undefined {
-  const data = getData();
-  return data.dm.find((dm) =>
-    dm.messages.find((message) => message.messageId === messageId)
-  );
-}
-
 export function updateAllData(
   dataPoint: string,
   authUserId: number,

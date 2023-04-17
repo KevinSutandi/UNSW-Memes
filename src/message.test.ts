@@ -117,13 +117,7 @@ describe('testing sendMessages', () => {
         message: `hello world number ${numMessages - i - 1}`,
         timeSent: expect.any(Number),
         isPinned: false,
-        reacts: [
-          {
-            reactId: 1,
-            uIds: [],
-            isThisUserReacted: false,
-          },
-        ],
+        reacts: [],
       });
     }
     expect(result).toStrictEqual({
@@ -478,13 +472,7 @@ describe('testing messageEdit', () => {
           message: 'hello world',
           timeSent: expect.any(Number),
           isPinned: false,
-          reacts: [
-            {
-              reactId: 1,
-              uIds: [],
-              isThisUserReacted: false,
-            },
-          ],
+          reacts: [],
         },
       ],
       start: 0,
@@ -517,13 +505,7 @@ describe('testing messageEdit', () => {
           message: 'hello world',
           timeSent: expect.any(Number),
           isPinned: false,
-          reacts: [
-            {
-              reactId: 1,
-              uIds: [],
-              isThisUserReacted: false,
-            },
-          ],
+          reacts: [],
         },
       ],
       start: 0,
@@ -561,13 +543,7 @@ describe('testing messageEdit', () => {
           message: 'hello world',
           timeSent: expect.any(Number),
           isPinned: false,
-          reacts: [
-            {
-              reactId: 1,
-              uIds: [],
-              isThisUserReacted: false,
-            },
-          ],
+          reacts: [],
         },
       ],
       start: 0,
@@ -635,13 +611,7 @@ describe('testing messageEdit DM', () => {
           message: 'hello world',
           timeSent: expect.any(Number),
           isPinned: false,
-          reacts: [
-            {
-              reactId: 1,
-              uIds: [],
-              isThisUserReacted: false,
-            },
-          ],
+          reacts: [],
         },
       ],
       start: 0,
@@ -669,13 +639,7 @@ describe('testing messageEdit DM', () => {
           message: 'hello world',
           timeSent: expect.any(Number),
           isPinned: false,
-          reacts: [
-            {
-              reactId: 1,
-              uIds: [],
-              isThisUserReacted: false,
-            },
-          ],
+          reacts: [],
         },
       ],
       start: 0,
@@ -1652,9 +1616,9 @@ describe('testing message react', () => {
     message2 = messageSendDm(user1.token, dm1.dmId, 'FACE');
   });
 
-  afterEach(() => {
-    clearV1();
-  });
+  // afterEach(() => {
+  //   clearV1();
+  // });
 
   test('token is invalid', () => {
     expect(messageReact(user1.token + 2, message1.messageId, 1)).toBe(403);
@@ -1668,6 +1632,10 @@ describe('testing message react', () => {
     expect(messageReact(user1.token, message1.messageId, 3)).toBe(400);
   });
 
+  test('user is not a member of the channel', () => {
+    expect(messageReact(user2.token, message1.messageId, 1)).toBe(403);
+  });
+
   // message already contained the react that sent from the authorised user
   //
   test('react already sent', () => {
@@ -1678,9 +1646,6 @@ describe('testing message react', () => {
   });
 
   test('valid case', () => {
-    // messageReact(user1.token, message1.messageId, 1);
-    // messageReact(user2.token, message2.messageId, 1)
-    console.log('message1 id is ', message1.messageId);
     expect(messageReact(user1.token, message1.messageId, 1)).toStrictEqual({});
     expect(messageReact(user2.token, message2.messageId, 1)).toStrictEqual({});
     const check1 = channelMessage(user1.token, channel1.channelId, 0);
@@ -1719,6 +1684,56 @@ describe('testing message react', () => {
               isThisUserReacted: false,
               reactId: 1,
               uIds: [user2.authUserId],
+            },
+          ],
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('valid case where 2 users react', () => {
+    channelJoin(user2.token, channel1.channelId);
+    expect(messageReact(user1.token, message1.messageId, 1)).toStrictEqual({});
+    expect(messageReact(user2.token, message1.messageId, 1)).toStrictEqual({});
+    expect(messageReact(user1.token, message2.messageId, 1)).toStrictEqual({});
+    expect(messageReact(user2.token, message2.messageId, 1)).toStrictEqual({});
+    const check1 = channelMessage(user1.token, channel1.channelId, 0);
+    const check2 = dmMessages(user2.token, dm1.dmId, 0);
+    expect(check1).toStrictEqual({
+      messages: [
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'HAPPY',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: [
+            {
+              isThisUserReacted: true,
+              reactId: 1,
+              uIds: [user1.authUserId, user2.authUserId],
+            },
+          ],
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+    expect(check2).toStrictEqual({
+      messages: [
+        {
+          messageId: message2.messageId,
+          uId: user1.authUserId,
+          message: 'FACE',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: [
+            {
+              isThisUserReacted: true,
+              reactId: 1,
+              uIds: [user1.authUserId, user2.authUserId],
             },
           ],
         },
