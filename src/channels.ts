@@ -98,7 +98,7 @@ export function channelsListV1(
   const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
 
   // need to access our data and pull out all of the channels linked to user
@@ -132,7 +132,7 @@ export function channelsListAllV1(
   // invalid token
   const user = getUserByToken(token);
   if (user === undefined) {
-    return { error: 'Invalid token' };
+    throw HTTPError(403, 'Invalid token');
   }
   return {
     channels: data.channels.map((a) => ({
