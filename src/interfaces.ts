@@ -5,7 +5,7 @@
 export interface reactsObject {
   reactId: number;
   uIds: Array<number>;
-  isThisUserReacted: boolean;
+  isThisUserReacted?: boolean;
 }
 
 /**
@@ -22,7 +22,7 @@ export interface messagesObject {
   message: string;
   timeSent: number;
   isPinned: boolean;
-  reacts: Array<reactsObject>;
+  reacts?: Array<reactsObject>;
 }
 
 /**

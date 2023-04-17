@@ -234,3 +234,21 @@ export function downloadImage(imgUrl?: string, name?: string) {
 
   fs.writeFileSync(path.join(dir, name), img, { flag: 'w' });
 }
+
+export function findMessageInChannel(
+  messageId: number
+): channelData | undefined {
+  const data = getData();
+  data.channels.forEach(channel => {
+    return channel.messages.find((message) => message.messageId === messageId);
+  });
+}
+
+export function findMessageInDm(
+  messageId: number
+): dmData | undefined {
+  const data = getData();
+  data.dm.forEach(dm => {
+    return dm.messages.find((message) => message.messageId === messageId);
+  });
+}

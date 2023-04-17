@@ -12,6 +12,8 @@ import {
   getChannelIndex,
   getDmIndex,
   getUserByToken,
+  findMessageInChannel,
+  findMessageInDm,
 } from './functionHelper';
 import HTTPError from 'http-errors';
 import {
@@ -168,6 +170,9 @@ export function messageRemoveV1(
     data.dm[dmIndex].messages.splice(messageIndex, 1);
     setData(data);
     return {};
+
+    // reacted message: "{User’s handle} reacted to your message in {channel/DM name}"
+  // added to a channel/DM: "{User’s handle} added you to {channel/DM name}"
   }
 }
 
@@ -743,6 +748,92 @@ export function messageShareV1(
 }
 
 export function messageReactV1(token: string, messageId: number, reactId: number) {
+  // errors
+  const data = getData();
+  const tokenFound = getUserByToken(token);
 
+  const reactedChannel = findMessageInChannel(messageId);
+  const reactedDm = findMessageInDm(messageId);
+
+  if (tokenFound === undefined) {
+    throw HTTPError(403, 'Invalid token');
+  }
+  // message id
+  // const messageIdFound = data.channels.some(channel => {
+  //   return channel.messages.some((message) => message.messageId === messageId);
+  // });
+
+  // if (reactedChannel === undefined && reactedDm === undefined) {
+  //  throw HTTPError(400, 'Invalid messageid');
+  // }
+
+  // react id
+  if (reactId !== 1) {
+    throw HTTPError(400, 'Invalid react id');
+  }
+
+  if (reactedChannel !== undefined) {
+    if (reactedChannel.messages.reacts && reactedChannel.messages.reacts.uIds.includes(tokenFound.authUserId)) {
+      throw HTTPError(400, 'User has already reacted in channel!');
+    } else if (reactedChannel.messages.reacts) {
+      reactedChannel.messages.reacts.uIds.push(tokenFound);
+      const notification: notification = {
+        dmId: -1,
+        channelId: reactedChannel.channelId,
+        notificationMessage: `${tokenFound.handleStr} reacted to your message in ${
+          reactedChannel.name
+        }: ${reactedChannel.messages.message.slice(0, 20)}`,
+      };
+      tokenFound.notifications.push(notification);
+    } else {
+      reactedChannel.messages.reacts = [];
+      reactedChannel.messages.reacts.push({
+        reactId: reactId,
+        uIds: [tokenFound],
+        isThisUserReacted: false,
+      });
+      const notification: notification = {
+        dmId: -1,
+        channelId: reactedChannel.channelId,
+        notificationMessage: `${tokenFound.handleStr} reacted to your message in ${
+          reactedChannel.name
+        }: ${reactedChannel.messages.message.slice(0, 20)}`,
+      };
+      tokenFound.notifications.push(notification);
+    }
+  }
+
+  if (reactedDm !== undefined) {
+    if (reactedDm.messages.reacts && reactedDm.messages.reacts.uIds.includes(tokenFound)) {
+      throw HTTPError(400, 'User has already reacted in dm!');
+    } else if (reactedDm.messages.reacts) {
+      reactedDm.messages.reacts.uIds.push(tokenFound);
+      const notification: notification = {
+        channelId: -1,
+        dmId: reactedDm.dmId,
+        notificationMessage: `${tokenFound.handleStr} reacted to your message in ${
+          reactedDm.name
+        }: ${reactedChannel.messages.message.slice(0, 20)}`,
+      };
+      tokenFound.notifications.push(notification);
+    } else {
+      messages.reacts = [];
+      messages.reacts.push({
+        reactId: reactId,
+        uIds: [tokenFound],
+        isThisUserReacted: false,
+      });
+      const notification: notification = {
+        channelId: -1,
+        dmId: reactedDm.dmId,
+        notificationMessage: `${tokenFound.handleStr} reacted to your message in ${
+          reactedDm.name
+        }: ${reactedChannel.messages.message.slice(0, 20)}`,
+      };
+      tokenFound.notifications.push(notification);
+    }
+  }
+
+  setData(data);
   return {};
 }

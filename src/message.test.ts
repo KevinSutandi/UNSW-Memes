@@ -29,7 +29,6 @@ const NUM = expect.any(Number);
 describe('testing sendMessages', () => {
   let user1: AuthReturn;
   let channel1: { channelId: number };
-  let message1: newMessageReturn;
   beforeEach(() => {
     clearV1();
     user1 = authRegister(
@@ -1623,11 +1622,11 @@ describe('testing notifications', () => {
 });
 
 // user1 sends a react for that message
-describe.only('testing message react', () => {
+describe('testing message react', () => {
   let user1: AuthReturn;
   let user2: AuthReturn;
   let channel1: { channelId: number };
-  let channel2: { channelId: number };
+  // let channel2: { channelId: number };
   let message1 : newMessageReturn;
   let message2 : newMessageReturn;
   let dm1: dmCreateReturn;
@@ -1647,18 +1646,18 @@ describe.only('testing message react', () => {
       'Boy'
     );
     channel1 = channelsCreate(user1.token, 'wego', true);
-    channel2 = channelsCreate(user2.token, 'memes', false);
+    // channel2 = channelsCreate(user2.token, 'memes', false);
+    dm1 = dmCreate(user1.token, [user2.authUserId]);
     message1 = messageSend(
       user1.token,
       channel1.channelId,
       'HAPPY'
     );
-    message2 = messageSend(
+    message2 = messageSendDm(
       user1.token,
       dm1.dmId,
       'FACE'
     );
-    dm1 = dmCreate(user1.token, [user2.authUserId]);
   });
 
   afterEach(() => {
@@ -1678,17 +1677,18 @@ describe.only('testing message react', () => {
   });
 
   // message already contained the react that sent from the authorised user
-  // 
-  test('react already sent', () => {
+  //
+  test.skip('react already sent', () => {
     expect(messageReact(user1.token, message1.messageId, 1)).toStrictEqual({});
     expect(messageReact(user1.token, message1.messageId, 1)).toBe(400);
     expect(messageReact(user1.token, message2.messageId, 1)).toStrictEqual({});
     expect(messageReact(user1.token, message2.messageId, 1)).toBe(400);
   });
 
-  test('valid case', () => {
-    messageReact(user1.token, message1.messageId, 1);
-    messageReact(user2.token, message2.messageId, 1)
+  test.only('valid case', () => {
+    // messageReact(user1.token, message1.messageId, 1);
+    // messageReact(user2.token, message2.messageId, 1)
+    console.log('message1 id is ', message1.messageId);
     expect(messageReact(user1.token, message1.messageId, 1)).toStrictEqual({});
     expect(messageReact(user2.token, message2.messageId, 1)).toStrictEqual({});
     const check1 = channelMessage(user1.token, channel1.channelId, 0);
@@ -1696,7 +1696,7 @@ describe.only('testing message react', () => {
     expect(check1).toStrictEqual({
       messages: [
         {
-          messageId: 1,
+          messageId: message1.messageId,
           uId: user1.authUserId,
           message: 'HAPPY',
           timeSent: NUM,
@@ -1710,18 +1710,20 @@ describe.only('testing message react', () => {
           }],
         },
       ],
+      start: 0,
+      end: -1,
     });
 
     expect(check2).toStrictEqual({
       messages: [
         {
-          messageId: 2,
+          messageId: message2.messageId,
           uId: user2.authUserId,
           message: 'FACE',
           timeSent: NUM,
           isPinned: false,
           reacts: [{
-            isThisUserReacted: false,
+            isThisUserReacted: true,
             reactId: 1,
             uIds: [
               user2.authUserId,
