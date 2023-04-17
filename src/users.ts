@@ -5,6 +5,7 @@ import {
   getUserByToken,
   findUserIndex,
   downloadImage,
+  updateAllData,
 } from './functionHelper';
 import validator from 'validator';
 import HTTPError from 'http-errors';
@@ -87,7 +88,9 @@ export function setEmail(token: string, email: string) {
   }
   const userIndex = findUserIndex(user.authUserId);
   data.users[userIndex].email = email;
+
   setData(data);
+  updateAllData(email, user.authUserId, 'email');
   return {};
 }
 
@@ -118,6 +121,8 @@ export function setName(token: string, nameFirst: string, nameLast: string) {
   data.users[userIndex].nameFirst = nameFirst;
   data.users[userIndex].nameLast = nameLast;
   setData(data);
+  updateAllData(nameFirst, user.authUserId, 'nameFirst');
+  updateAllData(nameLast, user.authUserId, 'nameLast');
   return {};
 }
 
@@ -143,14 +148,16 @@ export function setHandle(
     handleStr.length > 20 ||
     !/^[a-zA-Z0-9]+$/.test(handleStr)
   ) {
-    throw HTTPError(400, 'handle is invalid');
+    throw HTTPError(400, 'Please use alphanumeric characters only');
   }
   if (data.users.some((user) => user.handleStr === handleStr)) {
-    throw HTTPError(400, 'handle is already had');
+    throw HTTPError(400, 'handle is already being used by another user');
   }
   const userIndex = findUserIndex(user.authUserId);
   data.users[userIndex].handleStr = handleStr;
   setData(data);
+
+  updateAllData(handleStr, user.authUserId, 'handleStr');
   return {};
 }
 
@@ -242,33 +249,9 @@ export function userProfileUploadPhotoV1(
 
   data.users[userIndex].profileImgUrl = newUrl;
 
-  data.channels.forEach((channel) => {
-    channel.ownerMembers.forEach((ownerMember) => {
-      if (ownerMember.uId === user.authUserId) {
-        ownerMember.profileImgUrl = newUrl;
-      }
-    });
-    channel.allMembers.forEach((allMember) => {
-      if (allMember.uId === user.authUserId) {
-        allMember.profileImgUrl = newUrl;
-      }
-    });
-  });
-
-  data.dm.forEach((dm) => {
-    dm.ownerMembers.forEach((ownerMember) => {
-      if (ownerMember.uId === user.authUserId) {
-        ownerMember.profileImgUrl = newUrl;
-      }
-    });
-    dm.allMembers.forEach((member) => {
-      if (member.uId === user.authUserId) {
-        member.profileImgUrl = newUrl;
-      }
-    });
-  });
-
   setData(data);
+
+  updateAllData(newUrl, user.authUserId, 'profileImgUrl');
 
   return {};
 }

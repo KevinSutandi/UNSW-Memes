@@ -1,4 +1,4 @@
-import { getData } from './dataStore';
+import { getData, setData } from './dataStore';
 import request from 'sync-request';
 import { channelData, dmData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
@@ -238,4 +238,42 @@ export function downloadImage(imgUrl?: string, name?: string) {
   const img = res.getBody();
 
   fs.writeFileSync(path.join(dir, name), img, { flag: 'w' });
+}
+
+export function updateAllData(
+  dataPoint: string,
+  authUserId: number,
+  flags: string
+) {
+  const data = getData();
+
+  data.channels.forEach((channel) => {
+    channel.ownerMembers.forEach((ownerMember) => {
+      if (ownerMember.uId === authUserId) {
+        ownerMember[flags] = dataPoint;
+      }
+    });
+    channel.allMembers.forEach((allMember) => {
+      if (allMember.uId === authUserId) {
+        allMember[flags] = dataPoint;
+      }
+    });
+  });
+
+  data.dm.forEach((dm) => {
+    dm.ownerMembers.forEach((ownerMember) => {
+      if (ownerMember.uId === authUserId) {
+        ownerMember[flags] = dataPoint;
+      }
+    });
+    dm.allMembers.forEach((member) => {
+      if (member.uId === authUserId) {
+        console.log(member[flags]);
+        member[flags] = dataPoint;
+        console.log(member[flags]);
+      }
+    });
+  });
+
+  setData(data);
 }
