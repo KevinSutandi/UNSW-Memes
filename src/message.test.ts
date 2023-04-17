@@ -18,11 +18,14 @@ import {
   messageSendLaterDm,
   messageShare,
   channelInvite,
+  messageReact,
+  messageUnReact,
 } from './httpHelper';
-import { AuthReturn } from './interfaces';
+import { AuthReturn, newMessageReturn, dmCreateReturn } from './interfaces';
 
 const badrequest = 400;
 const forbidden = 403;
+const NUM = expect.any(Number);
 
 describe('testing sendMessages', () => {
   let user1: AuthReturn;
@@ -115,13 +118,7 @@ describe('testing sendMessages', () => {
         message: `hello world number ${numMessages - i - 1}`,
         timeSent: expect.any(Number),
         isPinned: false,
-        reacts: [
-          {
-            reactId: 1,
-            uIds: [],
-            isThisUserReacted: false,
-          },
-        ],
+        reacts: [],
       });
     }
     expect(result).toStrictEqual({
@@ -476,13 +473,7 @@ describe('testing messageEdit', () => {
           message: 'hello world',
           timeSent: expect.any(Number),
           isPinned: false,
-          reacts: [
-            {
-              reactId: 1,
-              uIds: [],
-              isThisUserReacted: false,
-            },
-          ],
+          reacts: [],
         },
       ],
       start: 0,
@@ -515,13 +506,7 @@ describe('testing messageEdit', () => {
           message: 'hello world',
           timeSent: expect.any(Number),
           isPinned: false,
-          reacts: [
-            {
-              reactId: 1,
-              uIds: [],
-              isThisUserReacted: false,
-            },
-          ],
+          reacts: [],
         },
       ],
       start: 0,
@@ -559,13 +544,7 @@ describe('testing messageEdit', () => {
           message: 'hello world',
           timeSent: expect.any(Number),
           isPinned: false,
-          reacts: [
-            {
-              reactId: 1,
-              uIds: [],
-              isThisUserReacted: false,
-            },
-          ],
+          reacts: [],
         },
       ],
       start: 0,
@@ -633,13 +612,7 @@ describe('testing messageEdit DM', () => {
           message: 'hello world',
           timeSent: expect.any(Number),
           isPinned: false,
-          reacts: [
-            {
-              reactId: 1,
-              uIds: [],
-              isThisUserReacted: false,
-            },
-          ],
+          reacts: [],
         },
       ],
       start: 0,
@@ -667,13 +640,7 @@ describe('testing messageEdit DM', () => {
           message: 'hello world',
           timeSent: expect.any(Number),
           isPinned: false,
-          reacts: [
-            {
-              reactId: 1,
-              uIds: [],
-              isThisUserReacted: false,
-            },
-          ],
+          reacts: [],
         },
       ],
       start: 0,
@@ -1615,6 +1582,348 @@ describe('testing notifications', () => {
             'soccerboy added you to kevinsutandi, soccerboy, wegoasu',
         },
       ],
+    });
+  });
+});
+
+describe('testing message react', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let channel1: { channelId: number };
+  // let channel2: { channelId: number };
+  let message1: newMessageReturn;
+  let message2: newMessageReturn;
+  let dm1: dmCreateReturn;
+
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    channel1 = channelsCreate(user1.token, 'wego', true);
+    // channel2 = channelsCreate(user2.token, 'memes', false);
+    dm1 = dmCreate(user1.token, [user2.authUserId]);
+    message1 = messageSend(user1.token, channel1.channelId, 'HAPPY');
+    message2 = messageSendDm(user1.token, dm1.dmId, 'FACE');
+  });
+
+  // afterEach(() => {
+  //   clearV1();
+  // });
+
+  test('token is invalid', () => {
+    expect(messageReact(user1.token + 2, message1.messageId, 1)).toBe(403);
+  });
+
+  test('messageId is invalid', () => {
+    expect(messageReact(user1.token, message1.messageId + 1, 1)).toBe(400);
+  });
+
+  test('reactId is invalid', () => {
+    expect(messageReact(user1.token, message1.messageId, 3)).toBe(400);
+  });
+
+  test('user is not a member of the channel', () => {
+    expect(messageReact(user2.token, message1.messageId, 1)).toBe(403);
+  });
+
+  // message already contained the react that sent from the authorised user
+  //
+  test('react already sent', () => {
+    expect(messageReact(user1.token, message1.messageId, 1)).toStrictEqual({});
+    expect(messageReact(user1.token, message1.messageId, 1)).toBe(400);
+    expect(messageReact(user1.token, message2.messageId, 1)).toStrictEqual({});
+    expect(messageReact(user1.token, message2.messageId, 1)).toBe(400);
+  });
+
+  test('valid case', () => {
+    expect(messageReact(user1.token, message1.messageId, 1)).toStrictEqual({});
+    const check1 = channelMessage(user1.token, channel1.channelId, 0);
+    expect(check1).toStrictEqual({
+      messages: [
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'HAPPY',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: [
+            {
+              isThisUserReacted: true,
+              reactId: 1,
+              uIds: [user1.authUserId],
+            },
+          ],
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+    console.log('user 1', user1.authUserId);
+    console.log('user 2', user2.authUserId);
+  });
+
+  test('valid case for dm', () => {
+    expect(messageReact(user2.token, message2.messageId, 1)).toStrictEqual({});
+    const check2 = dmMessages(user2.token, dm1.dmId, 0);
+    console.log('user 1', user1.authUserId);
+    console.log('user 2', user2.authUserId);
+
+    expect(check2).toStrictEqual({
+      messages: [
+        {
+          messageId: message2.messageId,
+          uId: user1.authUserId,
+          message: 'FACE',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: [
+            {
+              isThisUserReacted: false,
+              reactId: 1,
+              uIds: [user2.authUserId],
+            },
+          ],
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('valid case where 2 users react', () => {
+    channelJoin(user2.token, channel1.channelId);
+    expect(messageReact(user1.token, message1.messageId, 1)).toStrictEqual({});
+    expect(messageReact(user2.token, message1.messageId, 1)).toStrictEqual({});
+    expect(messageReact(user1.token, message2.messageId, 1)).toStrictEqual({});
+    expect(messageReact(user2.token, message2.messageId, 1)).toStrictEqual({});
+    const check1 = channelMessage(user1.token, channel1.channelId, 0);
+    const check2 = dmMessages(user2.token, dm1.dmId, 0);
+    expect(check1).toStrictEqual({
+      messages: [
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'HAPPY',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: [
+            {
+              isThisUserReacted: true,
+              reactId: 1,
+              uIds: [user1.authUserId, user2.authUserId],
+            },
+          ],
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+    expect(check2).toStrictEqual({
+      messages: [
+        {
+          messageId: message2.messageId,
+          uId: user1.authUserId,
+          message: 'FACE',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: [
+            {
+              isThisUserReacted: true,
+              reactId: 1,
+              uIds: [user1.authUserId, user2.authUserId],
+            },
+          ],
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+  });
+});
+
+describe('testing message unreact', () => {
+  let user1: AuthReturn;
+  let user2: AuthReturn;
+  let channel1: { channelId: number };
+  // let channel2: { channelId: number };
+  let message1: newMessageReturn;
+  let message2: newMessageReturn;
+  let dm1: dmCreateReturn;
+
+  beforeEach(() => {
+    clearV1();
+    user1 = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    user2 = authRegister(
+      'asdwer@gmail.com',
+      'welovesoccer1001',
+      'Soccer',
+      'Boy'
+    );
+    channel1 = channelsCreate(user1.token, 'wego', true);
+    // channel2 = channelsCreate(user2.token, 'memes', false);
+    dm1 = dmCreate(user1.token, [user2.authUserId]);
+    message1 = messageSend(user1.token, channel1.channelId, 'HAPPY');
+    message2 = messageSendDm(user1.token, dm1.dmId, 'FACE');
+  });
+
+  afterEach(() => {
+    clearV1();
+  });
+
+  test('token is invalid', () => {
+    expect(messageUnReact(user1.token + 2, message1.messageId, 1)).toBe(403);
+  });
+
+  test('messageId is invalid', () => {
+    expect(messageUnReact(user1.token, message1.messageId + 1, 1)).toBe(400);
+  });
+
+  test('reactId is invalid', () => {
+    expect(messageUnReact(user1.token, message1.messageId, 3)).toBe(400);
+  });
+
+  test('message does not contain that react', () => {
+    expect(messageUnReact(user1.token, message1.messageId, 1)).toBe(400);
+    expect(messageUnReact(user1.token, message2.messageId, 1)).toBe(400);
+  });
+
+  test('user is not in the channel', () => {
+    const user3: AuthReturn = authRegister(
+      'kev@gm.com',
+      'kevin1001',
+      'Kevin',
+      'sadkfjlksajd'
+    );
+    messageReact(user2.token, message1.messageId, 1);
+    expect(messageUnReact(user3.token, message1.messageId, 1)).toBe(403);
+  });
+
+  test('user is not in the dm', () => {
+    const user3: AuthReturn = authRegister(
+      'kev@gm.com',
+      'kevin1001',
+      'Kevin',
+      'sadkfjlksajd'
+    );
+    messageReact(user2.token, message2.messageId, 1);
+    expect(messageUnReact(user3.token, message2.messageId, 1)).toBe(403);
+  });
+
+  test('user has not reacted to the message', () => {
+    channelJoin(user2.token, channel1.channelId);
+    messageReact(user2.token, message1.messageId, 1);
+    expect(messageUnReact(user1.token, message1.messageId, 1)).toBe(400);
+  });
+
+  test('user has not reacted in dm', () => {
+    messageReact(user2.token, message2.messageId, 1);
+    expect(messageUnReact(user1.token, message2.messageId, 1)).toBe(400);
+  });
+
+  test('valid case for channel', () => {
+    messageReact(user1.token, message1.messageId, 1);
+    expect(messageUnReact(user1.token, message1.messageId, 1)).toStrictEqual(
+      {}
+    );
+    const check1 = channelMessage(user1.token, channel1.channelId, 0);
+    expect(check1).toStrictEqual({
+      messages: [
+        {
+          messageId: message1.messageId,
+          uId: user1.authUserId,
+          message: 'HAPPY',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: [],
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('valid case for dm', () => {
+    messageReact(user2.token, message2.messageId, 1);
+    expect(messageUnReact(user2.token, message2.messageId, 1)).toStrictEqual(
+      {}
+    );
+    const check2 = dmMessages(user2.token, dm1.dmId, 0);
+    expect(check2).toStrictEqual({
+      messages: [
+        {
+          messageId: message2.messageId,
+          uId: user1.authUserId,
+          message: 'FACE',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: [],
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+  });
+
+  test('valid case for dm 2', () => {
+    messageReact(user2.token, message2.messageId, 1);
+    messageReact(user1.token, message2.messageId, 1);
+    expect(messageUnReact(user2.token, message2.messageId, 1)).toStrictEqual(
+      {}
+    );
+    const check2 = dmMessages(user2.token, dm1.dmId, 0);
+    expect(check2).toStrictEqual({
+      messages: [
+        {
+          messageId: message2.messageId,
+          uId: user1.authUserId,
+          message: 'FACE',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: [
+            {
+              isThisUserReacted: true,
+              reactId: 1,
+              uIds: [user1.authUserId],
+            },
+          ],
+        },
+      ],
+      start: 0,
+      end: -1,
+    });
+    expect(messageUnReact(user1.token, message2.messageId, 1)).toStrictEqual(
+      {}
+    );
+    const check3 = dmMessages(user2.token, dm1.dmId, 0);
+    expect(check3).toStrictEqual({
+      messages: [
+        {
+          messageId: message2.messageId,
+          uId: user1.authUserId,
+          message: 'FACE',
+          timeSent: NUM,
+          isPinned: false,
+
+          reacts: [],
+        },
+      ],
+      start: 0,
+      end: -1,
     });
   });
 });

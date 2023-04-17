@@ -5,7 +5,7 @@
 export interface reactsObject {
   reactId: number;
   uIds: Array<number>;
-  isThisUserReacted: boolean;
+  isThisUserReacted?: boolean;
 }
 
 /**

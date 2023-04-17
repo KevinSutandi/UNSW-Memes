@@ -39,6 +39,8 @@ import {
   notificationsGetV1,
   messageSendLaterDmV1,
   messageShareV1,
+  messageReactV1,
+  messageUnreactV1,
 } from './message';
 import {
   setEmail,
@@ -59,7 +61,7 @@ import {
 // import { userProfileV1 } from './users';
 import { clearV1 } from './other';
 import { standupActiveV1, standupSendV1, standupStartV1 } from './standup';
-import { adminuserPermissionChangeV1 } from './admin';
+import { adminuserPermissionChangeV1, adminuserRemoveV1 } from './admin';
 
 // Set up web app
 const app = express();
@@ -388,10 +390,30 @@ app.post(
   }
 );
 
+app.delete('/admin/user/remove/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const uId = parseInt(req.query.uId as string);
+  const result = adminuserRemoveV1(token, uId);
+  return res.json(result);
+});
+
+app.post('/message/react/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId, reactId } = req.body;
+  const result = messageReactV1(token, messageId, reactId);
+  return res.json(result);
+});
+
+app.post('/message/unreact/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const { messageId, reactId } = req.body;
+  const result = messageUnreactV1(token, messageId, reactId);
+  return res.json(result);
+});
+
 // Keep this BENEATH route definitions
 // handles errors nicely
 app.use(errorHandler());
-
 // start server
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
