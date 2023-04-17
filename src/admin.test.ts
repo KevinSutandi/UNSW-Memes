@@ -10,6 +10,7 @@ import {
   userProfile,
   channelMessage,
   dmMessages,
+  messageSendDm,
 } from './httpHelper';
 import { AuthReturn, channelsCreateReturn, dmCreateReturn } from './interfaces';
 
@@ -127,7 +128,7 @@ describe('testing adminPermissionChangeV1', () => {
 
 // 400: invalid uId; invalid token; user with uId is the only global owner;
 // 403: user with the token is not the global owner
-describe.only('testing adminRemoveV1', () => {
+describe('testing adminRemoveV1', () => {
   let user1: AuthReturn;
   let user2: AuthReturn;
   let user3: AuthReturn;
@@ -153,7 +154,7 @@ describe.only('testing adminRemoveV1', () => {
       'Zombie',
       'Ibrahim'
     );
-    channel1 = channelsCreate(user1.token, 'wego', false);
+    channel1 = channelsCreate(user1.token, 'wego', true);
     dm1 = dmCreate(user1.token, [user2.authUserId]);
   });
 
@@ -191,6 +192,11 @@ describe.only('testing adminRemoveV1', () => {
     adminuserPermissionChange(user1.token, user2.authUserId, 1);
     channelJoin(user2.token, channel1.channelId);
     messageSend(user1.token, channel1.channelId, 'HIGUYS');
+    messageSend(user2.token, channel1.channelId, 'BANNED');
+    messageSend(user1.token, channel1.channelId, 'kjsaldajf');
+    messageSendDm(user1.token, dm1.dmId, 'BYE');
+    messageSendDm(user2.token, dm1.dmId, 'BANNED');
+    messageSendDm(user1.token, dm1.dmId, 'ksladjflajsdf');
 
     adminuserRemove(user2.token, user1.authUserId);
     expect(userProfile(user2.token, user1.authUserId)).toStrictEqual({
@@ -206,27 +212,63 @@ describe.only('testing adminRemoveV1', () => {
 
     // check the message
     expect(channelMessage(user2.token, channel1.channelId, 0)).toMatchObject({
-      messages: [{
-        messageId: NUM,
-        uId: user1.authUserId,
-        message: 'Removed user',
-        timeSent: NUM,
-        isPinned: false,
-        reacts: ARRAY,
-      }],
+      messages: [
+        {
+          messageId: NUM,
+          uId: user1.authUserId,
+          message: 'Removed user',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: ARRAY,
+        },
+        {
+          messageId: NUM,
+          uId: user2.authUserId,
+          message: 'BANNED',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: ARRAY,
+        },
+        {
+          messageId: NUM,
+          uId: user1.authUserId,
+          message: 'Removed user',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: ARRAY,
+        },
+      ],
       start: NUM,
       end: NUM,
     });
 
     expect(dmMessages(user2.token, dm1.dmId, 0)).toMatchObject({
-      messages: [{
-        messageId: NUM,
-        uId: user1.authUserId,
-        message: 'Removed user',
-        timeSent: NUM,
-        isPinned: false,
-        reacts: ARRAY,
-      }],
+      messages: [
+        {
+          messageId: NUM,
+          uId: user1.authUserId,
+          message: 'Removed user',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: ARRAY,
+        },
+        {
+          messageId: NUM,
+          uId: user2.authUserId,
+          message: 'BANNED',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: ARRAY,
+        },
+        {
+          messageId: NUM,
+          uId: user1.authUserId,
+          message: 'Removed user',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: ARRAY,
+        },
+      ],
       start: NUM,
       end: NUM,
     });
