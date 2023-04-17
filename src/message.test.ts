@@ -1647,9 +1647,7 @@ describe('testing message react', () => {
 
   test('valid case', () => {
     expect(messageReact(user1.token, message1.messageId, 1)).toStrictEqual({});
-    expect(messageReact(user2.token, message2.messageId, 1)).toStrictEqual({});
     const check1 = channelMessage(user1.token, channel1.channelId, 0);
-    const check2 = dmMessages(user2.token, dm1.dmId, 0);
     expect(check1).toStrictEqual({
       messages: [
         {
@@ -1670,6 +1668,15 @@ describe('testing message react', () => {
       start: 0,
       end: -1,
     });
+    console.log('user 1', user1.authUserId);
+    console.log('user 2', user2.authUserId);
+  });
+
+  test('valid case for dm', () => {
+    expect(messageReact(user2.token, message2.messageId, 1)).toStrictEqual({});
+    const check2 = dmMessages(user2.token, dm1.dmId, 0);
+    console.log('user 1', user1.authUserId);
+    console.log('user 2', user2.authUserId);
 
     expect(check2).toStrictEqual({
       messages: [
@@ -1911,6 +1918,7 @@ describe('testing message unreact', () => {
           message: 'FACE',
           timeSent: NUM,
           isPinned: false,
+
           reacts: [],
         },
       ],
