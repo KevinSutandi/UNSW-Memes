@@ -1668,15 +1668,11 @@ describe('testing message react', () => {
       start: 0,
       end: -1,
     });
-    console.log('user 1', user1.authUserId);
-    console.log('user 2', user2.authUserId);
   });
 
   test('valid case for dm', () => {
     expect(messageReact(user2.token, message2.messageId, 1)).toStrictEqual({});
     const check2 = dmMessages(user2.token, dm1.dmId, 0);
-    console.log('user 1', user1.authUserId);
-    console.log('user 2', user2.authUserId);
 
     expect(check2).toStrictEqual({
       messages: [
