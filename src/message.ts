@@ -1011,13 +1011,3 @@ export function messageUnreactV1(
   setData(data);
   return {};
 }
-
-function findMessageInChannel(
-  messageId: number,
-  channelId: number,
-): messages {
-  const data = getData();
-  const channelFound = data.channels.find((channel) => channel.channelId === channelId);
-  const messageFound = channelFound.messages.find((message) => message.messageId === messageId);
-  return messageFound;
-}

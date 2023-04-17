@@ -1,6 +1,6 @@
 import { getData, setData } from './dataStore';
 import request from 'sync-request';
-import { channelData, dmData, messagesObject, userData } from './interfaces';
+import { channelData, dmData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 // import { data } from './dataStore';
 
