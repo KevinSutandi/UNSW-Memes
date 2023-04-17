@@ -1,12 +1,18 @@
 import { getData, setData } from './dataStore';
-import { findUser, findUserIndex, getUserByToken } from './functionHelper';
+import {
+  findDm,
+  findUser,
+  findUserIndex,
+  getUserByToken,
+  isDm,
+  isDmMember,
+} from './functionHelper';
 import {
   errorMessage,
   dmCreateReturn,
   userData,
-  userObject,
-  dmData,
   dmListReturn,
+  userObject,
 } from './interfaces';
 import HTTPError from 'http-errors';
 
@@ -107,61 +113,6 @@ export function dmCreateV1(
 }
 
 /**
- * Determines whether a dm is a valid dm
- * by checking through dms array in the
- * dataStore.js
- *
- * @param {number} dmId - The authenticated channel Id
- * @returns {boolean} - true if the dm is in the dataStore,
- *                    | false if the dm isnt in the dataStore
- *
- */
-export function isDm(dmId: number): boolean {
-  const data = getData();
-  return data.dm.some((a) => a.dmId === dmId);
-}
-
-/**
- * Determines whether a user is a valid dm member
- * by checking through dms array in the
- * dataStore.js
- *
- * @param {number} dmId - The authenticated dm Id
- * @param {number} userId - The authenticated user Id
- * @returns {boolean} - true if the user is a member of the dm
- *                    | false if the user isn't a member of the dm
- *
- */
-export function isDmMember(dmId: number, userId: number): boolean {
-  const dm = findDm(dmId);
-  const allMemberIds = getAllMemberIds(dm);
-  return allMemberIds.includes(userId);
-}
-
-/**
- * Finds the dm object based on the given dmId
- *
- * @param {number} dmId - The authenticated dm Id
- * @returns {undefined} - if the function cannot find the dm
- * @returns {channel}  - returns dm object if the dm is found
- *
- */
-export function findDm(dmId: number): dmData | undefined {
-  const data = getData();
-  return data.dm.find((a) => a.dmId === dmId);
-}
-
-/**
- * Returns an array of member IDs for the specified dm.
- *
- * @param {object} dm - The dm object to retrieve member IDs from.
- * @returns {(Array.<uId>|null)} - An array of member IDs, or null if the channel does not contain any.
- */
-export function getAllMemberIds(dm: dmData) {
-  return dm.allMembers.map((member) => member.uId);
-}
-
-/**
  *
  * Given a DM with a valid dmId, authorised members are able
  * to send messages to other group members. This function
@@ -198,7 +149,10 @@ export function dmMessagesV1(token: string, dmId: number, start: number) {
   const dmIndex = data.dm.findIndex((a) => a.dmId === dmId);
   const dmMessages = data.dm[dmIndex].messages.length;
   if (start > data.dm[dmIndex].messages.length) {
-    throw HTTPError(400, 'start is greater than the total number of messages in the channel');
+    throw HTTPError(
+      400,
+      'start is greater than the total number of messages in the channel'
+    );
   }
 
   const dm = findDm(dmId);
@@ -287,14 +241,24 @@ export function dmListV1(token: string): dmListReturn | errorMessage {
   return userDms;
 }
 
+/**
+  Removes a direct message (DM) with the specified DM ID if the user making the request is the original creator.
+  @function
+  @name dmRemoveV1
+  @param {string} token - The token of the authenticated user.
+  @param {number} dmId - The ID of the DM to remove.
+  @throws {HTTPError} Throws an error if the token is invalid or if the DM ID does not refer to a valid DM.
+  @throws {HTTPError} Throws an error if the user making the request is not the original creator of the DM.
+  @returns {Object} An empty object to indicate successful removal of the DM.
+*/
 export function dmRemoveV1(token: string, dmId: number) {
   const data = getData();
   const user = getUserByToken(token);
+  const dmIndex = data.dm.findIndex((item) => item.dmId === dmId);
 
   if (user === undefined) {
     throw HTTPError(403, 'Invalid token');
   }
-  const dmIndex = data.dm.findIndex((item) => item.dmId === dmId);
   if (dmIndex === -1) {
     throw HTTPError(400, 'dmId does not refer to a valid DM');
   }

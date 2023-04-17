@@ -387,10 +387,10 @@ export function channelRemoveOwnerV1(
     throw HTTPError(403, 'Invalid token');
   }
 
-  // // Check if user is in the channel
-  // if (!isChannelMember(channelId, uId)) {
-  //   throw HTTPError(400, ' is not a member of the channel');
-  // }
+  // Check if user is in the channel
+  if (!isChannelMember(channelId, uId)) {
+    throw HTTPError(400, ' is not a member of the channel');
+  }
 
   // uId user is not owner of the channel
   if (!isChannelOwner(uId, channelId)) {

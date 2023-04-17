@@ -185,6 +185,16 @@ export function getAllUsers(token: string): allUsers | errorMessage {
   };
 }
 
+/**
+ *
+ * @param token - The user's access token.
+ * @param imgUrl - The URL of the image to upload. (ONLY JPG)
+ * @param xStart - The x starting coordinate from the top left corner of the crop area.
+ * @param yStart - The y starting coordinate from the top left corner of the crop area.
+ * @param xEnd - The x ending coordinate from the top left corner of the crop area.
+ * @param yEnd - The y ending coordinate from the top left corner of the crop area.
+ * @returns {} - Returns an empty object if successful, or throw error message if unsuccessful.
+ */
 export function userProfileUploadPhotoV1(
   token: string,
   imgUrl: string,

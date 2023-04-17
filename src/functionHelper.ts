@@ -66,9 +66,11 @@ export function findUser(userId: number): userData | undefined {
  * @param {object} channel - The channel object to retrieve member IDs from.
  * @returns {(Array.<number>|null)} - An array of member IDs, or null if the channel does not contain any.
  */
-export function getAllMemberIds(channel: channelData | dmData): Array<number> {
-  if (channel) {
-    return channel.allMembers.map((member) => member.uId);
+export function getAllMemberIds(
+  dataPoint: channelData | dmData
+): Array<number> {
+  if (dataPoint) {
+    return dataPoint.allMembers.map((member) => member.uId);
   } else {
     return null;
   }
@@ -276,4 +278,49 @@ export function updateAllData(
   });
 
   setData(data);
+}
+
+/**
+ * Determines whether a dm is a valid dm
+ * by checking through dms array in the
+ * dataStore.js
+ *
+ * @param {number} dmId - The authenticated channel Id
+ * @returns {boolean} - true if the dm is in the dataStore,
+ *                    | false if the dm isnt in the dataStore
+ *
+ */
+export function isDm(dmId: number): boolean {
+  const data = getData();
+  return data.dm.some((a) => a.dmId === dmId);
+}
+
+/**
+ * Determines whether a user is a valid dm member
+ * by checking through dms array in the
+ * dataStore.js
+ *
+ * @param {number} dmId - The authenticated dm Id
+ * @param {number} userId - The authenticated user Id
+ * @returns {boolean} - true if the user is a member of the dm
+ *                    | false if the user isn't a member of the dm
+ *
+ */
+export function isDmMember(dmId: number, userId: number): boolean {
+  const dm = findDm(dmId);
+  const allMemberIds = getAllMemberIds(dm);
+  return allMemberIds.includes(userId);
+}
+
+/**
+ * Finds the dm object based on the given dmId
+ *
+ * @param {number} dmId - The authenticated dm Id
+ * @returns {undefined} - if the function cannot find the dm
+ * @returns {channel}  - returns dm object if the dm is found
+ *
+ */
+export function findDm(dmId: number): dmData | undefined {
+  const data = getData();
+  return data.dm.find((a) => a.dmId === dmId);
 }

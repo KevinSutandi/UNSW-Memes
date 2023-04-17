@@ -16,7 +16,7 @@ function removeImages() {
   const path = './img';
   const fs = require('fs');
   fs.readdirSync(path).forEach((file: any) => {
-    // remove any file with .jpg except for de
+    // remove any file with .jpg except for default
     if (file.endsWith('.jpg') && file !== 'default.jpg') {
       fs.unlinkSync(`${path}/${file}`);
     }
