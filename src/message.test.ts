@@ -1622,7 +1622,7 @@ describe('testing notifications', () => {
 });
 
 // user1 sends a react for that message
-describe('testing message react', () => {
+describe.only('testing message react', () => {
   let user1: AuthReturn;
   let user2: AuthReturn;
   let channel1: { channelId: number };
@@ -1676,23 +1676,16 @@ describe('testing message react', () => {
     expect(messageReact(user1.token, message1.messageId, 3)).toBe(400);
   });
 
-  // message already contained the react that sent from the authorised user
-  //
-  test.skip('react already sent', () => {
+  test('react already sent', () => {
     expect(messageReact(user1.token, message1.messageId, 1)).toStrictEqual({});
     expect(messageReact(user1.token, message1.messageId, 1)).toBe(400);
     expect(messageReact(user1.token, message2.messageId, 1)).toStrictEqual({});
     expect(messageReact(user1.token, message2.messageId, 1)).toBe(400);
   });
 
-  test.only('valid case', () => {
-    // messageReact(user1.token, message1.messageId, 1);
-    // messageReact(user2.token, message2.messageId, 1)
-    console.log('message1 id is ', message1.messageId);
+  test('valid case for channel', () => {
     expect(messageReact(user1.token, message1.messageId, 1)).toStrictEqual({});
-    //expect(messageReact(user2.token, message2.messageId, 1)).toStrictEqual({});
     const check1 = channelMessage(user1.token, channel1.channelId, 0);
-    //const check2 = dmMessages(user2.token, dm1.dmId, 0);
     expect(check1).toStrictEqual({
       messages: [
         {
@@ -1702,7 +1695,7 @@ describe('testing message react', () => {
           timeSent: NUM,
           isPinned: false,
           reacts: [{
-            isThisUserReacted: false,
+            isThisUserReacted: true,
             reactId: 1,
             uIds: [user1.authUserId],
           }],
@@ -1711,24 +1704,36 @@ describe('testing message react', () => {
       start: 0,
       end: -1,
     });
-
-    // expect(check2).toStrictEqual({
-    //   messages: [
-    //     {
-    //       messageId: message2.messageId,
-    //       uId: user2.authUserId,
-    //       message: 'FACE',
-    //       timeSent: NUM,
-    //       isPinned: false,
-    //       reacts: [{
-    //         isThisUserReacted: true,
-    //         reactId: 1,
-    //         uIds: [
-    //           user2.authUserId,
-    //         ],
-    //       }],
-    //     },
-    //   ],
-    // });
+    console.log('user 1',user1.authUserId)
+    console.log('user 2',user2.authUserId)
   });
+
+  test('valid case for dm', () => {
+    expect(messageReact(user2.token, message2.messageId, 1)).toStrictEqual({});
+    const check2 = dmMessages(user2.token, dm1.dmId, 0);
+    console.log('user 1',user1.authUserId)
+    console.log('user 2',user2.authUserId)
+
+    expect(check2).toStrictEqual({
+      messages: [
+        {
+          messageId: message2.messageId,
+          uId: user2.authUserId,
+          message: 'FACE',
+          timeSent: NUM,
+          isPinned: false,
+          reacts: [{
+            isThisUserReacted: false,
+            reactId: 1,
+            uIds: [
+              user2.authUserId,
+            ],
+          }],
+        },
+      ],
+      start:0,
+      end:-1,
+    });
+  });
+
 });

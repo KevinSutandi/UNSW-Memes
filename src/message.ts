@@ -170,7 +170,7 @@ export function messageRemoveV1(
     return {};
 
     // reacted message: "{User’s handle} reacted to your message in {channel/DM name}"
-  // added to a channel/DM: "{User’s handle} added you to {channel/DM name}"
+    // added to a channel/DM: "{User’s handle} added you to {channel/DM name}"
   }
 }
 
@@ -745,63 +745,248 @@ export function messageShareV1(
   }
 }
 
-export function messageReactV1(token: string, messageId: number, reactId: number) {
+export function messageReactV1(
+  token: string,
+  messageId: number,
+  reactId: number
+) {
   // errors
   const data = getData();
   const tokenFound = getUserByToken(token);
 
-  const reactedChannel = findChannelByMessageId(messageId);
-  const reactedDm = findDMbyMessageId(messageId);
+  const channel = findChannelByMessageId(messageId);
+  const dm = findDMbyMessageId(messageId);
 
   if (tokenFound === undefined) {
     throw HTTPError(403, 'Invalid token');
   }
 
-  if (reactedChannel === undefined && reactedDm === undefined) {
-   throw HTTPError(400, 'Invalid messageid');
+  if (channel === undefined && dm === undefined) {
+    throw HTTPError(400, 'Message does not exist');
   }
 
-  // react id
   if (reactId !== 1) {
     throw HTTPError(400, 'Invalid react id');
   }
 
-  if (reactedChannel !== undefined) {
-    const reactedChannelId = reactedChannel.channelId;
-    const messageObj = findMessageInChannel(messageId, reactedChannelId);
-    // Reaction ID maps to index in array
-    if (messageObj.reacts && messageObj.reacts[reactId - 1].uIds.includes(tokenFound.authUserId)) {
-      throw HTTPError(400, 'User has already reacted in channel!');
-    } 
-    else if (messageObj.reacts) {
-      messageObj.reacts[reactId - 1].uIds.push(tokenFound.authUserId);
-      const notification: notification = {
-        dmId: -1,
-        channelId: reactedChannel.channelId,
-        notificationMessage: `${tokenFound.handleStr} reacted to your message in ${
-          reactedChannel.name
-        }: ${messageObj.message.slice(0, 20)}`,
-      };
-      tokenFound.notifications.push(notification);
-    } 
-    else {
-      messageObj.reacts = [];
-      messageObj.reacts[reactId - 1].uIds.push(tokenFound.authUserId);
-      messageObj.reacts.push({
+  let messageIndex = -1;
+  let flags;
+  let index;
+
+  if (channel !== undefined) {
+    messageIndex = findMessageIndexInChannel(channel, messageId);
+    index = getChannelIndex(channel.channelId);
+    flags = channel;
+  } else {
+    messageIndex = findMessageIndexInDM(dm, messageId);
+    index = getDmIndex(dm.dmId);
+    flags = dm;
+  }
+
+  const allMemberIds = getAllMemberIds(flags);
+  if (!allMemberIds.includes(tokenFound.authUserId)) {
+    throw HTTPError(403, 'You cannot react to this message');
+  }
+
+  if (flags === channel) {
+    // if user already reacted to message
+    if (
+      data.channels[index].messages[messageIndex].reacts.length !== 0 &&
+      data.channels[index].messages[messageIndex].reacts[0].uIds.includes(
+        tokenFound.authUserId
+      )
+    ) {
+      throw HTTPError(400, 'You already reacted to this message');
+    }
+
+    if (data.channels[index].messages[messageIndex].reacts.length === 0) {
+      const newReact = {
         reactId: reactId,
         uIds: [tokenFound.authUserId],
         isThisUserReacted: false,
-      });
-
-      const notification: notification = {
-        dmId: -1,
-        channelId: reactedChannel.channelId,
-        notificationMessage: `${tokenFound.handleStr} reacted to your message in ${
-          reactedChannel.name
-        }: ${messageObj.message.slice(0, 20)}`,
       };
+      data.channels[index].messages[messageIndex].reacts.push(newReact);
+    } else {
+      // find the reacts and push the uid
+      data.channels[index].messages[messageIndex].reacts.forEach(
+        (react: reactsObject) => {
+          if (react.reactId === reactId) {
+            react.uIds.push(tokenFound.authUserId);
+          }
+        }
+      );
+    }
 
-      tokenFound.notifications.push(notification);
+    // if author of message reacts to their own message
+    if (
+      data.channels[index].messages[messageIndex].uId === tokenFound.authUserId
+    ) {
+      data.channels[index].messages[messageIndex].reacts.forEach(
+        (react: reactsObject) => {
+          if (react.reactId === reactId) {
+            react.isThisUserReacted = true;
+          }
+        }
+      );
+    }
+  } else {
+    // if user already reacted to message
+    if (
+      data.dm[index].messages[messageIndex].reacts.length !== 0 &&
+      data.dm[index].messages[messageIndex].reacts[0].uIds.includes(
+        tokenFound.authUserId
+      )
+    ) {
+      throw HTTPError(400, 'You already reacted to this message');
+    }
+    if (data.dm[index].messages[messageIndex].reacts.length === 0) {
+      const newReact = {
+        reactId: reactId,
+        uIds: [tokenFound.authUserId],
+        isThisUserReacted: false,
+      };
+      data.dm[index].messages[messageIndex].reacts.push(newReact);
+    } else {
+      // find the reacts and push the uid
+      data.dm[index].messages[messageIndex].reacts.forEach(
+        (react: reactsObject) => {
+          if (react.reactId === reactId) {
+            react.uIds.push(tokenFound.authUserId);
+          }
+        }
+      );
+    }
+
+    // if author of message reacts to their own message
+    if (data.dm[index].messages[messageIndex].uId === tokenFound.authUserId) {
+      data.dm[index].messages[messageIndex].reacts.forEach(
+        (react: reactsObject) => {
+          if (react.reactId === reactId) {
+            react.isThisUserReacted = true;
+          }
+        }
+      );
+    }
+  }
+
+  setData(data);
+  return {};
+}
+
+export function messageUnreactV1(
+  token: string,
+  messageId: number,
+  reactId: number
+) {
+  // errors
+  const data = getData();
+  const tokenFound = getUserByToken(token);
+
+  const channel = findChannelByMessageId(messageId);
+  const dm = findDMbyMessageId(messageId);
+
+  if (tokenFound === undefined) {
+    throw HTTPError(403, 'Invalid token');
+  }
+
+  if (channel === undefined && dm === undefined) {
+    throw HTTPError(400, 'Message does not exist');
+  }
+
+  if (reactId !== 1) {
+    throw HTTPError(400, 'Invalid react id');
+  }
+
+  let messageIndex = -1;
+  let flags;
+  let index;
+
+  if (channel !== undefined) {
+    messageIndex = findMessageIndexInChannel(channel, messageId);
+    index = getChannelIndex(channel.channelId);
+    flags = channel;
+  } else {
+    messageIndex = findMessageIndexInDM(dm, messageId);
+    index = getDmIndex(dm.dmId);
+    flags = dm;
+  }
+
+  const allMemberIds = getAllMemberIds(flags);
+  if (!allMemberIds.includes(tokenFound.authUserId)) {
+    throw HTTPError(403, 'You cannot react to this message');
+  }
+
+  if (flags === channel) {
+    // if user is not in the uids array
+    if (
+      !data.channels[index].messages[messageIndex].reacts[0].uIds.includes(
+        tokenFound.authUserId
+      )
+    ) {
+      throw HTTPError(400, 'You have not reacted to this message');
+    }
+
+    // if user is in the uids array
+    data.channels[index].messages[messageIndex].reacts.forEach(
+      (react: reactsObject) => {
+        if (react.reactId === reactId) {
+          react.uIds.splice(react.uIds.indexOf(tokenFound.authUserId), 1);
+        }
+      }
+    );
+
+    // if author of message unreacts to their own message
+    if (
+      data.channels[index].messages[messageIndex].uId === tokenFound.authUserId
+    ) {
+      data.channels[index].messages[messageIndex].reacts.forEach(
+        (react: reactsObject) => {
+          if (react.reactId === reactId) {
+            react.isThisUserReacted = false;
+          }
+        }
+      );
+    }
+
+    // if there is no more uids in the array, remove the react
+    if (
+      data.channels[index].messages[messageIndex].reacts[0].uIds.length === 0
+    ) {
+      data.channels[index].messages[messageIndex].reacts = [];
+    }
+  } else {
+    // if user is not in the uids array
+    if (
+      !data.dm[index].messages[messageIndex].reacts[0].uIds.includes(
+        tokenFound.authUserId
+      )
+    ) {
+      throw HTTPError(400, 'You have not reacted to this message');
+    }
+
+    // if user is in the uids array
+    data.dm[index].messages[messageIndex].reacts.forEach(
+      (react: reactsObject) => {
+        if (react.reactId === reactId) {
+          react.uIds.splice(react.uIds.indexOf(tokenFound.authUserId), 1);
+        }
+      }
+    );
+
+    // if author of message unreacts to their own message
+    if (data.dm[index].messages[messageIndex].uId === tokenFound.authUserId) {
+      data.dm[index].messages[messageIndex].reacts.forEach(
+        (react: reactsObject) => {
+          if (react.reactId === reactId) {
+            react.isThisUserReacted = false;
+          }
+        }
+      );
+    }
+
+    // if there is no more uids in the array, remove the react
+    if (data.dm[index].messages[messageIndex].reacts[0].uIds.length === 0) {
+      data.dm[index].messages[messageIndex].reacts = [];
     }
   }
 

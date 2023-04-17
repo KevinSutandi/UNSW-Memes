@@ -319,8 +319,14 @@ export function messageSendDm(token: string, dmId: number, message: string) {
   );
 }
 
-export function adminuserPermissionChange(token: string, uId: number, permissionId: number) {
-  return requestHelper('POST', '/admin/userpermission/change/v1',
+export function adminuserPermissionChange(
+  token: string,
+  uId: number,
+  permissionId: number
+) {
+  return requestHelper(
+    'POST',
+    '/admin/userpermission/change/v1',
     {
       uId,
       permissionId,
@@ -330,7 +336,9 @@ export function adminuserPermissionChange(token: string, uId: number, permission
 }
 
 export function adminuserRemove(token: string, uId: number) {
-  return requestHelper('DELETE', '/admin/user/remove/v1',
+  return requestHelper(
+    'DELETE',
+    '/admin/user/remove/v1',
     {
       uId,
     },
@@ -338,8 +346,14 @@ export function adminuserRemove(token: string, uId: number) {
   );
 }
 
-export function messageReact(token: string, messageId: number, reactId: number) {
-  return requestHelper('POST', '/message/react/v1',
+export function messageReact(
+  token: string,
+  messageId: number,
+  reactId: number
+) {
+  return requestHelper(
+    'POST',
+    '/message/react/v1',
     {
       messageId,
       reactId,
