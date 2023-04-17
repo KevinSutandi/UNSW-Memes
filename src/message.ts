@@ -58,20 +58,13 @@ export function messageSendV1(
 
   const channelIndex = getChannelIndex(channelId);
   const messageId = Math.floor(Math.random() * 1000000);
-  const uIdsReact: Array<number> = [];
   const newMessage = {
     messageId: messageId,
     uId: user.authUserId,
     message: message,
     timeSent: Math.floor(Date.now() / 1000),
     isPinned: false,
-    reacts: [
-      {
-        reactId: 1,
-        uIds: uIdsReact,
-        isThisUserReacted: false,
-      },
-    ],
+    reacts: [] as reactsObject[],
   };
   data.channels[channelIndex].messages.push(newMessage);
 
@@ -304,20 +297,13 @@ export function messageSendDmV1(
 
   const dmIndex = getDmIndex(dmId);
   const messageId = Math.floor(Math.random() * 1000000);
-  const uIdsReact: Array<number> = [];
   const newMessage = {
     messageId: messageId,
     uId: user.authUserId,
     message: message,
     timeSent: Math.floor(Date.now() / 1000),
     isPinned: false,
-    reacts: [
-      {
-        reactId: 1,
-        uIds: uIdsReact,
-        isThisUserReacted: false,
-      },
-    ],
+    reacts: [] as reactsObject[],
   };
   data.dm[dmIndex].messages.push(newMessage);
 
@@ -583,7 +569,6 @@ export function messageSendLaterV1(
 
   const channelIndex = getChannelIndex(channelId);
   const messageId = Math.floor(Math.random() * 1000000);
-  const uIdsReact = [] as Array<number>;
 
   const timeDelay = timeSent - currentTime;
   setTimeout(() => {
@@ -593,13 +578,7 @@ export function messageSendLaterV1(
       message: message,
       timeSent: Math.floor(Date.now() / 1000),
       isPinned: false,
-      reacts: [
-        {
-          reactId: 1,
-          uIds: uIdsReact,
-          isThisUserReacted: false,
-        },
-      ],
+      reacts: [] as reactsObject[],
     };
     data.channels[channelIndex].messages.push(newMessage);
     setData(data);
@@ -829,6 +808,23 @@ export function messageReactV1(
         }
       );
     }
+
+    // send notification to message author that someone reacted to their message
+    if (
+      data.channels[index].messages[messageIndex].uId !== tokenFound.authUserId
+    ) {
+      const newNotification = {
+        channelId: data.channels[index].channelId,
+        dmId: -1,
+        notificationMessage: `${tokenFound.handleStr} reacted to your message in ${data.channels[index].name}`,
+      };
+
+      const userIndex = findUserIndex(
+        data.channels[index].messages[messageIndex].uId
+      );
+
+      data.users[userIndex].notifications.push(newNotification);
+    }
   } else {
     // if user already reacted to message
     if (
@@ -866,6 +862,21 @@ export function messageReactV1(
           }
         }
       );
+    }
+
+    // send notification to message author that someone reacted to their message
+    if (data.dm[index].messages[messageIndex].uId !== tokenFound.authUserId) {
+      const newNotification = {
+        channelId: -1,
+        dmId: data.dm[index].dmId,
+        notificationMessage: `${tokenFound.handleStr} reacted to your message in ${data.dm[index].name}`,
+      };
+
+      const userIndex = findUserIndex(
+        data.dm[index].messages[messageIndex].uId
+      );
+
+      data.users[userIndex].notifications.push(newNotification);
     }
   }
 
@@ -918,6 +929,9 @@ export function messageUnreactV1(
 
   if (flags === channel) {
     // if user is not in the uids array
+    if (data.channels[index].messages[messageIndex].reacts.length === 0) {
+      throw HTTPError(400, 'There is no reaction to remove');
+    }
     if (
       !data.channels[index].messages[messageIndex].reacts[0].uIds.includes(
         tokenFound.authUserId
@@ -955,6 +969,10 @@ export function messageUnreactV1(
       data.channels[index].messages[messageIndex].reacts = [];
     }
   } else {
+    if (data.dm[index].messages[messageIndex].reacts.length === 0) {
+      throw HTTPError(400, 'There is no reaction to remove');
+    }
+
     // if user is not in the uids array
     if (
       !data.dm[index].messages[messageIndex].reacts[0].uIds.includes(
