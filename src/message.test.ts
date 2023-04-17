@@ -1627,8 +1627,8 @@ describe('testing message react', () => {
   let user2: AuthReturn;
   let channel1: { channelId: number };
   // let channel2: { channelId: number };
-  let message1 : newMessageReturn;
-  let message2 : newMessageReturn;
+  let message1: newMessageReturn;
+  let message2: newMessageReturn;
   let dm1: dmCreateReturn;
 
   beforeEach(() => {
@@ -1648,16 +1648,8 @@ describe('testing message react', () => {
     channel1 = channelsCreate(user1.token, 'wego', true);
     // channel2 = channelsCreate(user2.token, 'memes', false);
     dm1 = dmCreate(user1.token, [user2.authUserId]);
-    message1 = messageSend(
-      user1.token,
-      channel1.channelId,
-      'HAPPY'
-    );
-    message2 = messageSendDm(
-      user1.token,
-      dm1.dmId,
-      'FACE'
-    );
+    message1 = messageSend(user1.token, channel1.channelId, 'HAPPY');
+    message2 = messageSendDm(user1.token, dm1.dmId, 'FACE');
   });
 
   afterEach(() => {
@@ -1678,14 +1670,14 @@ describe('testing message react', () => {
 
   // message already contained the react that sent from the authorised user
   //
-  test.skip('react already sent', () => {
+  test('react already sent', () => {
     expect(messageReact(user1.token, message1.messageId, 1)).toStrictEqual({});
     expect(messageReact(user1.token, message1.messageId, 1)).toBe(400);
     expect(messageReact(user1.token, message2.messageId, 1)).toStrictEqual({});
     expect(messageReact(user1.token, message2.messageId, 1)).toBe(400);
   });
 
-  test.only('valid case', () => {
+  test('valid case', () => {
     // messageReact(user1.token, message1.messageId, 1);
     // messageReact(user2.token, message2.messageId, 1)
     console.log('message1 id is ', message1.messageId);
@@ -1701,13 +1693,13 @@ describe('testing message react', () => {
           message: 'HAPPY',
           timeSent: NUM,
           isPinned: false,
-          reacts: [{
-            isThisUserReacted: false,
-            reactId: 1,
-            uIds: [
-              user1.authUserId,
-            ],
-          }],
+          reacts: [
+            {
+              isThisUserReacted: true,
+              reactId: 1,
+              uIds: [user1.authUserId],
+            },
+          ],
         },
       ],
       start: 0,
@@ -1718,19 +1710,21 @@ describe('testing message react', () => {
       messages: [
         {
           messageId: message2.messageId,
-          uId: user2.authUserId,
+          uId: user1.authUserId,
           message: 'FACE',
           timeSent: NUM,
           isPinned: false,
-          reacts: [{
-            isThisUserReacted: true,
-            reactId: 1,
-            uIds: [
-              user2.authUserId,
-            ],
-          }],
+          reacts: [
+            {
+              isThisUserReacted: false,
+              reactId: 1,
+              uIds: [user2.authUserId],
+            },
+          ],
         },
       ],
+      start: 0,
+      end: -1,
     });
   });
 });
