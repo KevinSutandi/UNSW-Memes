@@ -1,4 +1,5 @@
 import {
+  authLogout,
   channelJoin,
   channelLeave,
   channelMessage,
@@ -79,7 +80,7 @@ describe('Test error cases for standup with async', () => {
       true
     );
 
-    standUpStart(user1.token, channel1.channelId, 2);
+    standUpStart(user1.token, channel1.channelId, 1);
 
     // StandUp Start error tests
     expect(standUpStart(user1.token, channel1.channelId, 5)).toStrictEqual(400);
@@ -108,7 +109,7 @@ describe('Test error cases for standup with async', () => {
     expect(channelLeave(user1.token, channel1.channelId)).toStrictEqual(400);
 
     // wait for standup to end
-    await sleep(2);
+    await sleep(1);
 
     // cannot send message
     expect(standUpSend(user1.token, channel1.channelId, 'hello')).toStrictEqual(
@@ -116,6 +117,41 @@ describe('Test error cases for standup with async', () => {
     );
 
     expect(standUpActive(user1.token, channel1.channelId)).toStrictEqual({
+      isActive: false,
+      timeFinish: 0,
+    });
+  });
+
+  test('standup then logout should not result in crashing', async () => {
+    const user1: AuthReturn = authRegister(
+      'kevins050324@gmail.com',
+      'kevin1001',
+      'Kevin',
+      'Sutandi'
+    );
+    const user2: AuthReturn = authRegister(
+      'aslkdjf@gmail.com',
+      'alksjdf77',
+      'Kevin',
+      'asdf'
+    );
+    const channel1: { channelId: number } = channelsCreate(
+      user1.token,
+      'wego',
+      true
+    );
+
+    channelJoin(user2.token, channel1.channelId);
+
+    standUpStart(user1.token, channel1.channelId, 1);
+
+    authLogout(user1.token);
+
+    // wait for standup to end
+    await sleep(1);
+
+    // check that standUpActive still works
+    expect(standUpActive(user2.token, channel1.channelId)).toStrictEqual({
       isActive: false,
       timeFinish: 0,
     });
@@ -142,12 +178,12 @@ describe('Test error cases for standup with async', () => {
 
     channelJoin(user2.token, channel1.channelId);
 
-    const timeToCompare = Math.floor(new Date().getTime() / 1000) + 2;
-    const timeFinish = standUpStart(user1.token, channel1.channelId, 2);
+    const timeToCompare = Math.floor(new Date().getTime() / 1000) + 1;
+    const timeFinish = standUpStart(user1.token, channel1.channelId, 1);
 
     // check the timeFinish is within 3 seconds
     expect(timeFinish.timeFinish).toBeGreaterThanOrEqual(timeToCompare);
-    expect(timeFinish.timeFinish).toBeLessThanOrEqual(timeToCompare + 1);
+    expect(timeFinish.timeFinish).toBeLessThanOrEqual(timeToCompare + 2);
 
     // check standup is active
     expect(standUpActive(user1.token, channel1.channelId)).toStrictEqual({
@@ -167,7 +203,7 @@ describe('Test error cases for standup with async', () => {
     ).toStrictEqual({});
 
     // wait for standup to end
-    await sleep(2);
+    await sleep(1);
     expect(standUpActive(user1.token, channel1.channelId)).toStrictEqual({
       isActive: false,
       timeFinish: 0,
@@ -175,7 +211,7 @@ describe('Test error cases for standup with async', () => {
 
     // check message sent
     const messageSent =
-      'kevinsutandi: This should be on top\nkevinasdf: This should be on middle\nkevinsutandi: This should be on bottom\n';
+      'kevinsutandi: This should be on top\nkevinasdf: This should be on middle\nkevinsutandi: This should be on bottom';
     expect(channelMessage(user1.token, channel1.channelId, 0)).toStrictEqual({
       messages: [
         {

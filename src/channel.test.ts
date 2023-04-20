@@ -610,6 +610,13 @@ describe('testing channelAddowner', () => {
     ).toBe(400);
   });
 
+  test('user executing command is not in channel test 1', () => {
+    channelJoin(user2.token, channel1.channelId);
+    expect(
+      channelAddOwner(user3.token, channel1.channelId, user2.authUserId)
+    ).toBe(403);
+  });
+
   test('user already is owner test 1', () => {
     expect(
       channelAddOwner(user1.token, channel1.channelId, user1.authUserId)
@@ -974,6 +981,13 @@ describe('testing removing owner from channel', () => {
     ).toBe(403);
   });
 
+  test('user executing command is not in channel test 1', () => {
+    channelJoin(user2.token, channel1.channelId);
+    expect(
+      channelRemoveOwner(user3.token, channel1.channelId, user2.authUserId)
+    ).toBe(403);
+  });
+
   test('User with uId is not owner test 1', () => {
     channelJoin(user1.token, channel3.channelId);
     channelJoin(user2.token, channel3.channelId);
@@ -1018,6 +1032,15 @@ describe('testing removing owner from channel', () => {
     ).toBe(400);
   });
 
+  test('channel member removes  owner test', () => {
+    channelJoin(user1.token, channel2.channelId);
+    channelJoin(user3.token, channel2.channelId);
+    channelAddOwner(user2.token, channel2.channelId, user1.authUserId);
+    expect(
+      channelRemoveOwner(user3.token, channel2.channelId, user2.authUserId)
+    ).toBe(403);
+  });
+
   test('User with uId is the only owner test 2', () => {
     expect(
       channelRemoveOwner(user3.token, channel3.channelId, user3.authUserId)
@@ -1025,6 +1048,7 @@ describe('testing removing owner from channel', () => {
   });
 
   test('Global owner removes the only owner test 3', () => {
+    channelJoin(user1.token, channel2.channelId);
     expect(
       channelRemoveOwner(user1.token, channel2.channelId, user2.authUserId)
     ).toBe(400);
@@ -1070,6 +1094,7 @@ describe('testing removing owner from channel', () => {
   });
 
   test('global owner removes the other owner test', () => {
+    channelJoin(user1.token, channel2.channelId);
     channelJoin(user3.token, channel2.channelId);
     channelAddOwner(user2.token, channel2.channelId, user3.authUserId);
     channelRemoveOwner(user1.token, channel2.channelId, user3.authUserId);
@@ -1094,6 +1119,14 @@ describe('testing removing owner from channel', () => {
           nameFirst: 'Jonah',
           nameLast: 'Meggs',
           handleStr: 'jonahmeggs',
+          profileImgUrl: expect.any(String),
+        },
+        {
+          uId: user1.authUserId,
+          email: 'kevins050324@gmail.com',
+          nameFirst: 'Kevin',
+          nameLast: 'Sutandi',
+          handleStr: 'kevinsutandi',
           profileImgUrl: expect.any(String),
         },
         {

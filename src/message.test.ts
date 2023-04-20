@@ -1478,6 +1478,7 @@ describe('testing notifications', () => {
   });
 
   test('tagged user1 in channel should send notification', () => {
+    channelJoin(user1.token, channel1.channelId);
     messageSend(user2.token, channel1.channelId, 'test moments @kevinsutandi');
     expect(notificationsGetV1(user1.token)).toStrictEqual({
       notifications: [
@@ -1492,6 +1493,7 @@ describe('testing notifications', () => {
   });
 
   test('tagged both users in channel should send notification', () => {
+    channelJoin(user1.token, channel1.channelId);
     messageSend(
       user2.token,
       channel1.channelId,
@@ -1521,6 +1523,98 @@ describe('testing notifications', () => {
           dmId: dm1.dmId,
           notificationMessage:
             'kevinsutandi added you to kevinsutandi, soccerboy',
+        },
+      ],
+    });
+  });
+
+  test('tagged both users in channel and one invalid should send notification', () => {
+    channelJoin(user1.token, channel1.channelId);
+    messageSend(
+      user2.token,
+      channel1.channelId,
+      'test moments @kevinsutandi @soccerboy @randomass'
+    );
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+      ],
+    });
+
+    expect(notificationsGetV1(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage:
+            'kevinsutandi added you to kevinsutandi, soccerboy',
+        },
+      ],
+    });
+  });
+
+  test('tagged both users in channel and one user not in channel (no notif) should send notification', () => {
+    channelJoin(user1.token, channel1.channelId);
+    authRegister('kev@gm.com', 'kevin1001', 'lmao', 'lmao');
+    messageSend(
+      user2.token,
+      channel1.channelId,
+      'test moments @kevinsutandi @soccerboy @lmaolmao'
+    );
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+      ],
+    });
+
+    expect(notificationsGetV1(user2.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage:
+            'kevinsutandi added you to kevinsutandi, soccerboy',
+        },
+      ],
+    });
+  });
+
+  test('multiple tags on same person should only send one notification', () => {
+    channelJoin(user1.token, channel1.channelId);
+    messageSend(
+      user2.token,
+      channel1.channelId,
+      'test moments @kevinsutandi @kevinsutandi'
+    );
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
         },
       ],
     });
@@ -1684,7 +1778,7 @@ describe('testing message react', () => {
           isPinned: false,
           reacts: [
             {
-              isThisUserReacted: false,
+              isThisUserReacted: true,
               reactId: 1,
               uIds: [user2.authUserId],
             },
@@ -1892,7 +1986,7 @@ describe('testing message unreact', () => {
           isPinned: false,
           reacts: [
             {
-              isThisUserReacted: true,
+              isThisUserReacted: false,
               reactId: 1,
               uIds: [user1.authUserId],
             },

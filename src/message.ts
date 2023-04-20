@@ -71,20 +71,32 @@ export function messageSendV1(
   // send notification if there are users tagged
   // tagged: "{User’s handle} tagged you in {channel/DM name}: {first 20 characters of the message}"
   const taggedUsers = message.match(/@([a-zA-Z0-9_]+)/g);
+  // avoid duplicate notifications
   if (taggedUsers !== null) {
-    const notification: notification = {
-      channelId: channelId,
-      dmId: -1,
-      notificationMessage: `${user.handleStr} tagged you in ${
-        channel.name
-      }: ${message.slice(0, 20)}`,
-    };
+    const notifiedUsers = new Set(); // keep track of notified users
     taggedUsers.forEach((taggedUser) => {
-      // find the index of the user from handleStr
       const taggedUserIndex = data.users.findIndex(
         (user) => user.handleStr === taggedUser.slice(1)
       );
+      if (taggedUserIndex < 0) {
+        return;
+      }
+      const authUserId = data.users[taggedUserIndex].authUserId;
+      if (!allMemberIds.includes(authUserId)) {
+        return;
+      }
+      if (notifiedUsers.has(authUserId)) {
+        return; // skip notifying the same user again
+      }
+      const notification: notification = {
+        channelId: channelId,
+        dmId: -1,
+        notificationMessage: `${user.handleStr} tagged you in ${
+          channel.name
+        }: ${message.slice(0, 20)}`,
+      };
       data.users[taggedUserIndex].notifications.push(notification);
+      notifiedUsers.add(authUserId); // add the user to the set of notified users
     });
   }
 
@@ -813,7 +825,6 @@ export function messageReactV1(
       const newReact = {
         reactId: reactId,
         uIds: [tokenFound.authUserId],
-        isThisUserReacted: false,
       };
       data.channels[index].messages[messageIndex].reacts.push(newReact);
     } else {
@@ -822,19 +833,6 @@ export function messageReactV1(
         (react: reactsObject) => {
           if (react.reactId === reactId) {
             react.uIds.push(tokenFound.authUserId);
-          }
-        }
-      );
-    }
-
-    // if author of message reacts to their own message
-    if (
-      data.channels[index].messages[messageIndex].uId === tokenFound.authUserId
-    ) {
-      data.channels[index].messages[messageIndex].reacts.forEach(
-        (react: reactsObject) => {
-          if (react.reactId === reactId) {
-            react.isThisUserReacted = true;
           }
         }
       );
@@ -870,7 +868,6 @@ export function messageReactV1(
       const newReact = {
         reactId: reactId,
         uIds: [tokenFound.authUserId],
-        isThisUserReacted: false,
       };
       data.dm[index].messages[messageIndex].reacts.push(newReact);
     } else {
@@ -879,17 +876,6 @@ export function messageReactV1(
         (react: reactsObject) => {
           if (react.reactId === reactId) {
             react.uIds.push(tokenFound.authUserId);
-          }
-        }
-      );
-    }
-
-    // if author of message reacts to their own message
-    if (data.dm[index].messages[messageIndex].uId === tokenFound.authUserId) {
-      data.dm[index].messages[messageIndex].reacts.forEach(
-        (react: reactsObject) => {
-          if (react.reactId === reactId) {
-            react.isThisUserReacted = true;
           }
         }
       );
@@ -987,19 +973,6 @@ export function messageUnreactV1(
       }
     );
 
-    // if author of message unreacts to their own message
-    if (
-      data.channels[index].messages[messageIndex].uId === tokenFound.authUserId
-    ) {
-      data.channels[index].messages[messageIndex].reacts.forEach(
-        (react: reactsObject) => {
-          if (react.reactId === reactId) {
-            react.isThisUserReacted = false;
-          }
-        }
-      );
-    }
-
     // if there is no more uids in the array, remove the react
     if (
       data.channels[index].messages[messageIndex].reacts[0].uIds.length === 0
@@ -1028,17 +1001,6 @@ export function messageUnreactV1(
         }
       }
     );
-
-    // if author of message unreacts to their own message
-    if (data.dm[index].messages[messageIndex].uId === tokenFound.authUserId) {
-      data.dm[index].messages[messageIndex].reacts.forEach(
-        (react: reactsObject) => {
-          if (react.reactId === reactId) {
-            react.isThisUserReacted = false;
-          }
-        }
-      );
-    }
 
     // if there is no more uids in the array, remove the react
     if (data.dm[index].messages[messageIndex].reacts[0].uIds.length === 0) {

@@ -103,8 +103,11 @@ export function adminuserRemoveV1(token: string, uId: number) {
     }
   }, 0);
 
-  if (globalOwnernum === 1) {
-    throw HTTPError(400, 'You are the only global owner!');
+  if (globalOwnernum === 1 && uIdfound.isGlobalOwner === 1) {
+    throw HTTPError(
+      400,
+      'The person you are trying to remove is the only Global Owner!'
+    );
   }
   data = editProfile(uId, data);
   data = replaceMessage(uId, data);
@@ -141,6 +144,9 @@ function editProfile(uId: number, data: newData) {
   removeUser.nameLast = 'user';
   removeUser.email = '';
   removeUser.handleStr = '';
+  removeUser.isGlobalOwner = 2;
+  // clear token
+  removeUser.token = [{ token: '' }];
   return data;
 }
 

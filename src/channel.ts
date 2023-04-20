@@ -58,6 +58,15 @@ export function channelMessagesV1(
     throw HTTPError(400, '"Start" is greater than the amount of messages');
   }
 
+  for (const message of channel.messages) {
+    if (message.reacts.length !== 0) {
+      if (message.reacts[0].uIds.includes(user.authUserId)) {
+        message.reacts[0].isThisUserReacted = true;
+      } else {
+        message.reacts[0].isThisUserReacted = false;
+      }
+    }
+  }
   // reverse message
   channel.messages.reverse();
 
@@ -336,6 +345,10 @@ export function channelAddOwnerV1(
     throw HTTPError(400, 'User is not a member of the channel');
   }
 
+  if (!isChannelMember(channelId, user.authUserId)) {
+    throw HTTPError(403, 'You are not a member of the channel');
+  }
+
   if (isChannelOwner(uId, channelId)) {
     throw HTTPError(400, user.authUserId + ' is already owner of this channel');
   }
@@ -390,6 +403,11 @@ export function channelRemoveOwnerV1(
   // Check if user is in the channel
   if (!isChannelMember(channelId, uId)) {
     throw HTTPError(400, ' is not a member of the channel');
+  }
+
+  // Check if the user executing the command is in the channel
+  if (!isChannelMember(channelId, user.authUserId)) {
+    throw HTTPError(403, 'You are not a member of the channel');
   }
 
   // uId user is not owner of the channel

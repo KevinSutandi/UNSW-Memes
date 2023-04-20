@@ -277,9 +277,9 @@ app.post('/message/unpin/v1', (req: Request, res: Response, next) => {
   return res.json(result);
 });
 
-app.post('/search/v1', (req: Request, res: Response, next) => {
+app.get('/search/v1', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
-  const { queryStr } = req.body;
+  const queryStr = req.query.queryStr as string;
   const result = searchV1(token, queryStr);
   return res.json(result);
 });

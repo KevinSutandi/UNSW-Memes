@@ -156,6 +156,16 @@ export function dmMessagesV1(token: string, dmId: number, start: number) {
   }
 
   const dm = findDm(dmId);
+
+  for (const message of dm.messages) {
+    if (message.reacts.length !== 0) {
+      if (message.reacts[0].uIds.includes(user.authUserId)) {
+        message.reacts[0].isThisUserReacted = true;
+      } else {
+        message.reacts[0].isThisUserReacted = false;
+      }
+    }
+  }
   // reverse message
   dm.messages.reverse();
 

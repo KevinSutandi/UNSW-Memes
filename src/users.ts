@@ -12,6 +12,7 @@ import HTTPError from 'http-errors';
 import { port } from './config.json';
 import request from 'sync-request';
 import sharp from 'sharp';
+// import { getAllMemberIds } from './functionHelper';
 
 /**
  * For a valid user, userProfileV1 returns information about the user
