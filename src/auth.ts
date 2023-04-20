@@ -192,7 +192,9 @@ export function passwordResetRequestV1(email: string) {
     text: 'Your reset code is ' + resetCode,
   };
 
+  // ignoring the if for coverage as it is not possible to test
   transporter.sendMail(mailOptions, function (error: string) {
+    /* istanbul ignore if */
     if (error) {
       console.log(error);
     } else {
@@ -214,6 +216,10 @@ export function passwordResetRequestV1(email: string) {
   } else {
     data.resetCodes[codeIndex].resetCode = resetCode;
   }
+
+  // log out the user from all devices
+  const userIndex = findUserIndex(user.authUserId);
+  data.users[userIndex].token = [];
 
   setData(data);
   return {};

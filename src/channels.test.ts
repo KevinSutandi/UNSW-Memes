@@ -8,8 +8,6 @@ import {
   clearV1,
 } from './httpHelper';
 
-const ERROR = { error: expect.any(String) };
-
 // push the test first please
 describe('testing channelsListAllV2', () => {
   let user: AuthReturn;
@@ -34,7 +32,7 @@ describe('testing channelsListAllV2', () => {
   });
 
   test('invalid token', () => {
-    expect(channelsListAll(user.token + 1)).toStrictEqual(ERROR);
+    expect(channelsListAll(user.token + 1)).toStrictEqual(403);
   });
 
   test('valid token, no channels were created', () => {
@@ -159,7 +157,7 @@ describe('/channels/list/v2', () => {
   });
 
   test('Token is invalid', () => {
-    expect(channelsList('asade')).toStrictEqual(ERROR);
+    expect(channelsList('asade')).toStrictEqual(403);
   });
 
   test('valid token, multiple users created in different channels', () => {

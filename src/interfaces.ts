@@ -64,7 +64,7 @@ export interface userData {
   isGlobalOwner: number;
   profileImgUrl: string;
   token: Array<{
-    token: string;
+    token: string | null;
   }>;
   notifications: Array<{
     channelId: number;
@@ -166,7 +166,7 @@ export interface channelsListReturn {
 
 export interface AuthReturn {
   authUserId: number;
-  token: string;
+  token: string | null;
 }
 
 export interface dmCreateReturn {

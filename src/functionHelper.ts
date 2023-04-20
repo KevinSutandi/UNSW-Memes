@@ -218,28 +218,32 @@ export function findUserbyEmail(email: string) {
 }
 // make a function where user passes in imgUrl and stores in /img/ folder
 export function downloadImage(imgUrl?: string, name?: string) {
-  let image = imgUrl;
-  if (name === undefined && imgUrl === undefined) {
-    image =
-      'https://static.wikia.nocookie.net/joke-battles/images/b/b5/The_Screaming_Cat.jpg';
-    name = 'default.jpg';
+  try {
+    let image = imgUrl;
+    if (name === undefined && imgUrl === undefined) {
+      image =
+        'https://static.wikia.nocookie.net/joke-battles/images/b/b5/The_Screaming_Cat.jpg';
+      name = 'default.jpg';
+    }
+
+    const path = require('path');
+    const fs = require('fs');
+
+    const dir = path.join(__dirname, '../img');
+
+    const filePath = path.join(dir, 'default.jpg');
+
+    if (fs.existsSync(filePath) && name === 'default.jpg') {
+      return;
+    }
+
+    const res = request('GET', image);
+    const img = res.getBody();
+
+    fs.writeFileSync(path.join(dir, name), img, { flag: 'w' });
+  } catch (error) /* istanbul ignore next */ {
+    console.error(`Error downloading image: ${error}`);
   }
-
-  const path = require('path');
-  const fs = require('fs');
-
-  const dir = path.join(__dirname, '../img');
-
-  const filePath = path.join(dir, 'default.jpg');
-
-  if (fs.existsSync(filePath) && name === 'default.jpg') {
-    return;
-  }
-
-  const res = request('GET', image);
-  const img = res.getBody();
-
-  fs.writeFileSync(path.join(dir, name), img, { flag: 'w' });
 }
 
 export function updateAllData(

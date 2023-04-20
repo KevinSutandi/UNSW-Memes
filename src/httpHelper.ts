@@ -283,7 +283,7 @@ export function messageUnpinV1(token: string, messageId: number) {
 
 export function searchV1(token: string, queryStr: string) {
   return requestHelper(
-    'POST',
+    'GET',
     '/search/v1',
     {
       queryStr,

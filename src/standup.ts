@@ -54,7 +54,19 @@ export function standupStartV1(
 
   // timeout
   setTimeout(() => {
-    standUpEnd(token, channelId);
+    // if token is invalid, do nothing
+    try {
+      standUpEnd(token, channelId);
+    } catch (e) {
+      const data = getData();
+      const channelIndex = getChannelIndex(channelId);
+      const standUp = data.channels[channelIndex].standUp;
+      standUp.standUpActive = false;
+      standUp.standUpLength = 0;
+      standUp.standUpMessage = [];
+      standUp.standUpOwner = -1;
+      setData(data);
+    }
   }, length * 1000);
 
   return { timeFinish: timeFinish };
@@ -169,6 +181,10 @@ function standUpEnd(token: string, channelId: number) {
   const data = getData();
   const standUp = data.channels[channelIndex].standUp;
 
+  if (user === undefined) {
+    throw HTTPError(403, 'Token is invalid');
+  }
+
   if (standUp.standUpMessage.length === 0) {
     standUp.standUpActive = false;
     standUp.standUpLength = 0;
@@ -185,8 +201,15 @@ function standUpEnd(token: string, channelId: number) {
     const messageSenderHandle = user.handleStr;
     const messageContent = standUp.standUpMessage[i].message;
 
+    // join the message together
     message += `${messageSenderHandle}: ${messageContent}\n`;
+
+    // if the message is the last message, delete the last new line
+    if (i === messageLength - 1) {
+      message = message.slice(0, -1);
+    }
   }
+  // add new lines in between messages
 
   const newMessage = {
     messageId: Math.floor(Math.random() * 1000000),

@@ -324,11 +324,9 @@ describe('password reset request', () => {
   test('invalid email, does not return error', () => {
     expect(passwordResetRequest('gunman@gmail.com')).toStrictEqual({});
   });
-  test('valid email', () => {
+  test('valid email then logout', () => {
     expect(passwordResetRequest('kevins050@gmail.com')).toStrictEqual({});
-    expect(userProfile(user.token, user.authUserId)).toStrictEqual(
-      expect.any(Object)
-    );
+    expect(authLogout(user.token)).toStrictEqual(403);
   });
 });
 
@@ -359,9 +357,10 @@ describe('password reset', () => {
     const data = getData();
     const resetCode = data.resetCodes[0].resetCode;
     expect(passwordResetReset(resetCode, 'newhardpassword')).toStrictEqual({});
-    expect(userProfile(user.token, user.authUserId)).toStrictEqual(
-      expect.any(Object)
-    );
+    expect(authLogin('kevins050@gmail.com', 'newhardpassword')).toStrictEqual({
+      authUserId: user.authUserId,
+      token: expect.any(String),
+    });
   });
 
   test('valid input, user requested twice', () => {
@@ -370,8 +369,9 @@ describe('password reset', () => {
     const data = getData();
     const resetCode = data.resetCodes[0].resetCode;
     expect(passwordResetReset(resetCode, 'newhardpassword')).toStrictEqual({});
-    expect(userProfile(user.token, user.authUserId)).toStrictEqual(
-      expect.any(Object)
-    );
+    expect(authLogin('kevins050@gmail.com', 'newhardpassword')).toStrictEqual({
+      authUserId: user.authUserId,
+      token: expect.any(String),
+    });
   });
 });
