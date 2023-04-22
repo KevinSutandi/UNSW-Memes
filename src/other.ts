@@ -6,6 +6,12 @@ export function clearV1(): Record<string, never> {
   data.channels = [];
   data.dm = [];
   data.resetCodes = [];
+  data.stats = {
+    channelsExist: [],
+    dmsExist: [],
+    messagesExist: [],
+    utilizationRate: 0,
+  };
   removeImages();
   setData(data);
 

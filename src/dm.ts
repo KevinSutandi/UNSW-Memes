@@ -3,9 +3,11 @@ import {
   findDm,
   findUser,
   findUserIndex,
+  getCurrentTime,
   getUserByToken,
   isDm,
   isDmMember,
+  updateDmInfo,
 } from './functionHelper';
 import {
   errorMessage,
@@ -99,6 +101,7 @@ export function dmCreateV1(
   });
 
   // send notification to all the users invited to the dm
+  // and add the stats
   for (const uId of uIds) {
     const uIdIndex = findUserIndex(uId);
     data.users[uIdIndex].notifications.push({
@@ -108,7 +111,17 @@ export function dmCreateV1(
     });
   }
 
+  // update the dm info
+  data.stats.dmsExist.push({
+    numDmsExist: data.dm.length,
+    timeStamp: getCurrentTime(),
+  });
   setData(data);
+
+  for (const uId of userArray) {
+    updateDmInfo(uId.authUserId, 0);
+  }
+
   return { dmId: dmId };
 }
 
@@ -262,23 +275,33 @@ export function dmListV1(token: string): dmListReturn | errorMessage {
   @returns {Object} An empty object to indicate successful removal of the DM.
 */
 export function dmRemoveV1(token: string, dmId: number) {
-  const data = getData();
   const user = getUserByToken(token);
-  const dmIndex = data.dm.findIndex((item) => item.dmId === dmId);
+  const dm = findDm(dmId);
 
   if (user === undefined) {
     throw HTTPError(403, 'Invalid token');
   }
-  if (dmIndex === -1) {
+  if (dm === undefined) {
     throw HTTPError(400, 'dmId does not refer to a valid DM');
   }
-  if (
-    !data.dm[dmIndex].ownerMembers.some((item) => item.uId === user.authUserId)
-  ) {
+  if (!dm.ownerMembers.some((item) => item.uId === user.authUserId)) {
     throw HTTPError(403, 'User is not the original creator');
   }
+
+  for (const member of dm.allMembers) {
+    updateDmInfo(member.uId, 1);
+  }
+
+  const data = getData();
+  const dmIndex = data.dm.findIndex((a) => a.dmId === dmId);
   data.dm.splice(dmIndex, 1);
+  data.stats.dmsExist.push({
+    timeStamp: getCurrentTime(),
+    numDmsExist: data.dm.length,
+  });
+
   setData(data);
+
   return {};
 }
 
@@ -327,5 +350,8 @@ export function dmLeaveV1(token: string, dmId: number) {
 
   data.dm[dmIndex].allMembers.splice(userMemberIndex, 1);
   setData(data);
+
+  // update stats to remove the dm
+  updateDmInfo(user.authUserId, 1);
   return {};
 }

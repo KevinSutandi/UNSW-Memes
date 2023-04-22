@@ -45,6 +45,13 @@ export interface standUp {
   standUpOwner: number;
 }
 
+export interface userStats {
+  channelsJoined: Array<{ timeStamp: number; numChannelsJoined: number }>;
+  messagesSent: Array<{ timeStamp: number; numMessagesSent: number }>;
+  dmsJoined: Array<{ timeStamp: number; numDmsJoined: number }>;
+  involvementRate: number;
+}
+
 /**
  * @typedef {Object} userData - object containing the full user information in the datastore
  * @property {number} uId - user's unique id
@@ -71,6 +78,7 @@ export interface userData {
     dmId: number;
     notificationMessage: string;
   }>;
+  stats: userStats;
 }
 
 /**
@@ -128,6 +136,13 @@ export interface channelObject {
   isPublic: boolean;
   ownerMembers: Array<userObject>;
   allMembers: Array<userObject>;
+}
+
+export interface statsData {
+  channelsExist: Array<{ timeStamp: number; numChannelsExist: number }>;
+  dmsExist: Array<{ timeStamp: number; numDmsExist: number }>;
+  messagesExist: Array<{ timeStamp: number; numMessagesExist: number }>;
+  utilizationRate: number;
 }
 
 /**
@@ -202,6 +217,7 @@ export interface newData {
   users: Array<userData>;
   channels: Array<channelData>;
   dm: Array<dmData>;
+  stats: statsData;
   secret: string;
   resetCodes: Array<resetCode>;
 }

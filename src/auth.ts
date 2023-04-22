@@ -10,6 +10,7 @@ import {
   findUserbyEmail,
   findUserIndex,
   downloadImage,
+  getCurrentTime,
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
@@ -117,9 +118,32 @@ export function authRegisterV1(
     handlestring = `${originalHandle}${i}`;
   }
 
+  const timeStamp = getCurrentTime();
+
   let isGlobalOwner = 2;
   if (dataStore.users.length === 0) {
     isGlobalOwner = 1;
+    dataStore.stats = {
+      channelsExist: [
+        {
+          numChannelsExist: 0,
+          timeStamp: timeStamp,
+        },
+      ],
+      dmsExist: [
+        {
+          numDmsExist: 0,
+          timeStamp: timeStamp,
+        },
+      ],
+      messagesExist: [
+        {
+          numMessagesExist: 0,
+          timeStamp: timeStamp,
+        },
+      ],
+      utilizationRate: 0,
+    };
   }
 
   downloadImage();
@@ -137,6 +161,27 @@ export function authRegisterV1(
     isGlobalOwner: isGlobalOwner,
     profileImgUrl: `http://${HOST}:${PORT}/img/default.jpg`,
     token: [{ token: token }],
+    stats: {
+      channelsJoined: [
+        {
+          numChannelsJoined: 0,
+          timeStamp: timeStamp,
+        },
+      ],
+      dmsJoined: [
+        {
+          numDmsJoined: 0,
+          timeStamp: timeStamp,
+        },
+      ],
+      messagesSent: [
+        {
+          numMessagesSent: 0,
+          timeStamp: timeStamp,
+        },
+      ],
+      involvementRate: 0,
+    },
     notifications: [],
   });
 

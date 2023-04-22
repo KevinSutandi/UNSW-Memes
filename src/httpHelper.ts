@@ -496,3 +496,11 @@ export function passwordResetReset(resetCode: string, newPassword: string) {
     newPassword,
   });
 }
+
+export function userStats(token: string) {
+  return requestHelper('GET', '/user/stats/v1', {}, { token });
+}
+
+export function usersStats(token: string) {
+  return requestHelper('GET', '/users/stats/v1', {}, { token });
+}

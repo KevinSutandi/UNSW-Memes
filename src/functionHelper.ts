@@ -2,6 +2,7 @@ import { getData, setData } from './dataStore';
 import request from 'sync-request';
 import { channelData, dmData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
+import HTTPError from 'http-errors';
 // import { data } from './dataStore';
 
 /**
@@ -274,9 +275,7 @@ export function updateAllData(
     });
     dm.allMembers.forEach((member) => {
       if (member.uId === authUserId) {
-        console.log(member[flags]);
         member[flags] = dataPoint;
-        console.log(member[flags]);
       }
     });
   });
@@ -327,4 +326,270 @@ export function isDmMember(dmId: number, userId: number): boolean {
 export function findDm(dmId: number): dmData | undefined {
   const data = getData();
   return data.dm.find((a) => a.dmId === dmId);
+}
+
+export function getCurrentTime(): number {
+  return Math.floor(Date.now() / 1000);
+}
+
+/**
+ *
+ * @param token - token of the user to update
+ * @param flag - 0 for increment, 1 for decrement
+ */
+export function updateChannelInfo(authUserId: number, flag: number) {
+  // find the user and increment the number of channels they are in
+  const data = getData();
+  const timeStamp = getCurrentTime();
+  const userIndex = findUserIndex(authUserId);
+  const userStats = data.users[userIndex].stats;
+  // get the latest numChannelsJoined in the array and increment it
+  // if it is still blank then set it to 1
+  let numChannelsJoined = 0;
+  if (userStats.channelsJoined.length > 0) {
+    numChannelsJoined =
+      userStats.channelsJoined[userStats.channelsJoined.length - 1]
+        .numChannelsJoined;
+  }
+
+  /* istanbul ignore else */
+  if (flag === 0) {
+    numChannelsJoined++;
+  } else if (flag === 1 && numChannelsJoined > 0) {
+    numChannelsJoined--;
+  } else {
+    throw HTTPError(400, 'Cannot decrement below 0');
+  }
+
+  data.users[userIndex].stats.channelsJoined.push({
+    timeStamp: timeStamp,
+    numChannelsJoined: numChannelsJoined,
+  });
+
+  setData(data);
+
+  updateInvolvement(authUserId);
+}
+
+export function updateDmInfo(authUserId: number, flags: number) {
+  // find the user and increment the number of channels they are in
+  const data = getData();
+  const timeStamp = getCurrentTime();
+  const userIndex = findUserIndex(authUserId);
+  const userStats = data.users[userIndex].stats;
+  // get the latest numChannelsJoined in the array and increment it
+  // if it is still blank then set it to 1
+  let numDmsJoined = 0;
+  if (userStats.dmsJoined.length > 0) {
+    numDmsJoined =
+      userStats.dmsJoined[userStats.dmsJoined.length - 1].numDmsJoined;
+  }
+
+  /* istanbul ignore else */
+  if (flags === 0) {
+    numDmsJoined++;
+  } else if (flags === 1 && numDmsJoined > 0) {
+    numDmsJoined--;
+  } else {
+    throw HTTPError(400, 'Cannot decrement below 0');
+  }
+
+  data.users[userIndex].stats.dmsJoined.push({
+    timeStamp: timeStamp,
+    numDmsJoined: numDmsJoined,
+  });
+
+  setData(data);
+
+  updateInvolvement(authUserId);
+}
+
+export function incrementMessageStat(authUserId: number) {
+  // find the user and increment the number of channels they are in
+  const data = getData();
+  const timeStamp = getCurrentTime();
+  const userIndex = findUserIndex(authUserId);
+  const userStats = data.users[userIndex].stats;
+
+  const [lastMessageSent = { numMessagesSent: 0 }] =
+    userStats.messagesSent.slice(-1);
+
+  let numMessagesSent = lastMessageSent.numMessagesSent + 1;
+
+  data.users[userIndex].stats.messagesSent.push({
+    timeStamp: timeStamp,
+    numMessagesSent: numMessagesSent,
+  });
+
+  numMessagesSent = 0;
+  if (data.stats.messagesExist.length > 0) {
+    numMessagesSent =
+      data.stats.messagesExist[data.stats.messagesExist.length - 1]
+        .numMessagesExist;
+  }
+
+  numMessagesSent++;
+
+  data.stats.messagesExist.push({
+    timeStamp: timeStamp,
+    numMessagesExist: numMessagesSent,
+  });
+
+  setData(data);
+
+  updateInvolvement(authUserId);
+}
+
+export function updateInvolvement(authUserId: number) {
+  // find the user and increment the number of channels they are in
+  const data = getData();
+  const userIndex = findUserIndex(authUserId);
+  const userStats = data.users[userIndex].stats;
+  const workspaceStats = data.stats;
+
+  const numChannelsJoined = userStats.channelsJoined.length
+    ? userStats.channelsJoined.slice(-1)[0].numChannelsJoined
+    : 0;
+
+  const numDmsJoined = userStats.dmsJoined.length
+    ? userStats.dmsJoined.slice(-1)[0].numDmsJoined
+    : 0;
+
+  const numMessagesSent = userStats.messagesSent.length
+    ? userStats.messagesSent.slice(-1)[0].numMessagesSent
+    : 0;
+
+  const numChannelsExist = workspaceStats.channelsExist.length
+    ? workspaceStats.channelsExist.slice(-1)[0].numChannelsExist
+    : 0;
+
+  const numDmsExist = workspaceStats.dmsExist.length
+    ? workspaceStats.dmsExist.slice(-1)[0].numDmsExist
+    : 0;
+
+  const numMessagesExist = workspaceStats.messagesExist.length
+    ? workspaceStats.messagesExist.slice(-1)[0].numMessagesExist
+    : 0;
+
+  const numerator = numChannelsJoined + numDmsJoined + numMessagesSent;
+  const denominator = numChannelsExist + numDmsExist + numMessagesExist;
+
+  data.users[userIndex].stats.involvementRate =
+    denominator === 0 ? 0 : Math.min(numerator / denominator, 1);
+
+  setData(data);
+}
+
+export function updateUtilization() {
+  const data = getData();
+  // The workspace's utilization, which is a ratio of the number of users who have joined at least one channel/DM to the current total number of users, as defined by this pseudocode: numUsersWhoHaveJoinedAtLeastOneChannelOrDm / numUsers
+
+  let usersOneChannelDm = 0;
+
+  data.users.forEach((user) => {
+    const numChannelsJoined = user.stats.channelsJoined.length
+      ? user.stats.channelsJoined.slice(-1)[0].numChannelsJoined
+      : 0;
+
+    const numDmsJoined = user.stats.dmsJoined.length
+      ? user.stats.dmsJoined.slice(-1)[0].numDmsJoined
+      : 0;
+
+    if (numChannelsJoined > 0 || numDmsJoined > 0) {
+      usersOneChannelDm++;
+    }
+  });
+
+  const numUsers = data.users.length;
+
+  data.stats.utilizationRate =
+    numUsers === 0 ? 0 : Math.min(usersOneChannelDm / numUsers, 1);
+
+  setData(data);
+}
+
+export function sendNotifDm(
+  user: userData,
+  message: string,
+  allMemberIds: number[],
+  dm: dmData
+) {
+  const data = getData();
+
+  // send notification if there are users tagged
+  // tagged: "{User’s handle} tagged you in {channel/DM name}: {first 20 characters of the message}"
+  const taggedUsers = message.match(/@([a-zA-Z0-9_]+)/g);
+  // avoid duplicate notifications
+  if (taggedUsers !== null) {
+    const notifiedUsers = new Set(); // keep track of notified users
+    taggedUsers.forEach((taggedUser) => {
+      const taggedUserIndex = data.users.findIndex(
+        (user) => user.handleStr === taggedUser.slice(1)
+      );
+      if (taggedUserIndex < 0) {
+        return;
+      }
+      const authUserId = data.users[taggedUserIndex].authUserId;
+      if (!allMemberIds.includes(authUserId)) {
+        return;
+      }
+      if (notifiedUsers.has(authUserId)) {
+        return; // skip notifying the same user again
+      }
+      const notification = {
+        channelId: -1,
+        dmId: dm.dmId,
+        notificationMessage: `${user.handleStr} tagged you in ${
+          dm.name
+        }: ${message.slice(0, 20)}`,
+      };
+      data.users[taggedUserIndex].notifications.push(notification);
+      notifiedUsers.add(authUserId); // add the user to the set of notified users
+    });
+  }
+
+  setData(data);
+}
+
+export function sendNotifChannel(
+  user: userData,
+  message: string,
+  allMemberIds: number[],
+  channel: channelData
+) {
+  const data = getData();
+
+  // send notification if there are users tagged
+  // tagged: "{User’s handle} tagged you in {channel/DM name}: {first 20 characters of the message}"
+  const taggedUsers = message.match(/@([a-zA-Z0-9_]+)/g);
+  // avoid duplicate notifications
+  if (taggedUsers !== null) {
+    const notifiedUsers = new Set(); // keep track of notified users
+    taggedUsers.forEach((taggedUser) => {
+      const taggedUserIndex = data.users.findIndex(
+        (user) => user.handleStr === taggedUser.slice(1)
+      );
+      if (taggedUserIndex < 0) {
+        return;
+      }
+      const authUserId = data.users[taggedUserIndex].authUserId;
+      if (!allMemberIds.includes(authUserId)) {
+        return;
+      }
+      if (notifiedUsers.has(authUserId)) {
+        return; // skip notifying the same user again
+      }
+      const notification = {
+        channelId: channel.channelId,
+        dmId: -1,
+        notificationMessage: `${user.handleStr} tagged you in ${
+          channel.name
+        }: ${message.slice(0, 20)}`,
+      };
+      data.users[taggedUserIndex].notifications.push(notification);
+      notifiedUsers.add(authUserId); // add the user to the set of notified users
+    });
+  }
+
+  setData(data);
 }
