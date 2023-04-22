@@ -5,18 +5,26 @@ import {
   channelData,
   dmData,
   resetCode,
+  statsData,
 } from './interfaces';
 
 export let data: {
   users: userData[];
   channels: channelData[];
   dm: dmData[];
+  stats: statsData;
   secret: string;
   resetCodes: resetCode[];
 } = {
   users: [],
   channels: [],
   dm: [],
+  stats: {
+    channelsExist: [],
+    dmsExist: [],
+    messagesExist: [],
+    utilizationRate: 0,
+  },
   secret: 'KEVINHINDIEALMINAELSHIBO2394850-92840)_(*%&)_($#&()*',
   resetCodes: [],
 };

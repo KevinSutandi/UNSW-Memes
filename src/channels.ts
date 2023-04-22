@@ -1,5 +1,9 @@
 import { getData, setData } from './dataStore';
-import { getUserByToken } from './functionHelper';
+import {
+  getCurrentTime,
+  getUserByToken,
+  updateChannelInfo,
+} from './functionHelper';
 import {
   channelsCreateReturn,
   channelsListReturn,
@@ -73,7 +77,16 @@ export function channelsCreateV1(
     start: 0,
     end: 0,
   });
+
+  data.stats.channelsExist.push({
+    numChannelsExist: data.channels.length,
+    timeStamp: getCurrentTime(),
+  });
+
   setData(data);
+
+  // updates user stats
+  updateChannelInfo(user.authUserId, 0);
   return {
     channelId: newId,
   };

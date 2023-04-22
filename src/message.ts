@@ -12,13 +12,15 @@ import {
   getChannelIndex,
   getDmIndex,
   getUserByToken,
+  incrementMessageStat,
+  sendNotifChannel,
+  sendNotifDm,
 } from './functionHelper';
 import HTTPError from 'http-errors';
 import {
   messages,
   messagesObject,
   newMessageReturn,
-  notification,
   reactsObject,
 } from './interfaces';
 
@@ -68,39 +70,10 @@ export function messageSendV1(
   };
   data.channels[channelIndex].messages.push(newMessage);
 
-  // send notification if there are users tagged
-  // tagged: "{User’s handle} tagged you in {channel/DM name}: {first 20 characters of the message}"
-  const taggedUsers = message.match(/@([a-zA-Z0-9_]+)/g);
-  // avoid duplicate notifications
-  if (taggedUsers !== null) {
-    const notifiedUsers = new Set(); // keep track of notified users
-    taggedUsers.forEach((taggedUser) => {
-      const taggedUserIndex = data.users.findIndex(
-        (user) => user.handleStr === taggedUser.slice(1)
-      );
-      if (taggedUserIndex < 0) {
-        return;
-      }
-      const authUserId = data.users[taggedUserIndex].authUserId;
-      if (!allMemberIds.includes(authUserId)) {
-        return;
-      }
-      if (notifiedUsers.has(authUserId)) {
-        return; // skip notifying the same user again
-      }
-      const notification: notification = {
-        channelId: channelId,
-        dmId: -1,
-        notificationMessage: `${user.handleStr} tagged you in ${
-          channel.name
-        }: ${message.slice(0, 20)}`,
-      };
-      data.users[taggedUserIndex].notifications.push(notification);
-      notifiedUsers.add(authUserId); // add the user to the set of notified users
-    });
-  }
-
   setData(data);
+
+  incrementMessageStat(user.authUserId);
+  sendNotifChannel(user, message, allMemberIds, channel);
   return { messageId: messageId };
 }
 /**
@@ -245,7 +218,10 @@ export function messageEditV1(
     }
 
     data.channels[channelIndex].messages[messageIndex].message = message;
+
     setData(data);
+
+    sendNotifChannel(user, message, allMemberIds, channel);
     return {};
   } else {
     const dmIndex = getDmIndex(dm.dmId);
@@ -270,6 +246,8 @@ export function messageEditV1(
 
     data.dm[dmIndex].messages[messageIndex].message = message;
     setData(data);
+
+    sendNotifDm(user, message, allMemberIds, dm);
     return {};
   }
 }
@@ -319,25 +297,10 @@ export function messageSendDmV1(
   };
   data.dm[dmIndex].messages.push(newMessage);
 
-  const taggedUsers = message.match(/@([a-zA-Z0-9_]+)/g);
-  if (taggedUsers !== null) {
-    const notification: notification = {
-      channelId: -1,
-      dmId: dm.dmId,
-      notificationMessage: `${user.handleStr} tagged you in ${
-        dm.name
-      }: ${message.slice(0, 20)}`,
-    };
-    taggedUsers.forEach((taggedUser) => {
-      // find the index of the user from handleStr
-      const taggedUserIndex = data.users.findIndex(
-        (user) => user.handleStr === taggedUser.slice(1)
-      );
-      data.users[taggedUserIndex].notifications.push(notification);
-    });
-  }
-
   setData(data);
+
+  sendNotifDm(user, message, allMemberIds, dm);
+  incrementMessageStat(user.authUserId);
   return { messageId: messageId };
 }
 
@@ -602,6 +565,8 @@ export function messageSendLaterV1(
     };
     data.channels[channelIndex].messages.push(newMessage);
     setData(data);
+    sendNotifChannel(user, message, allMemberIds, channel);
+    incrementMessageStat(user.authUserId);
   }, timeDelay * 1000);
 
   return { messageId: messageId };
@@ -662,6 +627,8 @@ export function messageSendLaterDmV1(
     };
     data.dm[dmIndex].messages.push(newMessage);
     setData(data);
+    sendNotifDm(user, message, allMemberIds, dm);
+    incrementMessageStat(user.authUserId);
   }, timeDelay * 1000);
   return { messageId: messageId };
 }
@@ -739,6 +706,10 @@ export function messageShareV1(
     };
     data.channels[channelTargetIndex].messages.push(newMessage);
     setData(data);
+    incrementMessageStat(user.authUserId);
+    const targetChannel = data.channels[channelTargetIndex];
+    const allMemberIdsTarget = getAllMemberIds(targetChannel);
+    sendNotifChannel(user, message, allMemberIdsTarget, targetChannel);
     return { sharedMessageId: sharedMessageId };
 
     // Shares the message to a dm
@@ -757,6 +728,10 @@ export function messageShareV1(
     };
     data.dm[dmTargetIndex].messages.push(newMessage);
     setData(data);
+    incrementMessageStat(user.authUserId);
+    const targetDM = data.dm[dmTargetIndex];
+    const allMemberIdsTarget = getAllMemberIds(targetDM);
+    sendNotifDm(user, message, allMemberIdsTarget, targetDM);
     return { sharedMessageId: sharedMessageId };
   }
 }

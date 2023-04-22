@@ -6,6 +6,7 @@ import {
   getAllMemberIds,
   getChannelIndex,
   getUserByToken,
+  incrementMessageStat,
 } from './functionHelper';
 
 /**
@@ -234,4 +235,6 @@ function standUpEnd(token: string, channelId: number) {
   standUp.standUpOwner = -1;
 
   setData(data);
+
+  incrementMessageStat(user.authUserId);
 }

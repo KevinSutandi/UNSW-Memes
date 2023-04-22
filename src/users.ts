@@ -1,11 +1,19 @@
 import { getData, setData } from './dataStore';
-import { userObject, errorMessage, allUsers } from './interfaces';
+import {
+  userObject,
+  errorMessage,
+  allUsers,
+  userStats,
+  statsData,
+} from './interfaces';
 import {
   isUser,
   getUserByToken,
   findUserIndex,
   downloadImage,
   updateAllData,
+  updateInvolvement,
+  updateUtilization,
 } from './functionHelper';
 import validator from 'validator';
 import HTTPError from 'http-errors';
@@ -265,4 +273,36 @@ export function userProfileUploadPhotoV1(
   updateAllData(newUrl, user.authUserId, 'profileImgUrl');
 
   return {};
+}
+
+export function userStatsV1(token: string): { userStats: userStats } {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    throw HTTPError(403, 'Invalid token');
+  }
+
+  updateInvolvement(user.authUserId);
+
+  const data = getData();
+  const userIndex = findUserIndex(user.authUserId);
+  const userStats = data.users[userIndex].stats;
+
+  return { userStats: userStats };
+}
+
+export function usersStatsV1(token: string): {
+  workspaceStats: statsData;
+} {
+  const user = getUserByToken(token);
+  if (user === undefined) {
+    throw HTTPError(403, 'Invalid token');
+  }
+
+  // update utilization rate
+  updateUtilization();
+
+  const data = getData();
+  const workspaceStats = data.stats;
+
+  return { workspaceStats: workspaceStats };
 }

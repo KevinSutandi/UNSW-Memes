@@ -11,6 +11,7 @@ import {
   isChannelOwner,
   findOwnerIndex,
   findUserIndex,
+  updateChannelInfo,
 } from './functionHelper';
 import { messages, errorMessage } from './interfaces';
 import HTTPError from 'http-errors';
@@ -142,7 +143,11 @@ export function channelJoinV1(
     handleStr: user.handleStr,
     profileImgUrl: user.profileImgUrl,
   });
+
   setData(data);
+
+  // updates user stats
+  updateChannelInfo(user.authUserId, 0);
 
   return {};
 }
@@ -214,6 +219,9 @@ export function channelInviteV1(token: string, channelId: number, uId: number) {
   data.users[userInvitedIndex].notifications.push(notification);
 
   setData(data);
+
+  // update invited user stats
+  updateChannelInfo(uId, 0);
   return {};
 }
 
@@ -309,7 +317,11 @@ export function channelLeaveV1(token: string, channelId: number) {
   }
 
   data.channels[channelIndex].allMembers.splice(userMemberIndex, 1);
+
   setData(data);
+
+  // update user stats
+  updateChannelInfo(user.authUserId, 1);
   return {};
 }
 /**

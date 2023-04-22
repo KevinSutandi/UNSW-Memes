@@ -1,3 +1,4 @@
+import { getCurrentTime } from './functionHelper';
 import {
   authRegister,
   channelMessage,
@@ -22,6 +23,10 @@ import {
   messageUnReact,
 } from './httpHelper';
 import { AuthReturn, newMessageReturn, dmCreateReturn } from './interfaces';
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms * 1000));
+}
 
 const badrequest = 400;
 const forbidden = 403;
@@ -1621,7 +1626,7 @@ describe('testing notifications', () => {
   });
 
   test('tagged both users in dm should send notification', () => {
-    messageSendDm(user2.token, dm1.dmId, '@kevinsutandi @soccerboy');
+    messageSendDm(user2.token, dm1.dmId, '@kevinsutandi @soccerboy @lmaolmao');
     expect(notificationsGetV1(user1.token)).toStrictEqual({
       notifications: [
         {
@@ -1678,6 +1683,121 @@ describe('testing notifications', () => {
       ],
     });
   });
+
+  test('tag user if using sendlater and sendlaterdm', async () => {
+    const user3 = authRegister(
+      'kevin@gmaillol.com',
+      'wegoasu1001',
+      'Wego',
+      'Asu'
+    );
+
+    channelJoin(user1.token, channel1.channelId);
+
+    messageSendLater(
+      user2.token,
+      channel1.channelId,
+      'test moments @kevinsutandi @soccerboy',
+      getCurrentTime() + 1
+    );
+
+    await sleep(1);
+
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+      ],
+    });
+
+    const uIds1 = [user1.authUserId, user3.authUserId];
+    const dm1 = dmCreate(user2.token, uIds1);
+
+    messageSendLaterDm(
+      user2.token,
+      dm1.dmId,
+      '@kevinsutandi @soccerboy',
+      getCurrentTime() + 1
+    );
+
+    await sleep(1);
+
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage:
+            'soccerboy tagged you in kevinsutandi, soccerboy, wegoasu: @kevinsutandi @socce',
+        },
+        {
+          channelId: -1,
+          dmId: dm1.dmId,
+          notificationMessage:
+            'soccerboy added you to kevinsutandi, soccerboy, wegoasu',
+        },
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+      ],
+    });
+  });
+
+  test('tag user when message edited', () => {
+    channelJoin(user1.token, channel1.channelId);
+    const message1 = messageSend(
+      user2.token,
+      channel1.channelId,
+      'test moments'
+    );
+    messageEdit(
+      user2.token,
+      message1.messageId,
+      'test moments @kevinsutandi @soccerboy @kevs'
+    );
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: channel1.channelId,
+          dmId: -1,
+          notificationMessage:
+            'soccerboy tagged you in wego: test moments @kevins',
+        },
+      ],
+    });
+  });
+
+  test('tag user when message edited in Dm', () => {
+    const dm = dmCreate(user2.token, [user1.authUserId]);
+    const message1 = messageSendDm(user2.token, dm.dmId, 'test moments');
+    messageEdit(
+      user2.token,
+      message1.messageId,
+      'test moments @kevinsutandi @soccerboy @kevs'
+    );
+    expect(notificationsGetV1(user1.token)).toStrictEqual({
+      notifications: [
+        {
+          channelId: -1,
+          dmId: dm.dmId,
+          notificationMessage:
+            'soccerboy tagged you in kevinsutandi, soccerboy: test moments @kevins',
+        },
+        {
+          channelId: -1,
+          dmId: dm.dmId,
+          notificationMessage: 'soccerboy added you to kevinsutandi, soccerboy',
+        },
+      ],
+    });
+  });
 });
 
 describe('testing message react', () => {
@@ -1710,9 +1830,9 @@ describe('testing message react', () => {
     message2 = messageSendDm(user1.token, dm1.dmId, 'FACE');
   });
 
-  // afterEach(() => {
-  //   clearV1();
-  // });
+  afterEach(() => {
+    clearV1();
+  });
 
   test('token is invalid', () => {
     expect(messageReact(user1.token + 2, message1.messageId, 1)).toBe(403);

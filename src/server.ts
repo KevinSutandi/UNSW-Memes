@@ -49,6 +49,8 @@ import {
   getAllUsers,
   userProfileV2,
   userProfileUploadPhotoV1,
+  userStatsV1,
+  usersStatsV1,
 } from './users';
 import {
   dmCreateV1,
@@ -408,6 +410,18 @@ app.post('/message/unreact/v1', (req: Request, res: Response, next) => {
   const token = req.headers.token as string;
   const { messageId, reactId } = req.body;
   const result = messageUnreactV1(token, messageId, reactId);
+  return res.json(result);
+});
+
+app.get('/user/stats/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const result = userStatsV1(token);
+  return res.json(result);
+});
+
+app.get('/users/stats/v1', (req: Request, res: Response, next) => {
+  const token = req.headers.token as string;
+  const result = usersStatsV1(token);
   return res.json(result);
 });
 
