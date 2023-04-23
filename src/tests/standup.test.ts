@@ -6,9 +6,9 @@ import {
   standUpActive,
   standUpSend,
   standUpStart,
-} from './httpHelper';
-import { authRegister, channelsCreate, clearV1 } from './httpHelper';
-import { AuthReturn } from './interfaces';
+} from '../httpHelper';
+import { authRegister, channelsCreate, clearV1 } from '../httpHelper';
+import { AuthReturn } from '../interfaces';
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms * 1000));

@@ -3,7 +3,10 @@ import request from 'sync-request';
 import { channelData, dmData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import HTTPError from 'http-errors';
+import dotenv from 'dotenv';
 // import { data } from './dataStore';
+
+dotenv.config();
 
 /**
  * Determines whether a channel is a valid channel
@@ -206,10 +209,7 @@ export function findUserIndex(userId: number): number {
 
 export function HashingString(string: string): string {
   const jwt = require('jsonwebtoken');
-  const encryptedPassword = jwt.sign(
-    string,
-    'KEVINHINDIEALMINAELSHIBO2394850-92840)_(*%&)_($#&()*'
-  );
+  const encryptedPassword = jwt.sign(string, process.env.SECRET_KEY);
   return encryptedPassword;
 }
 

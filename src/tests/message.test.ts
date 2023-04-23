@@ -1,4 +1,4 @@
-import { getCurrentTime } from './functionHelper';
+import { getCurrentTime } from '../functionHelper';
 import {
   authRegister,
   channelMessage,
@@ -21,8 +21,8 @@ import {
   channelInvite,
   messageReact,
   messageUnReact,
-} from './httpHelper';
-import { AuthReturn, newMessageReturn, dmCreateReturn } from './interfaces';
+} from '../httpHelper';
+import { AuthReturn, newMessageReturn, dmCreateReturn } from '../interfaces';
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms * 1000));

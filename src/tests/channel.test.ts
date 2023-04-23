@@ -10,9 +10,9 @@ import {
   channelAddOwner,
   channelRemoveOwner,
   messageSend,
-} from './httpHelper';
-import { messagesObject } from './interfaces';
-import { AuthReturn, channelsCreateReturn } from './interfaces';
+} from '../httpHelper';
+import { messagesObject } from '../interfaces';
+import { AuthReturn, channelsCreateReturn } from '../interfaces';
 
 // const ERROR = { error: expect.any(String) };
 

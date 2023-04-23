@@ -26,10 +26,10 @@ import {
   dmLeave,
   channelInvite,
   usersStats,
-} from './httpHelper';
-import { AuthReturn } from './interfaces';
-import { port } from './config.json';
-import { getCurrentTime } from './functionHelper';
+} from '../httpHelper';
+import { AuthReturn } from '../interfaces';
+import { port } from '../config.json';
+import { getCurrentTime } from '../functionHelper';
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms * 1000));
