@@ -209,7 +209,10 @@ export function findUserIndex(userId: number): number {
 
 export function HashingString(string: string): string {
   const jwt = require('jsonwebtoken');
-  const encryptedPassword = jwt.sign(string, process.env.SECRET_KEY);
+  const encryptedPassword = jwt.sign(
+    string,
+    'KEVINALMINAHINDIEELSHIBOJLKDSJFLKJI#()#*49)0394890'
+  );
   return encryptedPassword;
 }
 
