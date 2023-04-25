@@ -1,0 +1,199 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model channelsJoined {
+  id                Int        @id @default(autoincrement())
+  timeStamp         Int
+  numChannelsJoined Int
+  userStats         userStats? @relation(fields: [userStatsId], references: [id])
+  userStatsId       Int?
+}
+
+model dmsJoined {
+  id           Int        @id @default(autoincrement())
+  timeStamp    Int
+  numDmsJoined Int
+  userStats    userStats? @relation(fields: [userStatsId], references: [id])
+  userStatsId  Int?
+}
+
+model messagesSent {
+  id              Int        @id @default(autoincrement())
+  timeStamp       Int
+  numMessagesSent Int
+  userStats       userStats? @relation(fields: [userStatsId], references: [id])
+  userStatsId     Int?
+}
+
+model token {
+  id      Int    @id @default(autoincrement())
+  token   String @unique
+  users   users? @relation(fields: [usersId], references: [id])
+  usersId Int?
+}
+
+model notification {
+  id                  Int    @id @default(autoincrement())
+  channelId           Int    @default(-1)
+  dmId                Int    @default(-1)
+  notificationMessage String
+  users               users? @relation(fields: [usersId], references: [id])
+  usersId             Int?
+}
+
+model userStats {
+  id              Int              @id @default(autoincrement())
+  channelsJoined  channelsJoined[]
+  messagesSent    messagesSent[]
+  dmsJoined       dmsJoined[]
+  involvementRate Int              @default(0)
+  users           users[]
+}
+
+model users {
+  id            Int            @id @default(autoincrement())
+  authUserId    Int            @unique
+  handleStr     String         @unique
+  email         String         @unique
+  password      String
+  nameFirst     String         @default("")
+  nameLast      String         @default("")
+  isGlobalowner Int            @default(2)
+  profileImgUrl String         @default("")
+  token         token[]
+  notifications notification[]
+  stats         userStats      @relation(fields: [userStatsId], references: [id])
+  userStatsId   Int
+}
+
+model standUp {
+  id             Int        @id @default(autoincrement())
+  standUpActive  Boolean    @default(false)
+  standUpLength  Int        @default(0)
+  standUpMessage Json
+  StandUpOwner   Int        @default(-1)
+  channels       channels[]
+}
+
+model ownerMembers {
+  id            Int       @id @default(autoincrement())
+  uId           Int       @unique
+  handleStr     String    @unique
+  email         String    @unique
+  nameFirst     String
+  nameLast      String
+  profileImgUrl String
+  channels      channels? @relation(fields: [channelsId], references: [id])
+  channelsId    Int?
+  dm            dm?       @relation(fields: [dmId], references: [id])
+  dmId          Int?
+}
+
+model allMembers {
+  id            Int       @id @default(autoincrement())
+  uId           Int       @unique
+  handleStr     String    @unique
+  email         String    @unique
+  nameFirst     String
+  nameLast      String
+  profileImgUrl String
+  channels      channels? @relation(fields: [channelsId], references: [id])
+  channelsId    Int?
+  dm            dm?       @relation(fields: [dmId], references: [id])
+  dmId          Int?
+}
+
+model reactsObject {
+  id                Int       @id @default(autoincrement())
+  reactId           Int       @unique
+  uIds              Int[]     @unique
+  isThisUserReacted Boolean
+  messages          messages? @relation(fields: [messagesId], references: [id])
+  messagesId        Int?
+}
+
+model messages {
+  id         Int            @id @default(autoincrement())
+  messageId  Int            @unique
+  uId        Int            @unique
+  message    String
+  timeSent   Int
+  isPinned   Boolean
+  reacts     reactsObject[]
+  channels   channels?      @relation(fields: [channelsId], references: [id])
+  channelsId Int?
+  dm         dm?            @relation(fields: [dmId], references: [id])
+  dmId       Int?
+}
+
+model channels {
+  id           Int            @id @default(autoincrement())
+  channelId    Int            @unique
+  name         String
+  isPublic     Boolean        @default(true)
+  ownerMembers ownerMembers[]
+  allMembers   allMembers[]
+  messages     messages[]
+  start        Int
+  end          Int
+  standUp      standUp        @relation(fields: [standUpId], references: [id])
+  standUpId    Int
+}
+
+model dm {
+  id           Int            @id @default(autoincrement())
+  dmId         Int            @unique
+  name         String
+  ownerMembers ownerMembers[]
+  allMembers   allMembers[]
+  messages     messages[]
+  start        Int
+  end          Int
+}
+
+model channelsExist {
+  id               Int    @id @default(autoincrement())
+  timeStamp        Int
+  numChannelsExist Int
+  stats            stats? @relation(fields: [statsId], references: [id])
+  statsId          Int?
+}
+
+model dmsExist {
+  id          Int    @id @default(autoincrement())
+  timeStamp   Int
+  numDmsExist Int
+  stats       stats? @relation(fields: [statsId], references: [id])
+  statsId     Int?
+}
+
+model messagesExist {
+  id               Int    @id @default(autoincrement())
+  timeStamp        Int
+  numMessagesExist Int
+  stats            stats? @relation(fields: [statsId], references: [id])
+  statsId          Int?
+}
+
+model stats {
+  id              Int             @id @default(autoincrement())
+  channelsExist   channelsExist[]
+  dmsExist        dmsExist[]
+  messagesExist   messagesExist[]
+  utilizationRate Int             @default(0)
+}
+
+model resetCodes {
+  id         Int    @id @default(autoincrement())
+  authUserId Int    @unique
+  resetCode  String @unique
+}
