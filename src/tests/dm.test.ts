@@ -8,8 +8,8 @@ import {
   dmRemove,
   dmDetails,
   dmLeave,
-} from './httpHelper';
-import { AuthReturn, dmCreateReturn } from './interfaces';
+} from '../httpHelper';
+import { AuthReturn, dmCreateReturn } from '../interfaces';
 
 describe('testing dmCreateV1', () => {
   let user: AuthReturn;

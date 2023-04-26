@@ -5,8 +5,8 @@ import {
   dmCreate,
   clearV1,
   dmList,
-} from './httpHelper';
-import { AuthReturn } from './interfaces';
+} from '../httpHelper';
+import { AuthReturn } from '../interfaces';
 
 describe('testing clearV1', () => {
   let user1: AuthReturn;

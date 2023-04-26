@@ -1,4 +1,4 @@
-import { getData } from './dataStore';
+import { getData } from '../dataStore';
 import {
   authLogin,
   authRegister,
@@ -9,8 +9,8 @@ import {
   userProfile,
   passwordResetRequest,
   passwordResetReset,
-} from './httpHelper';
-import { AuthReturn } from './interfaces';
+} from '../httpHelper';
+import { AuthReturn } from '../interfaces';
 
 const INPUT_ERROR = 400;
 const IDPASS = { authUserId: expect.any(Number), token: expect.any(String) };

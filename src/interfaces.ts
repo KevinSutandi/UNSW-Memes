@@ -218,7 +218,6 @@ export interface newData {
   channels: Array<channelData>;
   dm: Array<dmData>;
   stats: statsData;
-  secret: string;
   resetCodes: Array<resetCode>;
 }
 

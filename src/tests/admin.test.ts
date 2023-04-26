@@ -11,8 +11,12 @@ import {
   channelMessage,
   dmMessages,
   messageSendDm,
-} from './httpHelper';
-import { AuthReturn, channelsCreateReturn, dmCreateReturn } from './interfaces';
+} from '../httpHelper';
+import {
+  AuthReturn,
+  channelsCreateReturn,
+  dmCreateReturn,
+} from '../interfaces';
 
 const STR = expect.any(String);
 const NUM = expect.any(Number);

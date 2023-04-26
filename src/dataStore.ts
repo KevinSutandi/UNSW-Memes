@@ -13,7 +13,6 @@ export let data: {
   channels: channelData[];
   dm: dmData[];
   stats: statsData;
-  secret: string;
   resetCodes: resetCode[];
 } = {
   users: [],
@@ -25,7 +24,6 @@ export let data: {
     messagesExist: [],
     utilizationRate: 0,
   },
-  secret: 'KEVINHINDIEALMINAELSHIBO2394850-92840)_(*%&)_($#&()*',
   resetCodes: [],
 };
 

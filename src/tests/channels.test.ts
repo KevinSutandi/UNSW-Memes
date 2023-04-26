@@ -1,4 +1,4 @@
-import { AuthReturn, channelsCreateReturn } from './interfaces';
+import { AuthReturn, channelsCreateReturn } from '../interfaces';
 import {
   authRegister,
   channelsCreate,
@@ -6,7 +6,7 @@ import {
   channelsList,
   channelsListAll,
   clearV1,
-} from './httpHelper';
+} from '../httpHelper';
 
 // push the test first please
 describe('testing channelsListAllV2', () => {

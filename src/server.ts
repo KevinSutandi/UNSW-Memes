@@ -438,3 +438,7 @@ const server = app.listen(PORT, HOST, () => {
 process.on('SIGINT', () => {
   server.close(() => console.log('Shutting down server gracefully.'));
 });
+
+process.on('SIGTERM', () => {
+  server.close(() => console.log('Shutting down server gracefully.'));
+});
