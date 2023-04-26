@@ -26,6 +26,8 @@ import {
   dmLeave,
   channelInvite,
   usersStats,
+  messageRemove,
+  messageEdit,
 } from '../httpHelper';
 import { AuthReturn } from '../interfaces';
 import { port } from '../config.json';
@@ -620,6 +622,58 @@ describe('workspaceStats tests', () => {
     expect(
       usersStats(user.token).workspaceStats.messagesExist[2].numMessagesExist
     ).toStrictEqual(2);
+  });
+
+  test('messages should decrease when dmRemoved', () => {
+    const dm1 = dmCreate(user.token, []);
+
+    messageSendDm(user.token, dm1.dmId, 'message1');
+    messageSendDm(user.token, dm1.dmId, 'message1');
+    messageSendDm(user.token, dm1.dmId, 'message1');
+
+    dmRemove(user.token, dm1.dmId);
+
+    expect(
+      usersStats(user.token).workspaceStats.messagesExist[4].numMessagesExist
+    ).toStrictEqual(0);
+  });
+
+  test('messages should decrease when messageRemove', () => {
+    const channel1 = channelsCreate(user.token, 'channel1', true);
+    const dm1 = dmCreate(user.token, []);
+
+    const message1 = messageSend(user.token, channel1.channelId, 'message1');
+
+    const message2 = messageSendDm(user.token, dm1.dmId, 'message1');
+
+    messageRemove(user.token, message1.messageId);
+    messageRemove(user.token, message2.messageId);
+
+    expect(
+      usersStats(user.token).workspaceStats.messagesExist[3].numMessagesExist
+    ).toStrictEqual(1);
+    expect(
+      usersStats(user.token).workspaceStats.messagesExist[4].numMessagesExist
+    ).toStrictEqual(0);
+  });
+
+  test('messages should decrease when messageRemove', () => {
+    const channel1 = channelsCreate(user.token, 'channel1', true);
+    const dm1 = dmCreate(user.token, []);
+
+    const message1 = messageSend(user.token, channel1.channelId, 'message1');
+
+    const message2 = messageSendDm(user.token, dm1.dmId, 'message1');
+
+    messageEdit(user.token, message1.messageId, '');
+    messageEdit(user.token, message2.messageId, '');
+
+    expect(
+      usersStats(user.token).workspaceStats.messagesExist[3].numMessagesExist
+    ).toStrictEqual(1);
+    expect(
+      usersStats(user.token).workspaceStats.messagesExist[4].numMessagesExist
+    ).toStrictEqual(0);
   });
 
   test('Dms should not decrement when leaving', () => {
