@@ -280,6 +280,12 @@ export function userProfileUploadPhotoV1(
   return {};
 }
 
+/**
+ * Stats of the particular user that involves channels joined, dms joined and
+ * the number of messages sent
+ * @param token - Token of the user
+ * @returns Object -- {userStats: userStats}
+ */
 export function userStatsV1(token: string): { userStats: userStats } {
   const user = getUserByToken(token);
   if (user === undefined) {
@@ -295,6 +301,11 @@ export function userStatsV1(token: string): { userStats: userStats } {
   return { userStats: userStats };
 }
 
+/**
+ * Overall stats for the whole app (channels, dms and messages)
+ * @param token - Token of the user
+ * @returns Object -- {workspaceStats: workspaceStats}
+ */
 export function usersStatsV1(token: string): {
   workspaceStats: statsData;
 } {

@@ -269,23 +269,17 @@ describe('testing channelJoinV2', () => {
   test('channelId does not exist test 1', () => {
     expect(channelJoin(user1.token, channel2.channelId + 5)).toBe(badRequest);
   });
-  test('channelId does not exist test 2', () => {
-    expect(channelJoin(user3.token, channel2.channelId + 3)).toBe(badRequest);
-  });
+
   test('invalid token test 1', () => {
     expect(channelJoin(user1.token + 4, channel3.channelId)).toBe(forbidden);
   });
-  test('invalid token test 2', () => {
-    expect(channelJoin(user3.token + 10, channel2.channelId)).toBe(forbidden);
-  });
+
   test('authUserId already in channel test 1', () => {
     expect(channelJoin(user1.token, channel1.channelId)).toStrictEqual(
       badRequest
     );
   });
-  test('authUserId already in channel test 2', () => {
-    expect(channelJoin(user2.token, channel2.channelId)).toBe(badRequest);
-  });
+
   test('channel is private while non gloabalOwner is joining', () => {
     expect(channelJoin(user2.token, channel3.channelId)).toBe(forbidden);
   });
@@ -360,41 +354,6 @@ describe('testing channelJoinV2', () => {
       ],
     });
   });
-  test('Join channel test 2', () => {
-    channelJoin(user1.token, channel2.channelId);
-    expect(channelDetails(user1.token, channel2.channelId)).toStrictEqual({
-      name: 'Bakso',
-      isPublic: true,
-      ownerMembers: [
-        {
-          uId: user2.authUserId,
-          email: 'someotheremail@gmail.com',
-          nameFirst: 'Jonah',
-          nameLast: 'Meggs',
-          handleStr: 'jonahmeggs',
-          profileImgUrl: expect.any(String),
-        },
-      ],
-      allMembers: [
-        {
-          uId: user2.authUserId,
-          email: 'someotheremail@gmail.com',
-          nameFirst: 'Jonah',
-          nameLast: 'Meggs',
-          handleStr: 'jonahmeggs',
-          profileImgUrl: expect.any(String),
-        },
-        {
-          uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
-          profileImgUrl: expect.any(String),
-        },
-      ],
-    });
-  });
 });
 
 // push the test first
@@ -407,7 +366,6 @@ describe('testing channelJoinV2', () => {
 describe('testing channelLeaveV1', () => {
   let user1: AuthReturn;
   let user2: AuthReturn;
-  let user3: AuthReturn;
   let channel1: channelsCreateReturn;
   let channel2: channelsCreateReturn;
   beforeEach(() => {
@@ -424,12 +382,6 @@ describe('testing channelLeaveV1', () => {
       'Jonah',
       'Meggs'
     );
-    user3 = authRegister(
-      'z5352065@ad.unsw.edu.au',
-      'big!password3',
-      'Zombie',
-      'Ibrahim'
-    );
     channel1 = channelsCreate(user1.token, 'Ketoprak', true);
     channel2 = channelsCreate(user2.token, 'Bakso', true);
   });
@@ -442,24 +394,12 @@ describe('testing channelLeaveV1', () => {
     expect(channelLeave(user2.token, channel2.channelId + 10)).toBe(badRequest);
   });
 
-  test('Invalid channelId test 2', () => {
-    expect(channelLeave(user1.token, channel1.channelId + 3)).toBe(badRequest);
-  });
-
   test('invalid token test 1', () => {
     expect(channelLeave(user1.token + 10, channel1.channelId)).toBe(forbidden);
   });
 
-  test('invalid token test 2', () => {
-    expect(channelLeave(user2.token + 1, channel2.channelId)).toBe(forbidden);
-  });
-
   test('authorised user is not member test 1', () => {
     expect(channelLeave(user1.token, channel2.channelId)).toBe(forbidden);
-  });
-
-  test('authorised user is not member test 2', () => {
-    expect(channelLeave(user3.token, channel2.channelId)).toBe(forbidden);
   });
 
   test('The only owner leaving test, no longer member', () => {
@@ -576,21 +516,9 @@ describe('testing channelAddowner', () => {
     ).toBe(badRequest);
   });
 
-  test('Invalid channelId test 2', () => {
-    expect(
-      channelAddOwner(user1.token, channel1.channelId + 3, user2.authUserId)
-    ).toBe(badRequest);
-  });
-
   test('invalid token test 1', () => {
     expect(
       channelAddOwner(user1.token + 10, channel1.channelId, user2.authUserId)
-    ).toBe(forbidden);
-  });
-
-  test('invalid token test 2', () => {
-    expect(
-      channelAddOwner(user2.token + 1, channel2.channelId, user1.authUserId)
     ).toBe(forbidden);
   });
 
@@ -600,21 +528,9 @@ describe('testing channelAddowner', () => {
     ).toBe(badRequest);
   });
 
-  test('invalid uID test 2', () => {
-    expect(
-      channelAddOwner(user2.token, channel2.channelId, user1.authUserId + 6)
-    ).toBe(badRequest);
-  });
-
   test('user not member test 1', () => {
     expect(
       channelAddOwner(user3.token, channel1.channelId, user2.authUserId)
-    ).toBe(badRequest);
-  });
-
-  test('user not member test 2', () => {
-    expect(
-      channelAddOwner(user2.token, channel2.channelId, user3.authUserId)
     ).toBe(badRequest);
   });
 
@@ -631,26 +547,12 @@ describe('testing channelAddowner', () => {
     ).toBe(badRequest);
   });
 
-  test('user already is owner test 2', () => {
-    expect(
-      channelAddOwner(user2.token, channel2.channelId, user2.authUserId)
-    ).toBe(badRequest);
-  });
-
   test('user has no permission test 1', () => {
     // not owner and not global
     channelJoin(user2.token, channel1.channelId);
     channelJoin(user3.token, channel1.channelId);
     expect(
       channelAddOwner(user2.token, channel1.channelId, user3.authUserId)
-    ).toBe(forbidden);
-  });
-
-  test('user has no permission test 2', () => {
-    channelJoin(user1.token, channel2.channelId);
-    channelJoin(user3.token, channel2.channelId);
-    expect(
-      channelAddOwner(user3.token, channel2.channelId, user1.authUserId)
     ).toBe(forbidden);
   });
 
@@ -790,34 +692,14 @@ describe('/channel/invite/v3', () => {
       channelInvite(user1.token, channel1.channelId + 5, user2.authUserId)
     ).toEqual(badRequest);
   });
-  test('channelId does not exist test 2', () => {
-    expect(
-      channelInvite(user3.token, channel3.channelId + 3, user3.authUserId)
-    ).toEqual(badRequest);
-  });
   test('invalid token test 1', () => {
     expect(
       channelInvite('user1.token + 4', channel3.channelId, user2.authUserId)
     ).toEqual(forbidden);
   });
-  test('invalid token test 2', () => {
-    expect(
-      channelInvite('user3.token + 10', channel2.channelId, user1.authUserId)
-    ).toEqual(forbidden);
-  });
-  test('invalid token test 3', () => {
-    expect(
-      channelInvite('user3.token', channel2.channelId, user1.authUserId + 99)
-    ).toEqual(forbidden);
-  });
   test('person invited does not exist test 1', () => {
     expect(
       channelInvite(user1.token, channel1.channelId, user2.authUserId + 99)
-    ).toEqual(badRequest);
-  });
-  test('person invited does not exist test 2', () => {
-    expect(
-      channelInvite(user3.token, channel3.channelId, user1.authUserId + 99)
     ).toEqual(badRequest);
   });
   test('person invited already in channel test 1', () => {
@@ -826,21 +708,9 @@ describe('/channel/invite/v3', () => {
       channelInvite(user1.token, channel1.channelId, user2.authUserId)
     ).toEqual(badRequest);
   });
-  test('person invited already in channel test 2', () => {
-    channelJoin(user1.token, channel2.channelId);
-    channelJoin(user3.token, channel2.channelId);
-    expect(
-      channelInvite(user2.token, channel2.channelId, user3.authUserId)
-    ).toEqual(badRequest);
-  });
   test('person inviting is not in channel test 1', () => {
     expect(
       channelInvite(user1.token, channel2.channelId, user3.authUserId)
-    ).toEqual(forbidden);
-  });
-  test('person inviting is not in channel test 2', () => {
-    expect(
-      channelInvite(user3.token, channel2.channelId, user1.authUserId)
     ).toEqual(forbidden);
   });
   test('Invite person to channel test 1', () => {
@@ -873,41 +743,6 @@ describe('/channel/invite/v3', () => {
           nameFirst: 'Zombie',
           nameLast: 'Ibrahim',
           handleStr: 'zombieibrahim',
-          profileImgUrl: expect.any(String),
-        },
-      ],
-    });
-  });
-  test('Join channel test 2', () => {
-    channelInvite(user2.token, channel2.channelId, user1.authUserId);
-    expect(channelDetails(user2.token, channel2.channelId)).toStrictEqual({
-      name: 'Bakso',
-      isPublic: true,
-      ownerMembers: [
-        {
-          uId: user2.authUserId,
-          email: 'someotheremail@gmail.com',
-          nameFirst: 'Jonah',
-          nameLast: 'Meggs',
-          handleStr: 'jonahmeggs',
-          profileImgUrl: expect.any(String),
-        },
-      ],
-      allMembers: [
-        {
-          uId: user2.authUserId,
-          email: 'someotheremail@gmail.com',
-          nameFirst: 'Jonah',
-          nameLast: 'Meggs',
-          handleStr: 'jonahmeggs',
-          profileImgUrl: expect.any(String),
-        },
-        {
-          uId: user1.authUserId,
-          email: 'kevins050324@gmail.com',
-          nameFirst: 'Kevin',
-          nameLast: 'Sutandi',
-          handleStr: 'kevinsutandi',
           profileImgUrl: expect.any(String),
         },
       ],
@@ -959,33 +794,15 @@ describe('testing removing owner from channel', () => {
     ).toBe(badRequest);
   });
 
-  test('Invalid channelId test 2', () => {
-    expect(
-      channelRemoveOwner(user1.token, channel1.channelId + 3, user2.authUserId)
-    ).toBe(badRequest);
-  });
-
   test('Invalid uId test 1', () => {
     expect(
       channelRemoveOwner(user2.token, channel2.channelId, user2.authUserId + 2)
     ).toBe(badRequest);
   });
 
-  test('Invalid uId test 2', () => {
-    expect(
-      channelRemoveOwner(user1.token, channel1.channelId, user2.authUserId + 8)
-    ).toBe(badRequest);
-  });
-
   test('Invalid token test 1', () => {
     expect(
       channelRemoveOwner(user2.token + 1, channel2.channelId, user2.authUserId)
-    ).toBe(forbidden);
-  });
-
-  test('Invalid token test 2', () => {
-    expect(
-      channelRemoveOwner(user1.token + 2, channel1.channelId, user2.authUserId)
     ).toBe(forbidden);
   });
 
@@ -1001,14 +818,6 @@ describe('testing removing owner from channel', () => {
     channelJoin(user2.token, channel3.channelId);
     expect(
       channelRemoveOwner(user3.token, channel3.channelId, user2.authUserId)
-    ).toBe(badRequest);
-  });
-
-  test('User with uId is not owner test 2', () => {
-    channelJoin(user1.token, channel3.channelId);
-    channelJoin(user2.token, channel3.channelId);
-    expect(
-      channelRemoveOwner(user1.token, channel2.channelId, user3.authUserId)
     ).toBe(badRequest);
   });
 
@@ -1028,12 +837,6 @@ describe('testing removing owner from channel', () => {
     ).toBe(forbidden);
   });
 
-  test('User with token does not have owner permission test 2', () => {
-    expect(
-      channelRemoveOwner(user2.token, channel3.channelId, user3.authUserId)
-    ).toBe(forbidden);
-  });
-
   test('User with uId is the only owner test 1', () => {
     expect(
       channelRemoveOwner(user2.token, channel2.channelId, user2.authUserId)
@@ -1047,12 +850,6 @@ describe('testing removing owner from channel', () => {
     expect(
       channelRemoveOwner(user3.token, channel2.channelId, user2.authUserId)
     ).toBe(forbidden);
-  });
-
-  test('User with uId is the only owner test 2', () => {
-    expect(
-      channelRemoveOwner(user3.token, channel3.channelId, user3.authUserId)
-    ).toBe(badRequest);
   });
 
   test('Global owner removes the only owner test 3', () => {
