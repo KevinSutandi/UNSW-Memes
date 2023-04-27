@@ -294,10 +294,25 @@ export function dmRemoveV1(token: string, dmId: number) {
 
   const data = getData();
   const dmIndex = data.dm.findIndex((a) => a.dmId === dmId);
+  const messageToRemove = data.dm[dmIndex].messages.length;
   data.dm.splice(dmIndex, 1);
   data.stats.dmsExist.push({
     timeStamp: getCurrentTime(),
     numDmsExist: data.dm.length,
+  });
+
+  let numMessagesSent = 0;
+  if (data.stats.messagesExist.length > 0) {
+    numMessagesSent =
+      data.stats.messagesExist[data.stats.messagesExist.length - 1]
+        .numMessagesExist;
+  }
+
+  numMessagesSent = numMessagesSent - messageToRemove;
+
+  data.stats.messagesExist.push({
+    timeStamp: getCurrentTime(),
+    numMessagesExist: numMessagesSent,
   });
 
   setData(data);

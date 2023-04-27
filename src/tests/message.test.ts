@@ -1685,19 +1685,14 @@ describe('testing notifications', () => {
   });
 
   test('tag user if using sendlater and sendlaterdm', async () => {
-    const user3 = authRegister(
-      'kevin@gmaillol.com',
-      'wegoasu1001',
-      'Wego',
-      'Asu'
-    );
+    authRegister('kevin@gmaillol.com', 'wegoasu1001', 'Wego', 'Asu');
 
     channelJoin(user1.token, channel1.channelId);
 
     messageSendLater(
       user2.token,
       channel1.channelId,
-      'test moments @kevinsutandi @soccerboy',
+      'test moments @kevinsutandi @soccerboy @wegoasu',
       getCurrentTime() + 1
     );
 
@@ -1714,13 +1709,13 @@ describe('testing notifications', () => {
       ],
     });
 
-    const uIds1 = [user1.authUserId, user3.authUserId];
+    const uIds1 = [user1.authUserId];
     const dm1 = dmCreate(user2.token, uIds1);
 
     messageSendLaterDm(
       user2.token,
       dm1.dmId,
-      '@kevinsutandi @soccerboy',
+      '@kevinsutandi @soccerboy @wegoasu @soccerboy',
       getCurrentTime() + 1
     );
 
@@ -1732,13 +1727,12 @@ describe('testing notifications', () => {
           channelId: -1,
           dmId: dm1.dmId,
           notificationMessage:
-            'soccerboy tagged you in kevinsutandi, soccerboy, wegoasu: @kevinsutandi @socce',
+            'soccerboy tagged you in kevinsutandi, soccerboy: @kevinsutandi @socce',
         },
         {
           channelId: -1,
           dmId: dm1.dmId,
-          notificationMessage:
-            'soccerboy added you to kevinsutandi, soccerboy, wegoasu',
+          notificationMessage: 'soccerboy added you to kevinsutandi, soccerboy',
         },
         {
           channelId: channel1.channelId,

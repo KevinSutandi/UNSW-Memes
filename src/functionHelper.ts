@@ -443,6 +443,25 @@ export function incrementMessageStat(authUserId: number) {
   updateInvolvement(authUserId);
 }
 
+export function decrementMessageStat() {
+  const data = getData();
+  let numMessagesSent = 0;
+  if (data.stats.messagesExist.length > 0) {
+    numMessagesSent =
+      data.stats.messagesExist[data.stats.messagesExist.length - 1]
+        .numMessagesExist;
+  }
+
+  numMessagesSent--;
+
+  data.stats.messagesExist.push({
+    timeStamp: getCurrentTime(),
+    numMessagesExist: numMessagesSent,
+  });
+
+  setData(data);
+}
+
 export function updateInvolvement(authUserId: number) {
   // find the user and increment the number of channels they are in
   const data = getData();

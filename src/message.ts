@@ -1,5 +1,6 @@
 import { getData, setData } from './dataStore';
 import {
+  decrementMessageStat,
   findChannel,
   findChannelByMessageId,
   findDMbyId,
@@ -130,7 +131,10 @@ export function messageRemoveV1(
     }
 
     data.channels[channelIndex].messages.splice(messageIndex, 1);
+
     setData(data);
+
+    decrementMessageStat();
     return {};
   } else {
     const dmIndex = getDmIndex(dm.dmId);
@@ -145,10 +149,8 @@ export function messageRemoveV1(
 
     data.dm[dmIndex].messages.splice(messageIndex, 1);
     setData(data);
+    decrementMessageStat();
     return {};
-
-    // reacted message: "{User’s handle} reacted to your message in {channel/DM name}"
-    // added to a channel/DM: "{User’s handle} added you to {channel/DM name}"
   }
 }
 
@@ -211,6 +213,7 @@ export function messageEditV1(
     if (message.length < 1) {
       data.channels[channelIndex].messages.splice(messageIndex, 1);
       setData(data);
+      decrementMessageStat();
       return {};
     }
     if (message.length > 1000) {
@@ -238,6 +241,7 @@ export function messageEditV1(
     if (message.length < 1) {
       data.dm[dmIndex].messages.splice(messageIndex, 1);
       setData(data);
+      decrementMessageStat();
       return {};
     }
     if (message.length > 1000) {
