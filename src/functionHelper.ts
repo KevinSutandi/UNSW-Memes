@@ -248,7 +248,7 @@ export function downloadImage(imgUrl?: string, name?: string) {
     const img = res.getBody();
 
     fs.writeFileSync(path.join(dir, name), img, { flag: 'w' });
-  } catch (error) /* istanbul ignore next */ {
+  } catch (error) {
     console.error(`Error downloading image: ${error}`);
   }
 }
@@ -358,7 +358,6 @@ export function updateChannelInfo(authUserId: number, flag: number) {
         .numChannelsJoined;
   }
 
-  /* istanbul ignore else */
   if (flag === 0) {
     numChannelsJoined++;
   } else if (flag === 1 && numChannelsJoined > 0) {
@@ -391,7 +390,6 @@ export function updateDmInfo(authUserId: number, flags: number) {
       userStats.dmsJoined[userStats.dmsJoined.length - 1].numDmsJoined;
   }
 
-  /* istanbul ignore else */
   if (flags === 0) {
     numDmsJoined++;
   } else if (flags === 1 && numDmsJoined > 0) {

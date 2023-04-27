@@ -25,7 +25,6 @@ function removeImages() {
     // remove any file with .jpg except for default
     if (file.endsWith('.jpg') && file !== 'default.jpg') {
       const filePath = `${path}/${file}`;
-      /* istanbul ignore else */
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
         console.log(`Deleted file: ${filePath}`);
