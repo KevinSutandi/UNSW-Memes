@@ -3,7 +3,7 @@ import {
   authLogin,
   authRegister,
   channelsCreate,
-  // channelsList,
+  channelsList,
   clearV1,
   authLogout,
   userProfile,
@@ -11,8 +11,8 @@ import {
   passwordResetReset,
 } from '../httpHelper';
 import { AuthReturn } from '../interfaces';
+import { forbidden, badRequest } from '../functionHelper';
 
-const INPUT_ERROR = 400;
 const IDPASS = { authUserId: expect.any(Number), token: expect.any(String) };
 
 describe('testing authRegisterV3', () => {
@@ -161,12 +161,12 @@ describe('testing authRegisterV3', () => {
   test('Test invalid email', () => {
     expect(
       authRegister('@gmail.com', 'testpw0003', 'abcdefghijklm', 'YIUopqrst')
-    ).toBe(INPUT_ERROR);
+    ).toBe(badRequest);
   });
   test('Test invalid email 2', () => {
     expect(
       authRegister('doggo', 'testpw0003', 'abcdefghijklm', 'YIUopqrst')
-    ).toBe(INPUT_ERROR);
+    ).toBe(badRequest);
   });
   test('Test invalid email 3', () => {
     expect(
@@ -176,26 +176,26 @@ describe('testing authRegisterV3', () => {
         'abcdefghijklm',
         'YIUopqrst'
       )
-    ).toBe(INPUT_ERROR);
+    ).toBe(badRequest);
   });
 
   test('Test already used email', () => {
     authRegister('onlyfortest03@gmail.com', 'testpw0004', 'EL0000', 'EVE0000');
     expect(
       authRegister('onlyfortest03@gmail.com', 'testpw0004', 'EL0000', 'EVE0000')
-    ).toBe(INPUT_ERROR);
+    ).toBe(badRequest);
   });
 
   test('Test too short password', () => {
     expect(
       authRegister('onlyfortest04@gmail.com', 'short', 'EL0001', 'EVE001')
-    ).toBe(INPUT_ERROR);
+    ).toBe(badRequest);
   });
 
   test('Test no password', () => {
     expect(
       authRegister('onlyfortest04@gmail.com', '', 'EL0001', 'EVE001')
-    ).toBe(INPUT_ERROR);
+    ).toBe(badRequest);
   });
 
   test('Test too long nameFirst', () => {
@@ -206,7 +206,7 @@ describe('testing authRegisterV3', () => {
         'qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop0',
         'EVE002'
       )
-    ).toBe(INPUT_ERROR);
+    ).toBe(badRequest);
   });
 
   test('Test too long nameLast', () => {
@@ -217,18 +217,18 @@ describe('testing authRegisterV3', () => {
         'EL0002',
         'qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop9'
       )
-    ).toBe(INPUT_ERROR);
+    ).toBe(badRequest);
   });
   test('Test too short nameFirst', () => {
     expect(
       authRegister('onlyfortest05@gmail.com', 'testpw0005', '', 'EVE002')
-    ).toBe(INPUT_ERROR);
+    ).toBe(badRequest);
   });
 
   test('Test too short nameLast', () => {
     expect(
       authRegister('onlyfortest06@gmail.com', 'testpw0005', 'EL0002', '')
-    ).toBe(INPUT_ERROR);
+    ).toBe(badRequest);
   });
 });
 
@@ -258,12 +258,12 @@ describe('/auth/login/v3', () => {
 
   test('returns an object with "error" key if password isnt valid', () => {
     const result = authLogin('kevins050324@gmail.com', 'invalidpassword');
-    expect(result).toEqual(400);
+    expect(result).toEqual(badRequest);
   });
 
   test('returns an object with "error" key if email isnt valid', () => {
     const result = authLogin('invalidemail', 'kevin1001');
-    expect(result).toEqual(400);
+    expect(result).toEqual(badRequest);
   });
 });
 
@@ -284,12 +284,12 @@ describe('/auth/logout/v1', () => {
   });
 
   test('invalid token', () => {
-    expect(authLogout('asade')).toStrictEqual(403);
+    expect(authLogout('asade')).toStrictEqual(forbidden);
   });
   test('logout success', () => {
     authLogout(user.token);
     // will reenable when channelsList is done
-    // expect(channelsList(user.token)).toStrictEqual(403);
+    expect(channelsList(user.token)).toStrictEqual(forbidden);
   });
   test('logout, then login', () => {
     authLogout(user.token);
@@ -300,7 +300,7 @@ describe('/auth/logout/v1', () => {
   });
   test('logout duplicate', () => {
     authLogout(user.token);
-    expect(authLogout(user.token)).toStrictEqual(403);
+    expect(authLogout(user.token)).toStrictEqual(forbidden);
   });
   test('logged out but logged in on two devices', () => {
     user2 = authLogin('kevins050324@gmail.com', 'kevin1001');
@@ -326,7 +326,7 @@ describe('password reset request', () => {
   });
   test('valid email then logout', () => {
     expect(passwordResetRequest('kevins050@gmail.com')).toStrictEqual({});
-    expect(authLogout(user.token)).toStrictEqual(403);
+    expect(authLogout(user.token)).toStrictEqual(forbidden);
   });
 });
 
@@ -342,14 +342,16 @@ describe('password reset', () => {
   });
 
   test('Invalid reset code', () => {
-    expect(passwordResetReset('123456', 'newhardpassword')).toStrictEqual(400);
+    expect(passwordResetReset('123456', 'newhardpassword')).toStrictEqual(
+      badRequest
+    );
   });
 
   test('new password is too short', () => {
     expect(passwordResetRequest('kevins050@gmail.com')).toStrictEqual({});
     const data = getData();
     const resetCode = data.resetCodes[0].resetCode;
-    expect(passwordResetReset(resetCode, 'new')).toStrictEqual(400);
+    expect(passwordResetReset(resetCode, 'new')).toStrictEqual(badRequest);
   });
 
   test('valid input', () => {

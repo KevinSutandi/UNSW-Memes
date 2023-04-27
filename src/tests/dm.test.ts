@@ -10,6 +10,7 @@ import {
   dmLeave,
 } from '../httpHelper';
 import { AuthReturn, dmCreateReturn } from '../interfaces';
+import { badRequest, forbidden } from '../functionHelper';
 
 describe('testing dmCreateV1', () => {
   let user: AuthReturn;
@@ -29,12 +30,12 @@ describe('testing dmCreateV1', () => {
 
   test('any uId does not refer to a valid user', () => {
     const uIds = [2032];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(400);
+    expect(dmCreate(user.token, uIds)).toStrictEqual(badRequest);
   });
 
   test('user token is not valid', () => {
     const uIds = [user.authUserId];
-    expect(dmCreate('alminaaaaascnj', uIds)).toStrictEqual(403);
+    expect(dmCreate('alminaaaaascnj', uIds)).toStrictEqual(forbidden);
   });
 
   test('dm is successful with just owner', () => {
@@ -52,12 +53,12 @@ describe('testing dmCreateV1', () => {
       'levin'
     );
     const uIds = [user2.authUserId, user2.authUserId];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(400);
+    expect(dmCreate(user.token, uIds)).toStrictEqual(badRequest);
   });
 
   test('owner invites owner to dm result error', () => {
     const uIds: number[] = [user.authUserId];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(400);
+    expect(dmCreate(user.token, uIds)).toStrictEqual(badRequest);
   });
 
   test('dm is successful with multiple users', () => {
@@ -75,7 +76,7 @@ describe('testing dmCreateV1', () => {
 
   test('dm has one valid user and the second entry is invalid', () => {
     const uIds = [7586];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(400);
+    expect(dmCreate(user.token, uIds)).toStrictEqual(badRequest);
   });
 
   test('dm has two duplicate users', () => {
@@ -86,7 +87,7 @@ describe('testing dmCreateV1', () => {
       'Meggs'
     );
     const uIds = [user2.authUserId, user2.authUserId];
-    expect(dmCreate(user.token, uIds)).toStrictEqual(400);
+    expect(dmCreate(user.token, uIds)).toStrictEqual(badRequest);
   });
 
   test('dm is successful with multiple users 2', () => {
@@ -145,17 +146,17 @@ describe('testing dmDetailsV1', () => {
   });
 
   test('user token is not valid', () => {
-    expect(dmDetails('alminaaaaascnj', dm2.dmId)).toStrictEqual(403);
+    expect(dmDetails('alminaaaaascnj', dm2.dmId)).toStrictEqual(forbidden);
   });
 
   // test when dmId does not refer to valid dm
   test('dmId doesnt refer to a valid user', () => {
-    expect(dmDetails(user.token, dm1.dmId + 10)).toStrictEqual(400);
+    expect(dmDetails(user.token, dm1.dmId + 10)).toStrictEqual(badRequest);
   });
 
   // test when dmId is valid but authUser is not a member of dm
   test('dmId is valid but authUser is not member of DM', () => {
-    expect(dmDetails(user3.token, dm2.dmId)).toStrictEqual(403);
+    expect(dmDetails(user3.token, dm2.dmId)).toStrictEqual(forbidden);
   });
 
   test('valid dm with one user', () => {
@@ -210,7 +211,7 @@ describe('testing dmListV1', () => {
   });
   // test when there are multiple dms in the list
   test('the token taken is invalid', () => {
-    expect(dmList('alminaaaaascnj')).toStrictEqual(403);
+    expect(dmList('alminaaaaascnj')).toStrictEqual(forbidden);
   });
 
   test('valid user but there are no dms in the list', () => {
@@ -282,16 +283,16 @@ describe('testing dmRemoveV1', () => {
     dm2 = dmCreate(user2.token, uIds2);
   });
   test('token is invalid', () => {
-    expect(dmRemove('asasd', dm.dmId)).toStrictEqual(403);
+    expect(dmRemove('asasd', dm.dmId)).toStrictEqual(forbidden);
   });
 
   // test when dmId isnt a valid DM
   test('invalid dmId', () => {
-    expect(dmRemove(user.token, dm.dmId + 1)).toStrictEqual(400);
+    expect(dmRemove(user.token, dm.dmId + 1)).toStrictEqual(badRequest);
   });
 
   test('valid dmId but user is not the creator', () => {
-    expect(dmRemove(user2.token, dm.dmId)).toStrictEqual(403);
+    expect(dmRemove(user2.token, dm.dmId)).toStrictEqual(forbidden);
   });
 
   test('valid input', () => {
@@ -346,12 +347,12 @@ describe('testing dmMessagesV1 error cases', () => {
 
   // test when dmId does not refer to a valid DM
   test('dmId does not refer to a valid DM', () => {
-    expect(dmMessages(user.token, dm1.dmId + 1, 0)).toStrictEqual(400);
+    expect(dmMessages(user.token, dm1.dmId + 1, 0)).toStrictEqual(badRequest);
   });
 
   // test when start > total number of messages in the channel
   test('start > total number of messages in the channel', () => {
-    expect(dmMessages(user.token, dm1.dmId, 999999)).toStrictEqual(400);
+    expect(dmMessages(user.token, dm1.dmId, 999999)).toStrictEqual(badRequest);
   });
 
   // test when dmId is valid but authuser is not member of DM
@@ -362,12 +363,12 @@ describe('testing dmMessagesV1 error cases', () => {
       'Kevin',
       'Sutandi'
     );
-    expect(dmMessages(user4.token, dm1.dmId, 0)).toStrictEqual(403);
+    expect(dmMessages(user4.token, dm1.dmId, 0)).toStrictEqual(forbidden);
   });
 
   // token is invalid
   test('token is invalid', () => {
-    expect(dmMessages(user2.token + 999, dm2.dmId, 0)).toStrictEqual(403);
+    expect(dmMessages(user2.token + 999, dm2.dmId, 0)).toStrictEqual(forbidden);
   });
 
   test('No Messages in channel (expect empty array)', () => {
@@ -447,15 +448,15 @@ describe('testing dmLeaveV1', () => {
   });
 
   test('dmId doesnt refer to a valid user', () => {
-    expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(400);
+    expect(dmLeave(user.token, dm1.dmId + 10)).toStrictEqual(badRequest);
   });
 
   test('dmId is valid but authUser is not member of DM', () => {
-    expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(403);
+    expect(dmLeave(user3.token, dm2.dmId)).toStrictEqual(forbidden);
   });
 
   test('user token is not valid', () => {
-    expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(403);
+    expect(dmLeave('alminaaaaascnj', dm2.dmId)).toStrictEqual(forbidden);
   });
 
   test('One user leaves the DM, not the owner', () => {

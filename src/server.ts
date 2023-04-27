@@ -464,12 +464,10 @@ process.on('SIGINT', () => {
   server.close(() => console.log('Shutting down server gracefully.'));
 });
 
-/* istanbul ignore next */
 process.on('SIGTERM', () => {
   server.close(() => console.log('Shutting down server gracefully.'));
 });
 
-/* istanbul ignore next */
 process
   .on('unhandledRejection', () => {
     console.error('Unhandled Rejection at Promise');

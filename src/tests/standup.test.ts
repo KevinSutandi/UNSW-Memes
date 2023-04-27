@@ -6,8 +6,11 @@ import {
   standUpActive,
   standUpSend,
   standUpStart,
+  authRegister,
+  channelsCreate,
+  clearV1,
 } from '../httpHelper';
-import { authRegister, channelsCreate, clearV1 } from '../httpHelper';
+import { badRequest, forbidden } from '../functionHelper';
 import { AuthReturn } from '../interfaces';
 
 function sleep(ms: number) {
@@ -34,21 +37,21 @@ describe('Test error cases for standup Start without async', () => {
 
   test('Test standup start with invalid token', () => {
     const response = standUpStart('invalid token', channel1.channelId, 5);
-    expect(response).toStrictEqual(403);
+    expect(response).toStrictEqual(forbidden);
   });
 
   test('Test standup start with invalid channel', () => {
     const response = standUpStart(user1.token, 0, 5);
-    expect(response).toStrictEqual(400);
+    expect(response).toStrictEqual(badRequest);
   });
   test('Test standup start with invalid length', () => {
     const response = standUpStart(user1.token, channel1.channelId, -1);
-    expect(response).toStrictEqual(400);
+    expect(response).toStrictEqual(badRequest);
   });
   test('Test standup start with user not in channel', () => {
     const user2 = authRegister('aslkdjf@gmail.com', 'alksjdf', 'Kevin', 'asdf');
     const response = standUpStart(user2.token, channel1.channelId, 5);
-    expect(response).toStrictEqual(403);
+    expect(response).toStrictEqual(forbidden);
   });
 });
 
@@ -83,37 +86,45 @@ describe('Test error cases for standup with async', () => {
     standUpStart(user1.token, channel1.channelId, 1);
 
     // StandUp Start error tests
-    expect(standUpStart(user1.token, channel1.channelId, 5)).toStrictEqual(400);
+    expect(standUpStart(user1.token, channel1.channelId, 5)).toStrictEqual(
+      badRequest
+    );
 
     // Standup Active error tests
     expect(standUpActive('invalid token', channel1.channelId)).toStrictEqual(
-      403
+      forbidden
     );
-    expect(standUpActive(user1.token, 0)).toStrictEqual(400);
-    expect(standUpActive(user2.token, channel1.channelId)).toStrictEqual(403);
+    expect(standUpActive(user1.token, 0)).toStrictEqual(badRequest);
+    expect(standUpActive(user2.token, channel1.channelId)).toStrictEqual(
+      forbidden
+    );
 
     // Standup Send error tests
     expect(
       standUpSend('invalid token', channel1.channelId, 'hello')
-    ).toStrictEqual(403);
-    expect(standUpSend(user1.token, 0, 'hello')).toStrictEqual(400);
+    ).toStrictEqual(forbidden);
+    expect(standUpSend(user1.token, 0, 'hello')).toStrictEqual(badRequest);
     expect(standUpSend(user2.token, channel1.channelId, 'hello')).toStrictEqual(
-      403
+      forbidden
     );
-    expect(standUpSend(user1.token, channel1.channelId, '')).toStrictEqual(400);
+    expect(standUpSend(user1.token, channel1.channelId, '')).toStrictEqual(
+      badRequest
+    );
     expect(
       standUpSend(user1.token, channel1.channelId, 'a'.repeat(1001))
-    ).toStrictEqual(400);
+    ).toStrictEqual(badRequest);
 
     // standup owner cannot leave while standup running
-    expect(channelLeave(user1.token, channel1.channelId)).toStrictEqual(400);
+    expect(channelLeave(user1.token, channel1.channelId)).toStrictEqual(
+      badRequest
+    );
 
     // wait for standup to end
     await sleep(1);
 
     // cannot send message
     expect(standUpSend(user1.token, channel1.channelId, 'hello')).toStrictEqual(
-      400
+      badRequest
     );
 
     expect(standUpActive(user1.token, channel1.channelId)).toStrictEqual({

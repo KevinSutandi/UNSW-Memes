@@ -18,6 +18,8 @@ import {
   dmCreateReturn,
 } from '../interfaces';
 
+import { badRequest, forbidden } from '../functionHelper';
+
 const STR = expect.any(String);
 const NUM = expect.any(Number);
 const ARRAY = expect.any(Array);
@@ -57,61 +59,61 @@ describe('testing adminPermissionChangeV1', () => {
   test('invalid token test 1', () => {
     expect(
       adminuserPermissionChange(user1.token + 4, user2.authUserId, 1)
-    ).toBe(403);
+    ).toBe(forbidden);
   });
   test('invalid token test 2', () => {
     expect(
       adminuserPermissionChange(user1.token + 10, user2.authUserId, 1)
-    ).toBe(403);
+    ).toBe(forbidden);
   });
 
   test('invalid uId test 1', () => {
     expect(
       adminuserPermissionChange(user1.token, user1.authUserId + 4, 1)
-    ).toBe(400);
+    ).toBe(badRequest);
   });
   test('invalid uId test 2', () => {
     expect(
       adminuserPermissionChange(user1.token, user1.authUserId + 10, 1)
-    ).toBe(400);
+    ).toBe(badRequest);
   });
 
   test('user with uId is the only global owner', () => {
     expect(adminuserPermissionChange(user1.token, user1.authUserId, 2)).toBe(
-      400
+      badRequest
     );
   });
 
   test('invalid permissionId test 1', () => {
     expect(adminuserPermissionChange(user1.token, user3.authUserId, 3)).toBe(
-      400
+      badRequest
     );
   });
   test('invalid permissionId test 2', () => {
     expect(adminuserPermissionChange(user1.token, user2.authUserId, 4)).toBe(
-      400
+      badRequest
     );
   });
 
   test('user already has the permission level test 1', () => {
     expect(adminuserPermissionChange(user1.token, user3.authUserId, 2)).toBe(
-      400
+      badRequest
     );
   });
   test('user already has the permission level test 2', () => {
     expect(adminuserPermissionChange(user1.token, user2.authUserId, 2)).toBe(
-      400
+      badRequest
     );
   });
 
   test('authorised user is not the global owner test 1', () => {
     expect(adminuserPermissionChange(user3.token, user1.authUserId, 2)).toBe(
-      403
+      forbidden
     );
   });
   test('authorised user is not the global owner test 2', () => {
     expect(adminuserPermissionChange(user2.token, user3.authUserId, 1)).toBe(
-      403
+      forbidden
     );
   });
 
@@ -125,13 +127,13 @@ describe('testing adminPermissionChangeV1', () => {
     adminuserPermissionChange(user1.token, user3.authUserId, 1);
     adminuserPermissionChange(user2.token, user1.authUserId, 2);
     expect(adminuserPermissionChange(user1.token, user2.authUserId, 2)).toBe(
-      403
+      forbidden
     );
   });
 });
 
-// 400: invalid uId; invalid token; user with uId is the only global owner;
-// 403: user with the token is not the global owner
+// badRequest: invalid uId; invalid token; user with uId is the only global owner;
+// forbidden: user with the token is not the global owner
 describe('testing adminRemoveV1', () => {
   let user1: AuthReturn;
   let user2: AuthReturn;
@@ -167,28 +169,30 @@ describe('testing adminRemoveV1', () => {
   });
 
   test('invalid token test 1', () => {
-    expect(adminuserRemove(user1.token + 4, user2.authUserId)).toBe(403);
+    expect(adminuserRemove(user1.token + 4, user2.authUserId)).toBe(forbidden);
   });
   test('invalid token test 2', () => {
-    expect(adminuserRemove(user1.token + 10, user2.authUserId)).toBe(403);
+    expect(adminuserRemove(user1.token + 10, user2.authUserId)).toBe(forbidden);
   });
 
   test('invalid uId test 1', () => {
-    expect(adminuserRemove(user1.token, user1.authUserId + 4)).toBe(400);
+    expect(adminuserRemove(user1.token, user1.authUserId + 4)).toBe(badRequest);
   });
   test('invalid uId test 2', () => {
-    expect(adminuserRemove(user1.token, user1.authUserId + 10)).toBe(400);
+    expect(adminuserRemove(user1.token, user1.authUserId + 10)).toBe(
+      badRequest
+    );
   });
 
   test('user with uId is the only global owner', () => {
-    expect(adminuserRemove(user1.token, user1.authUserId)).toBe(400);
+    expect(adminuserRemove(user1.token, user1.authUserId)).toBe(badRequest);
   });
 
   test('authorised user is not the global owner test 1', () => {
-    expect(adminuserRemove(user3.token, user1.authUserId)).toBe(403);
+    expect(adminuserRemove(user3.token, user1.authUserId)).toBe(forbidden);
   });
   test('authorised user is not the global owner test 2', () => {
-    expect(adminuserRemove(user2.token, user3.authUserId)).toBe(403);
+    expect(adminuserRemove(user2.token, user3.authUserId)).toBe(forbidden);
   });
 
   // valid

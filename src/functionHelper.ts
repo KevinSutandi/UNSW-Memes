@@ -4,9 +4,12 @@ import { channelData, dmData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import HTTPError from 'http-errors';
 import dotenv from 'dotenv';
-// import { data } from './dataStore';
 
 dotenv.config();
+
+// Using for error codes globally
+export const forbidden = 403;
+export const badRequest = 400;
 
 /**
  * Determines whether a channel is a valid channel
@@ -245,7 +248,7 @@ export function downloadImage(imgUrl?: string, name?: string) {
     const img = res.getBody();
 
     fs.writeFileSync(path.join(dir, name), img, { flag: 'w' });
-  } catch (error) /* istanbul ignore next */ {
+  } catch (error) {
     console.error(`Error downloading image: ${error}`);
   }
 }
@@ -355,13 +358,12 @@ export function updateChannelInfo(authUserId: number, flag: number) {
         .numChannelsJoined;
   }
 
-  /* istanbul ignore else */
   if (flag === 0) {
     numChannelsJoined++;
   } else if (flag === 1 && numChannelsJoined > 0) {
     numChannelsJoined--;
   } else {
-    throw HTTPError(400, 'Cannot decrement below 0');
+    throw HTTPError(badRequest, 'Cannot decrement below 0');
   }
 
   data.users[userIndex].stats.channelsJoined.push({
@@ -388,13 +390,12 @@ export function updateDmInfo(authUserId: number, flags: number) {
       userStats.dmsJoined[userStats.dmsJoined.length - 1].numDmsJoined;
   }
 
-  /* istanbul ignore else */
   if (flags === 0) {
     numDmsJoined++;
   } else if (flags === 1 && numDmsJoined > 0) {
     numDmsJoined--;
   } else {
-    throw HTTPError(400, 'Cannot decrement below 0');
+    throw HTTPError(badRequest, 'Cannot decrement below 0');
   }
 
   data.users[userIndex].stats.dmsJoined.push({

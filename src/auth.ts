@@ -11,6 +11,8 @@ import {
   findUserIndex,
   downloadImage,
   getCurrentTime,
+  badRequest,
+  forbidden,
 } from './functionHelper';
 import { AuthReturn, errorMessage, userData } from './interfaces';
 import { getData, setData } from './dataStore';
@@ -35,11 +37,11 @@ export function authLoginV1(
     if (email === user.email && encryptedPassword === user.password) {
       correctUser = user;
     } else if (email === user.email && encryptedPassword !== user.password) {
-      throw HTTPError(400, 'Password is not correct');
+      throw HTTPError(badRequest, 'Password is not correct');
     }
   }
   if (correctUser === undefined) {
-    throw HTTPError(400, 'Email does not belong to a valid user');
+    throw HTTPError(badRequest, 'Email does not belong to a valid user');
   }
   const userIndex = dataStore.users.findIndex(
     (item) => item.authUserId === correctUser.authUserId
@@ -70,28 +72,28 @@ export function authRegisterV1(
   const dataStore = getData();
 
   if (!validator.isEmail(email)) {
-    throw HTTPError(400, 'Email is not valid');
+    throw HTTPError(badRequest, 'Email is not valid');
   }
 
   const emailfound = dataStore.users.find((item) => item.email === email);
   if (emailfound !== undefined) {
-    throw HTTPError(400, 'Email already exists');
+    throw HTTPError(badRequest, 'Email already exists');
   }
 
   if (password.length < 6) {
-    throw HTTPError(400, 'Password is too short');
+    throw HTTPError(badRequest, 'Password is too short');
   }
 
   if (nameFirst.length > 50) {
-    throw HTTPError(400, 'Your first name is too long');
+    throw HTTPError(badRequest, 'Your first name is too long');
   } else if (nameFirst.length < 1) {
-    throw HTTPError(400, 'Your first name is too short');
+    throw HTTPError(badRequest, 'Your first name is too short');
   }
 
   if (nameLast.length > 50) {
-    throw HTTPError(400, 'Your last name is too long');
+    throw HTTPError(badRequest, 'Your last name is too long');
   } else if (nameLast.length < 1) {
-    throw HTTPError(400, 'Your last name is too short');
+    throw HTTPError(badRequest, 'Your last name is too short');
   }
 
   const authId = Math.floor(Math.random() * 10000000);
@@ -199,7 +201,7 @@ export function authLogoutV1(token: string): Record<string, never> {
   const user = getUserByToken(token);
   const userIndex = getUserIndexByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Token is not valid');
+    throw HTTPError(forbidden, 'Token is not valid');
   }
 
   const tokenIndex = findTokenIndex(user, token);
@@ -239,7 +241,6 @@ export function passwordResetRequestV1(email: string) {
 
   // ignoring the if for coverage as it is not possible to test
   transporter.sendMail(mailOptions, function (error: string) {
-    /* istanbul ignore if */
     if (error) {
       console.log(error);
     } else {
@@ -283,11 +284,11 @@ export function passwordResetV1(resetCode: string, newPassword: string) {
   );
 
   if (codeIndex === -1) {
-    throw HTTPError(400, 'Invalid reset code');
+    throw HTTPError(badRequest, 'Invalid reset code');
   }
 
   if (newPassword.length < 6) {
-    throw HTTPError(400, 'Password is too short');
+    throw HTTPError(badRequest, 'Password is too short');
   }
 
   const userIndex = findUserIndex(data.resetCodes[codeIndex].authUserId);

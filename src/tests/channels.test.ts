@@ -7,6 +7,7 @@ import {
   channelsListAll,
   clearV1,
 } from '../httpHelper';
+import { badRequest, forbidden } from '../functionHelper';
 
 // push the test first please
 describe('testing channelsListAllV2', () => {
@@ -32,7 +33,7 @@ describe('testing channelsListAllV2', () => {
   });
 
   test('invalid token', () => {
-    expect(channelsListAll(user.token + 1)).toStrictEqual(403);
+    expect(channelsListAll(user.token + 1)).toStrictEqual(forbidden);
   });
 
   test('valid token, no channels were created', () => {
@@ -88,17 +89,17 @@ describe('/channels/create/v2', () => {
   });
 
   test('name less than 1 char', () => {
-    expect(channelsCreate(user.token, '', true)).toEqual(400);
+    expect(channelsCreate(user.token, '', true)).toEqual(badRequest);
   });
 
   test('name more than 20 chars', () => {
     expect(channelsCreate(user.token, '123456789012345678901', true)).toEqual(
-      400
+      badRequest
     );
   });
 
   test('invalid token', () => {
-    expect(channelsCreate('asade', 'general', false)).toStrictEqual(403);
+    expect(channelsCreate('asade', 'general', false)).toStrictEqual(forbidden);
   });
 
   test('valid input, with channelsDetailsV1', () => {
@@ -157,7 +158,7 @@ describe('/channels/list/v2', () => {
   });
 
   test('Token is invalid', () => {
-    expect(channelsList('asade')).toStrictEqual(403);
+    expect(channelsList('asade')).toStrictEqual(forbidden);
   });
 
   test('valid token, multiple users created in different channels', () => {

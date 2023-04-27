@@ -13,6 +13,8 @@ import {
   downloadImage,
   updateAllData,
   updateInvolvement,
+  badRequest,
+  forbidden,
   updateUtilization,
 } from './functionHelper';
 import validator from 'validator';
@@ -51,13 +53,13 @@ export function userProfileV2(
 ): { user: userObject } {
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
 
   const data = getData();
   // Check that uId is valid
   if (!isUser(uId)) {
-    throw HTTPError(400, 'Invalid uId');
+    throw HTTPError(badRequest, 'Invalid uId');
   }
   // Storing the user's data in an object to be returned
   const userNum = data.users.findIndex((a) => a.authUserId === uId);
@@ -84,16 +86,19 @@ export function userProfileV2(
 export function setEmail(token: string, email: string) {
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
 
   if (!validator.isEmail(email)) {
-    throw HTTPError(400, 'invalid email');
+    throw HTTPError(badRequest, 'invalid email');
   }
 
   const data = getData();
   if (data.users.some((user) => user.email === email)) {
-    throw HTTPError(400, 'email address is already being used by another user');
+    throw HTTPError(
+      badRequest,
+      'email address is already being used by another user'
+    );
   }
   const userIndex = findUserIndex(user.authUserId);
   data.users[userIndex].email = email;
@@ -115,7 +120,7 @@ export function setName(token: string, nameFirst: string, nameLast: string) {
   const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
 
   if (
@@ -124,7 +129,7 @@ export function setName(token: string, nameFirst: string, nameLast: string) {
     nameLast.length < 1 ||
     nameLast.length > 50
   ) {
-    throw HTTPError(400, 'name length should in range of 1 to 50');
+    throw HTTPError(badRequest, 'name length should in range of 1 to 50');
   }
   const userIndex = findUserIndex(user.authUserId);
   data.users[userIndex].nameFirst = nameFirst;
@@ -149,7 +154,7 @@ export function setHandle(
   const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
 
   if (
@@ -157,10 +162,10 @@ export function setHandle(
     handleStr.length > 20 ||
     !/^[a-zA-Z0-9]+$/.test(handleStr)
   ) {
-    throw HTTPError(400, 'Please use alphanumeric characters only');
+    throw HTTPError(badRequest, 'Please use alphanumeric characters only');
   }
   if (data.users.some((user) => user.handleStr === handleStr)) {
-    throw HTTPError(400, 'handle is already being used by another user');
+    throw HTTPError(badRequest, 'handle is already being used by another user');
   }
   const userIndex = findUserIndex(user.authUserId);
   data.users[userIndex].handleStr = handleStr;
@@ -180,7 +185,7 @@ export function getAllUsers(token: string): allUsers | errorMessage {
   const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
   return {
     users: data.users.map((a) => ({
@@ -214,17 +219,17 @@ export function userProfileUploadPhotoV1(
 ) {
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
 
   const res = request('GET', imgUrl);
   if (res.statusCode !== 200) {
-    throw HTTPError(400, 'Invalid image URL');
+    throw HTTPError(badRequest, 'Invalid image URL');
   }
 
   // check if image is a jpg
   if (!imgUrl.endsWith('.jpg')) {
-    throw HTTPError(400, 'Invalid image type');
+    throw HTTPError(badRequest, 'Invalid image type');
   }
 
   downloadImage(imgUrl, `${user.authUserId}.jpg`);
@@ -242,7 +247,7 @@ export function userProfileUploadPhotoV1(
     xStart >= xEnd ||
     yStart >= yEnd
   ) {
-    throw HTTPError(400, 'Invalid image dimensions');
+    throw HTTPError(badRequest, 'Invalid image dimensions');
   }
 
   // crop photo
@@ -278,7 +283,7 @@ export function userProfileUploadPhotoV1(
 export function userStatsV1(token: string): { userStats: userStats } {
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
 
   updateInvolvement(user.authUserId);
@@ -295,7 +300,7 @@ export function usersStatsV1(token: string): {
 } {
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
 
   // update utilization rate

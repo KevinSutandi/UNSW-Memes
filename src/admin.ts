@@ -1,6 +1,6 @@
 import HTTPError from 'http-errors';
 import { getData, setData } from './dataStore';
-import { getUserByToken } from './functionHelper';
+import { getUserByToken, badRequest, forbidden } from './functionHelper';
 import { newData } from './interfaces';
 
 /**
@@ -23,16 +23,16 @@ export function adminuserPermissionChangeV1(
   const uIdfound = data.users.find((user) => user.authUserId === uId);
 
   if (tokenFound === undefined) {
-    throw HTTPError(403, 'Invalid user token');
+    throw HTTPError(forbidden, 'Invalid user token');
   }
 
   if (uIdfound === undefined) {
-    throw HTTPError(400, 'Invalid uId');
+    throw HTTPError(badRequest, 'Invalid uId');
   }
 
   // user with the token is not global owner
   if (tokenFound.isGlobalOwner !== 1) {
-    throw HTTPError(403, tokenFound.authUserId + ' is not authorised');
+    throw HTTPError(forbidden, tokenFound.authUserId + ' is not authorised');
   }
 
   // user with uId is the only global, and Uid ===
@@ -49,14 +49,14 @@ export function adminuserPermissionChangeV1(
     permissionId === 2 &&
     uIdfound.isGlobalOwner === 1
   ) {
-    throw HTTPError(400, 'You are the only global owner!');
+    throw HTTPError(badRequest, 'You are the only global owner!');
   }
 
   if (permissionId !== 1 && permissionId !== 2) {
-    throw HTTPError(400, 'Invalid permissionId');
+    throw HTTPError(badRequest, 'Invalid permissionId');
   }
   if (uIdfound.isGlobalOwner === permissionId) {
-    throw HTTPError(400, 'User already in permission level');
+    throw HTTPError(badRequest, 'User already in permission level');
   }
 
   // set the globalowner property same as the permissionId
@@ -82,16 +82,16 @@ export function adminuserRemoveV1(token: string, uId: number) {
   const uIdfound = data.users.find((user) => user.authUserId === uId);
 
   if (tokenFound === undefined) {
-    throw HTTPError(403, 'Invalid user token');
+    throw HTTPError(forbidden, 'Invalid user token');
   }
 
   if (uIdfound === undefined) {
-    throw HTTPError(400, 'Invalid uId');
+    throw HTTPError(badRequest, 'Invalid uId');
   }
 
   // user with the token is not a global owner
   if (tokenFound.isGlobalOwner !== 1) {
-    throw HTTPError(403, tokenFound.authUserId + 'is not authorised');
+    throw HTTPError(forbidden, tokenFound.authUserId + 'is not authorised');
   }
 
   // user with uId is the only global, and Uid ===
@@ -105,7 +105,7 @@ export function adminuserRemoveV1(token: string, uId: number) {
 
   if (globalOwnernum === 1 && uIdfound.isGlobalOwner === 1) {
     throw HTTPError(
-      400,
+      badRequest,
       'The person you are trying to remove is the only Global Owner!'
     );
   }

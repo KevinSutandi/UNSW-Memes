@@ -3,6 +3,8 @@ import {
   getCurrentTime,
   getUserByToken,
   updateChannelInfo,
+  badRequest,
+  forbidden,
 } from './functionHelper';
 import {
   channelsCreateReturn,
@@ -33,12 +35,12 @@ export function channelsCreateV1(
   const data = getData();
   // Returns error if name's length is less than 1 or more than 20
   if (name.length < 1 || name.length > 20) {
-    throw HTTPError(400, 'Invalid name length');
+    throw HTTPError(badRequest, 'Invalid name length');
   }
   const user = getUserByToken(token);
   // Returns error if the given token is invalid
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
   const newId = Math.floor(Math.random() * 10000);
   // Finds the user data
@@ -111,7 +113,7 @@ export function channelsListV1(
   const data = getData();
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
 
   // need to access our data and pull out all of the channels linked to user
@@ -145,7 +147,7 @@ export function channelsListAllV1(
   // invalid token
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
   return {
     channels: data.channels.map((a) => ({
