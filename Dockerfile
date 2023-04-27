@@ -5,6 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY ./src ./src
 COPY ./img ./img
+COPY .env .env
 COPY dataStore.json dataStore.json
 
 RUN npm install \

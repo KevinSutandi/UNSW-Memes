@@ -65,6 +65,7 @@ import { clearV1 } from './other';
 import { standupActiveV1, standupSendV1, standupStartV1 } from './standup';
 import { adminuserPermissionChangeV1, adminuserRemoveV1 } from './admin';
 
+require('dotenv').config();
 // Set up web app
 const app = express();
 // Use middleware that allows us to access the JSON body of requests
