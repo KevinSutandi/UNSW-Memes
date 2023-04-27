@@ -78,7 +78,7 @@ app.use(morgan('dev'));
 app.use('/img', express.static('img'));
 
 const PORT: number = parseInt(process.env.PORT || config.port);
-const HOST: string = process.env.IP || config.url;
+const HOST: string = process.env.IP || 'localhost';
 
 // Example Route
 app.get('/echo', (req: Request, res: Response, next) => {
