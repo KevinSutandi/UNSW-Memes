@@ -1,4 +1,4 @@
-import { getCurrentTime } from '../functionHelper';
+import { getCurrentTime, badRequest, forbidden } from '../functionHelper';
 import {
   authRegister,
   channelMessage,
@@ -28,8 +28,6 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms * 1000));
 }
 
-const badrequest = 400;
-const forbidden = 403;
 const NUM = expect.any(Number);
 
 describe('testing sendMessages', () => {
@@ -53,19 +51,19 @@ describe('testing sendMessages', () => {
   test('channel does not exist', () => {
     expect(
       messageSend(user1.token, channel1.channelId + 200, 'hello world')
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('length of message is below 1 character', () => {
     expect(messageSend(user1.token, channel1.channelId, '')).toStrictEqual(
-      badrequest
+      badRequest
     );
   });
 
   test('length of message is above 1000 characters', () => {
     const message = 'a'.repeat(1001);
     expect(messageSend(user1.token, channel1.channelId, message)).toStrictEqual(
-      badrequest
+      badRequest
     );
   });
 
@@ -213,7 +211,7 @@ describe('testing removeMessages Error Cases and Channels', () => {
   });
   test('message does not exist', () => {
     expect(messageRemove(user1.token, message1.messageId + 200)).toStrictEqual(
-      badrequest
+      badRequest
     );
   });
   test('remove own message', () => {
@@ -321,7 +319,7 @@ describe('testing removeMessages DM', () => {
   });
 
   test('dm does not exist', () => {
-    expect(messageRemove(user1.token, 100000)).toStrictEqual(badrequest);
+    expect(messageRemove(user1.token, 100000)).toStrictEqual(badRequest);
   });
 
   test('remove own message', () => {
@@ -441,13 +439,13 @@ describe('testing messageEdit', () => {
   test('message does not exist', () => {
     expect(
       messageEdit(user1.token, message1.messageId + 200, 'hello')
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('message length over 1000', () => {
     expect(
       messageEdit(user1.token, message1.messageId, 'a'.repeat(1001))
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('delete message when message string empty', () => {
@@ -463,7 +461,7 @@ describe('testing messageEdit', () => {
     expect(messageEdit(user1.token, message1.messageId, '')).toStrictEqual({});
     expect(
       messageEdit(user1.token, message1.messageId, 'hello world')
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('edit own message', () => {
@@ -601,7 +599,7 @@ describe('testing messageEdit DM', () => {
   });
 
   test('dm does not exist', () => {
-    expect(messageEdit(user1.token, 100000, 'hello')).toStrictEqual(badrequest);
+    expect(messageEdit(user1.token, 100000, 'hello')).toStrictEqual(badRequest);
   });
 
   test('edit own message', () => {
@@ -667,7 +665,7 @@ describe('testing messageEdit DM', () => {
     const message5 = messageSendDm(user1.token, dm1.dmId, 'test moments');
     expect(
       messageEdit(user1.token, message5.messageId, 'a'.repeat(1001))
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 });
 
@@ -701,7 +699,7 @@ describe('testing messageSendDm', () => {
 
   test('dm does not exist', () => {
     expect(messageSendDm(user1.token, 100000, 'hello world')).toStrictEqual(
-      badrequest
+      badRequest
     );
   });
 
@@ -712,10 +710,10 @@ describe('testing messageSendDm', () => {
   });
 
   test('invalid messages', () => {
-    expect(messageSendDm(user1.token, dm1.dmId, '')).toStrictEqual(badrequest);
+    expect(messageSendDm(user1.token, dm1.dmId, '')).toStrictEqual(badRequest);
     expect(
       messageSendDm(user1.token, dm1.dmId, 'a'.repeat(1001))
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('non dm member send message', () => {
@@ -769,13 +767,13 @@ describe('testing messageSendLater', () => {
         'hello world',
         sendTime + 2000
       )
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('length of message is below 1 character', () => {
     expect(
       messageSendLater(user1.token, channel1.channelId, '', sendTime + 2000)
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('length of message is above 1000 characters', () => {
@@ -787,7 +785,7 @@ describe('testing messageSendLater', () => {
         message,
         sendTime + 2000
       )
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('user is not in channel', () => {
@@ -824,7 +822,7 @@ describe('testing messageSendLater', () => {
         'halooo',
         sendTime - 500
       )
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('valid message should return messageId', async () => {
@@ -878,7 +876,7 @@ describe('testing messageSendLaterDm', () => {
   test('dm does not exist', () => {
     expect(
       messageSendLaterDm(user1.token, 100000, 'hello world', 50)
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('invalid token', () => {
@@ -889,11 +887,11 @@ describe('testing messageSendLaterDm', () => {
 
   test('invalid messages', () => {
     expect(messageSendLaterDm(user1.token, dm1.dmId, '', 50)).toStrictEqual(
-      badrequest
+      badRequest
     );
     expect(
       messageSendLaterDm(user1.token, dm1.dmId, 'a'.repeat(1001), 50)
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('non dm member send message', () => {
@@ -912,7 +910,7 @@ describe('testing messageSendLaterDm', () => {
     // const timeStamp = new Date().getTime();
     expect(
       messageSendLaterDm(user1.token, dm1.dmId, 'haloo', 50)
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('valid message', async () => {
@@ -976,12 +974,12 @@ describe('testing messageShare', () => {
         channel1.channelId,
         -1
       )
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
   test('both channelId and dmId are invalid', () => {
     expect(
       messageShare(user1.token, message1.messageId, 'mantap', 15, 16)
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('neither channelId nor dmId are -1', () => {
@@ -993,7 +991,7 @@ describe('testing messageShare', () => {
         channel1.channelId,
         dm1.dmId
       )
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('ogMessageId does not refer to a valid message within a channel that the authorised user has joined', () => {
@@ -1007,7 +1005,7 @@ describe('testing messageShare', () => {
         channel1.channelId,
         -1
       )
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('ogMessageId does not refer to a valid message within a dm that the authorised user has joined', () => {
@@ -1027,7 +1025,7 @@ describe('testing messageShare', () => {
         channel1.channelId,
         -1
       )
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('length of optional message is more than 1000 characters', () => {
@@ -1039,7 +1037,7 @@ describe('testing messageShare', () => {
         channel1.channelId,
         -1
       )
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
   });
 
   test('valid input, but the user has not joined the channel they are trying to share the message to', () => {
@@ -1135,14 +1133,14 @@ describe('testing messagePin in Channels Cases', () => {
   });
   test('message does not exist', () => {
     expect(messagePinV1(user1.token, message1.messageId + 200)).toStrictEqual(
-      badrequest
+      badRequest
     );
   });
 
   test('message is already pinned', () => {
     expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
     expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual(
-      badrequest
+      badRequest
     );
   });
 
@@ -1171,7 +1169,7 @@ describe('testing messagePin in Channels Cases', () => {
   test('pin message and pin message is already pinned', () => {
     expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
     expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual(
-      badrequest
+      badRequest
     );
   });
   test('pin message', () => {
@@ -1222,7 +1220,7 @@ describe('testing messagePin in dm Cases', () => {
     const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
     expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
     expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual(
-      badrequest
+      badRequest
     );
   });
 
@@ -1273,7 +1271,7 @@ describe('testing messageUnpin in Channels Cases', () => {
   });
   test('message does not exist', () => {
     expect(messageUnpinV1(user1.token, message1.messageId + 200)).toStrictEqual(
-      badrequest
+      badRequest
     );
   });
 
@@ -1303,7 +1301,7 @@ describe('testing messageUnpin in Channels Cases', () => {
     expect(messagePinV1(user1.token, message1.messageId)).toStrictEqual({});
     expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual({});
     expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual(
-      badrequest
+      badRequest
     );
   });
   test('unpin message', () => {
@@ -1355,7 +1353,7 @@ describe('testing messageUnpin in dm Cases', () => {
   test('cannot unpin message when not pinned', () => {
     const message1 = messageSendDm(user1.token, dm1.dmId, 'test moments');
     expect(messageUnpinV1(user1.token, message1.messageId)).toStrictEqual(
-      badrequest
+      badRequest
     );
   });
 
@@ -1393,11 +1391,11 @@ describe('testing search', () => {
   });
 
   test('queryStr is invalid', () => {
-    expect(searchV1(user1.token, '')).toStrictEqual(badrequest);
+    expect(searchV1(user1.token, '')).toStrictEqual(badRequest);
   });
 
   test('queryStr is too long', () => {
-    expect(searchV1(user1.token, 'a'.repeat(1001))).toStrictEqual(badrequest);
+    expect(searchV1(user1.token, 'a'.repeat(1001))).toStrictEqual(badRequest);
   });
 
   test('search', () => {

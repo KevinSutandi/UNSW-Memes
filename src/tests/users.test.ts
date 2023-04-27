@@ -31,14 +31,11 @@ import {
 } from '../httpHelper';
 import { AuthReturn } from '../interfaces';
 import { port } from '../config.json';
-import { getCurrentTime } from '../functionHelper';
+import { getCurrentTime, badRequest, forbidden } from '../functionHelper';
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms * 1000));
 }
-
-const badrequest = 400;
-const forbidden = 403;
 
 describe('userProfile iteration 3 testing', () => {
   let user: AuthReturn, user2: AuthReturn;
@@ -63,17 +60,17 @@ describe('userProfile iteration 3 testing', () => {
 
   test('userProfile setHandlerv2', () => {
     expect(setHandle('', 'Batman')).toStrictEqual(forbidden);
-    expect(setHandle(user2.token, '')).toStrictEqual(badrequest);
-    expect(setHandle(user2.token, '@@@')).toStrictEqual(badrequest);
+    expect(setHandle(user2.token, '')).toStrictEqual(badRequest);
+    expect(setHandle(user2.token, '@@@')).toStrictEqual(badRequest);
     expect(
       setHandle(
         user2.token,
         '111111111111111111111111111111111111111111111111111111'
       )
-    ).toStrictEqual(badrequest);
+    ).toStrictEqual(badRequest);
 
     setHandle(user2.token, 'Batman');
-    expect(setHandle(user2.token, 'Batman')).toStrictEqual(badrequest);
+    expect(setHandle(user2.token, 'Batman')).toStrictEqual(badRequest);
     expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
       user: {
         uId: user2.authUserId,
@@ -88,11 +85,11 @@ describe('userProfile iteration 3 testing', () => {
 
   test('userProfile setEmail', () => {
     expect(setEmail('', '12')).toStrictEqual(forbidden);
-    expect(setEmail(user2.token, '12')).toStrictEqual(badrequest);
+    expect(setEmail(user2.token, '12')).toStrictEqual(badRequest);
 
     setEmail(user.token, 'onlyfortestttt9@gmail.com');
     expect(setEmail(user2.token, 'onlyfortestttt9@gmail.com')).toStrictEqual(
-      badrequest
+      badRequest
     );
     expect(userProfile(user.token, user.authUserId)).toStrictEqual({
       user: {
@@ -108,7 +105,7 @@ describe('userProfile iteration 3 testing', () => {
 
   test('userProfile setName', () => {
     expect(setName('', '12', '12')).toStrictEqual(forbidden);
-    expect(setName(user2.token, '', '')).toStrictEqual(badrequest);
+    expect(setName(user2.token, '', '')).toStrictEqual(badRequest);
 
     expect(setName(user2.token, 'Jonah', 'Meggs')).toStrictEqual({});
     expect(userProfile(user2.token, user2.authUserId)).toStrictEqual({
@@ -125,7 +122,7 @@ describe('userProfile iteration 3 testing', () => {
 
   test('userProfile userprofile', () => {
     expect(userProfile('', user.authUserId)).toStrictEqual(forbidden);
-    expect(userProfile(user.token, 1000000)).toStrictEqual(badrequest);
+    expect(userProfile(user.token, 1000000)).toStrictEqual(badRequest);
 
     expect(userProfile(user.token, user.authUserId)).toStrictEqual({
       user: {

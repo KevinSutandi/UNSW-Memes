@@ -30,7 +30,7 @@ function removeImages() {
         fs.unlinkSync(filePath);
         console.log(`Deleted file: ${filePath}`);
       } else {
-        console.error(`Error: ${filePath} not found`);
+        console.log(`Error: ${filePath} not found`);
       }
     }
   });

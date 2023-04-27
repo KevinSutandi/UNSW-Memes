@@ -4,9 +4,12 @@ import { channelData, dmData, userData } from './interfaces';
 import { v4 as uuidv4 } from 'uuid';
 import HTTPError from 'http-errors';
 import dotenv from 'dotenv';
-// import { data } from './dataStore';
 
 dotenv.config();
+
+// Using for error codes globally
+export const forbidden = 403;
+export const badRequest = 400;
 
 /**
  * Determines whether a channel is a valid channel
@@ -361,7 +364,7 @@ export function updateChannelInfo(authUserId: number, flag: number) {
   } else if (flag === 1 && numChannelsJoined > 0) {
     numChannelsJoined--;
   } else {
-    throw HTTPError(400, 'Cannot decrement below 0');
+    throw HTTPError(badRequest, 'Cannot decrement below 0');
   }
 
   data.users[userIndex].stats.channelsJoined.push({
@@ -394,7 +397,7 @@ export function updateDmInfo(authUserId: number, flags: number) {
   } else if (flags === 1 && numDmsJoined > 0) {
     numDmsJoined--;
   } else {
-    throw HTTPError(400, 'Cannot decrement below 0');
+    throw HTTPError(badRequest, 'Cannot decrement below 0');
   }
 
   data.users[userIndex].stats.dmsJoined.push({

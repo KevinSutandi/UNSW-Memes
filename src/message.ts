@@ -16,6 +16,8 @@ import {
   incrementMessageStat,
   sendNotifChannel,
   sendNotifDm,
+  badRequest,
+  forbidden,
 } from './functionHelper';
 import HTTPError from 'http-errors';
 import {
@@ -44,19 +46,19 @@ export function messageSendV1(
 
   // Error Checking
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
   if (channel === undefined) {
-    throw HTTPError(400, 'Channel does not exist');
+    throw HTTPError(badRequest, 'Channel does not exist');
   }
   if (allMemberIds.includes(user.authUserId) === false) {
-    throw HTTPError(403, 'User is not registered in channel');
+    throw HTTPError(forbidden, 'User is not registered in channel');
   }
   if (message.length < 1) {
-    throw HTTPError(400, 'Message is too short');
+    throw HTTPError(badRequest, 'Message is too short');
   }
   if (message.length > 1000) {
-    throw HTTPError(400, 'Message is too long');
+    throw HTTPError(badRequest, 'Message is too long');
   }
 
   const channelIndex = getChannelIndex(channelId);
@@ -95,11 +97,11 @@ export function messageRemoveV1(
   let flags;
 
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
 
   if (channel === undefined && dm === undefined) {
-    throw HTTPError(400, 'Message does not exist');
+    throw HTTPError(badRequest, 'Message does not exist');
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
@@ -112,7 +114,7 @@ export function messageRemoveV1(
   const allOwnerIds = getAllOwnerIds(flags);
 
   if (allMemberIds.includes(user.authUserId) === false) {
-    throw HTTPError(403, 'User is not registered in channel');
+    throw HTTPError(forbidden, 'User is not registered in channel');
   }
 
   if (flags === channel) {
@@ -125,7 +127,7 @@ export function messageRemoveV1(
       user.isGlobalOwner === 2
     ) {
       throw HTTPError(
-        403,
+        forbidden,
         'User is not the author of the message and not an owner'
       );
     }
@@ -144,7 +146,7 @@ export function messageRemoveV1(
       messageToEdit.uId !== user.authUserId &&
       allOwnerIds.includes(user.authUserId) === false
     ) {
-      throw HTTPError(403, 'User is not the author of the message');
+      throw HTTPError(forbidden, 'User is not the author of the message');
     }
 
     data.dm[dmIndex].messages.splice(messageIndex, 1);
@@ -174,11 +176,11 @@ export function messageEditV1(
   let flags;
 
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
 
   if (channel === undefined && dm === undefined) {
-    throw HTTPError(400, 'Message does not exist');
+    throw HTTPError(badRequest, 'Message does not exist');
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
@@ -191,7 +193,7 @@ export function messageEditV1(
   const allOwnerIds = getAllOwnerIds(flags);
 
   if (allMemberIds.includes(user.authUserId) === false) {
-    throw HTTPError(403, 'User is not registered in channel');
+    throw HTTPError(forbidden, 'User is not registered in channel');
   }
 
   if (flags === channel) {
@@ -204,7 +206,7 @@ export function messageEditV1(
       user.isGlobalOwner === 2
     ) {
       throw HTTPError(
-        403,
+        forbidden,
         'User is not the author of the message and not an owner'
       );
     }
@@ -217,7 +219,7 @@ export function messageEditV1(
       return {};
     }
     if (message.length > 1000) {
-      throw HTTPError(400, 'Message is too long');
+      throw HTTPError(badRequest, 'Message is too long');
     }
 
     data.channels[channelIndex].messages[messageIndex].message = message;
@@ -234,7 +236,7 @@ export function messageEditV1(
       messageToEdit.uId !== user.authUserId &&
       allOwnerIds.includes(user.authUserId) === false
     ) {
-      throw HTTPError(403, 'User is not the author of the message');
+      throw HTTPError(forbidden, 'User is not the author of the message');
     }
 
     // Delets message if message is empty
@@ -245,7 +247,7 @@ export function messageEditV1(
       return {};
     }
     if (message.length > 1000) {
-      throw HTTPError(400, 'Message is too long');
+      throw HTTPError(badRequest, 'Message is too long');
     }
 
     data.dm[dmIndex].messages[messageIndex].message = message;
@@ -274,19 +276,19 @@ export function messageSendDmV1(
   const allMemberIds = getAllMemberIds(dm);
 
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
   if (dm === undefined) {
-    throw HTTPError(400, 'DM does not exist');
+    throw HTTPError(badRequest, 'DM does not exist');
   }
   if (allMemberIds.includes(user.authUserId) === false) {
-    throw HTTPError(403, 'User is not registered in DM');
+    throw HTTPError(forbidden, 'User is not registered in DM');
   }
   if (message.length < 1) {
-    throw HTTPError(400, 'Message is too short');
+    throw HTTPError(badRequest, 'Message is too short');
   }
   if (message.length > 1000) {
-    throw HTTPError(400, 'Message is too long');
+    throw HTTPError(badRequest, 'Message is too long');
   }
 
   const dmIndex = getDmIndex(dmId);
@@ -326,11 +328,11 @@ export function messagePinV1(
   let flags;
 
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
 
   if (channel === undefined && dm === undefined) {
-    throw HTTPError(400, 'Message Not Found');
+    throw HTTPError(badRequest, 'Message Not Found');
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
@@ -343,21 +345,21 @@ export function messagePinV1(
   const allOwnerIds = getAllOwnerIds(flags);
 
   if (allMemberIds.includes(user.authUserId) === false) {
-    throw HTTPError(403, 'User is not registered in channel');
+    throw HTTPError(forbidden, 'User is not registered in channel');
   }
 
   if (flags === channel) {
     const channelIndex = getChannelIndex(channel.channelId);
     const messageToEdit = data.channels[channelIndex].messages[messageIndex];
     if (messageToEdit.isPinned === true) {
-      throw HTTPError(400, 'Message is already pinned');
+      throw HTTPError(badRequest, 'Message is already pinned');
     }
     // only global owner or owner can pin message
     if (
       allOwnerIds.includes(user.authUserId) === false &&
       user.isGlobalOwner === 2
     ) {
-      throw HTTPError(403, 'User is neither a global owner nor an owner');
+      throw HTTPError(forbidden, 'User is neither a global owner nor an owner');
     }
 
     data.channels[channelIndex].messages[messageIndex].isPinned = true;
@@ -365,11 +367,11 @@ export function messagePinV1(
     const dmIndex = getDmIndex(dm.dmId);
     const messageToEdit = data.dm[dmIndex].messages[messageIndex];
     if (messageToEdit.isPinned === true) {
-      throw HTTPError(400, 'Message is already pinned');
+      throw HTTPError(badRequest, 'Message is already pinned');
     }
     // only owner can pin message
     if (allOwnerIds.includes(user.authUserId) === false) {
-      throw HTTPError(403, 'User is not a dm owner');
+      throw HTTPError(forbidden, 'User is not a dm owner');
     }
     data.dm[dmIndex].messages[messageIndex].isPinned = true;
   }
@@ -396,11 +398,11 @@ export function messageUnpinV1(
   let flags;
 
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
 
   if (channel === undefined && dm === undefined) {
-    throw HTTPError(400, 'Message Not Found');
+    throw HTTPError(badRequest, 'Message Not Found');
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, messageId);
     flags = channel;
@@ -413,21 +415,21 @@ export function messageUnpinV1(
   const allOwnerIds = getAllOwnerIds(flags);
 
   if (allMemberIds.includes(user.authUserId) === false) {
-    throw HTTPError(403, 'User is not registered in channel');
+    throw HTTPError(forbidden, 'User is not registered in channel');
   }
 
   if (flags === channel) {
     const channelIndex = getChannelIndex(channel.channelId);
     const messageToEdit = data.channels[channelIndex].messages[messageIndex];
     if (messageToEdit.isPinned === false) {
-      throw HTTPError(400, 'Message is not pinned');
+      throw HTTPError(badRequest, 'Message is not pinned');
     }
     // only global owner or owner can unpin message
     if (
       allOwnerIds.includes(user.authUserId) === false &&
       user.isGlobalOwner === 2
     ) {
-      throw HTTPError(403, 'User is neither a global owner nor an owner');
+      throw HTTPError(forbidden, 'User is neither a global owner nor an owner');
     }
 
     data.channels[channelIndex].messages[messageIndex].isPinned = false;
@@ -435,11 +437,11 @@ export function messageUnpinV1(
     const dmIndex = getDmIndex(dm.dmId);
     const messageToEdit = data.dm[dmIndex].messages[messageIndex];
     if (messageToEdit.isPinned === false) {
-      throw HTTPError(400, 'Message is not pinned');
+      throw HTTPError(badRequest, 'Message is not pinned');
     }
     // only owner can pin message
     if (allOwnerIds.includes(user.authUserId) === false) {
-      throw HTTPError(403, 'User is not a dm owner');
+      throw HTTPError(forbidden, 'User is not a dm owner');
     }
     data.dm[dmIndex].messages[messageIndex].isPinned = false;
   }
@@ -455,13 +457,13 @@ export function messageUnpinV1(
 export function searchV1(token: string, queryStr: string): messages {
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
 
   if (queryStr.length < 1) {
-    throw HTTPError(400, 'Query is too short');
+    throw HTTPError(badRequest, 'Query is too short');
   } else if (queryStr.length > 1000) {
-    throw HTTPError(400, 'Query is too long');
+    throw HTTPError(badRequest, 'Query is too long');
   }
 
   const data = getData();
@@ -502,7 +504,7 @@ export function searchV1(token: string, queryStr: string): messages {
 export function notificationsGetV1(token: string) {
   const user = getUserByToken(token);
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
 
   const data = getData();
@@ -534,24 +536,24 @@ export function messageSendLaterV1(
 
   // Error Checking
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
   if (channel === undefined) {
-    throw HTTPError(400, 'Channel does not exist');
+    throw HTTPError(badRequest, 'Channel does not exist');
   }
   if (allMemberIds.includes(user.authUserId) === false) {
-    throw HTTPError(403, 'User is not registered in channel');
+    throw HTTPError(forbidden, 'User is not registered in channel');
   }
   if (message.length < 1) {
-    throw HTTPError(400, 'Message is too short');
+    throw HTTPError(badRequest, 'Message is too short');
   }
   if (message.length > 1000) {
-    throw HTTPError(400, 'Message is too long');
+    throw HTTPError(badRequest, 'Message is too long');
   }
 
   const currentTime = Math.floor(Date.now() / 1000);
   if (timeSent < currentTime) {
-    throw HTTPError(400, 'Time sent cannot be a time in the past');
+    throw HTTPError(badRequest, 'Time sent cannot be a time in the past');
   }
 
   const channelIndex = getChannelIndex(channelId);
@@ -596,24 +598,24 @@ export function messageSendLaterDmV1(
   const allMemberIds = getAllMemberIds(dm);
 
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
   if (dm === undefined) {
-    throw HTTPError(400, 'DM does not exist');
+    throw HTTPError(badRequest, 'DM does not exist');
   }
   if (allMemberIds.includes(user.authUserId) === false) {
-    throw HTTPError(403, 'User is not registered in DM');
+    throw HTTPError(forbidden, 'User is not registered in DM');
   }
   if (message.length < 1) {
-    throw HTTPError(400, 'Message is too short');
+    throw HTTPError(badRequest, 'Message is too short');
   }
   if (message.length > 1000) {
-    throw HTTPError(400, 'Message is too long');
+    throw HTTPError(badRequest, 'Message is too long');
   }
 
   const currentTime = Math.floor(Date.now() / 1000);
   if (timeSent < currentTime) {
-    throw HTTPError(400, 'Time sent cannot be a time in the past');
+    throw HTTPError(badRequest, 'Time sent cannot be a time in the past');
   }
 
   const dmIndex = getDmIndex(dmId);
@@ -663,16 +665,16 @@ export function messageShareV1(
   let flags;
 
   if (user === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
 
   if (channelTargetIndex === -1 && dmTargetIndex === -1) {
-    throw HTTPError(400, 'Invalid channelId and dmId');
+    throw HTTPError(badRequest, 'Invalid channelId and dmId');
   }
 
   // Finds the message's location
   if (channel === undefined && dm === undefined) {
-    throw HTTPError(400, 'Message does not exist');
+    throw HTTPError(badRequest, 'Message does not exist');
   } else if (channel !== undefined) {
     messageIndex = findMessageIndexInChannel(channel, ogMessageId);
     flags = channel;
@@ -682,15 +684,15 @@ export function messageShareV1(
   }
 
   if (channelId !== -1 && dmId !== -1) {
-    throw HTTPError(400, 'Neither channelId nor dmId are -1');
+    throw HTTPError(badRequest, 'Neither channelId nor dmId are -1');
   }
   if (message.length > 1000) {
-    throw HTTPError(400, 'Message cannot exceed 1000 characters');
+    throw HTTPError(badRequest, 'Message cannot exceed 1000 characters');
   }
 
   let allMemberIds = getAllMemberIds(flags);
   if (!allMemberIds.includes(user.authUserId)) {
-    throw HTTPError(400, 'You cannot share message from this');
+    throw HTTPError(badRequest, 'You cannot share message from this');
   }
 
   const sharedMessageId = Math.floor(Math.random() * 1000000);
@@ -698,7 +700,7 @@ export function messageShareV1(
   if (channelId !== -1) {
     allMemberIds = getAllMemberIds(data.channels[channelTargetIndex]);
     if (!allMemberIds.includes(user.authUserId)) {
-      throw HTTPError(403, 'You cannot share message to this channel');
+      throw HTTPError(forbidden, 'You cannot share message to this channel');
     }
     const newMessage = {
       messageId: sharedMessageId,
@@ -720,7 +722,7 @@ export function messageShareV1(
   } else {
     allMemberIds = getAllMemberIds(data.dm[dmTargetIndex]);
     if (!allMemberIds.includes(user.authUserId)) {
-      throw HTTPError(403, 'You cannot share message to this dm');
+      throw HTTPError(forbidden, 'You cannot share message to this dm');
     }
     const newMessage = {
       messageId: sharedMessageId,
@@ -759,15 +761,15 @@ export function messageReactV1(
   const dm = findDMbyMessageId(messageId);
 
   if (tokenFound === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
 
   if (channel === undefined && dm === undefined) {
-    throw HTTPError(400, 'Message does not exist');
+    throw HTTPError(badRequest, 'Message does not exist');
   }
 
   if (reactId !== 1) {
-    throw HTTPError(400, 'Invalid react id');
+    throw HTTPError(badRequest, 'Invalid react id');
   }
 
   let messageIndex = -1;
@@ -786,7 +788,7 @@ export function messageReactV1(
 
   const allMemberIds = getAllMemberIds(flags);
   if (!allMemberIds.includes(tokenFound.authUserId)) {
-    throw HTTPError(403, 'You cannot react to this message');
+    throw HTTPError(forbidden, 'You cannot react to this message');
   }
 
   if (flags === channel) {
@@ -797,7 +799,7 @@ export function messageReactV1(
         tokenFound.authUserId
       )
     ) {
-      throw HTTPError(400, 'You already reacted to this message');
+      throw HTTPError(badRequest, 'You already reacted to this message');
     }
 
     if (data.channels[index].messages[messageIndex].reacts.length === 0) {
@@ -841,7 +843,7 @@ export function messageReactV1(
         tokenFound.authUserId
       )
     ) {
-      throw HTTPError(400, 'You already reacted to this message');
+      throw HTTPError(badRequest, 'You already reacted to this message');
     }
     if (data.dm[index].messages[messageIndex].reacts.length === 0) {
       const newReact = {
@@ -900,15 +902,15 @@ export function messageUnreactV1(
   const dm = findDMbyMessageId(messageId);
 
   if (tokenFound === undefined) {
-    throw HTTPError(403, 'Invalid token');
+    throw HTTPError(forbidden, 'Invalid token');
   }
 
   if (channel === undefined && dm === undefined) {
-    throw HTTPError(400, 'Message does not exist');
+    throw HTTPError(badRequest, 'Message does not exist');
   }
 
   if (reactId !== 1) {
-    throw HTTPError(400, 'Invalid react id');
+    throw HTTPError(badRequest, 'Invalid react id');
   }
 
   let messageIndex = -1;
@@ -927,20 +929,20 @@ export function messageUnreactV1(
 
   const allMemberIds = getAllMemberIds(flags);
   if (!allMemberIds.includes(tokenFound.authUserId)) {
-    throw HTTPError(403, 'You cannot react to this message');
+    throw HTTPError(forbidden, 'You cannot react to this message');
   }
 
   if (flags === channel) {
     // if user is not in the uids array
     if (data.channels[index].messages[messageIndex].reacts.length === 0) {
-      throw HTTPError(400, 'There is no reaction to remove');
+      throw HTTPError(badRequest, 'There is no reaction to remove');
     }
     if (
       !data.channels[index].messages[messageIndex].reacts[0].uIds.includes(
         tokenFound.authUserId
       )
     ) {
-      throw HTTPError(400, 'You have not reacted to this message');
+      throw HTTPError(badRequest, 'You have not reacted to this message');
     }
 
     // if user is in the uids array
@@ -960,7 +962,7 @@ export function messageUnreactV1(
     }
   } else {
     if (data.dm[index].messages[messageIndex].reacts.length === 0) {
-      throw HTTPError(400, 'There is no reaction to remove');
+      throw HTTPError(badRequest, 'There is no reaction to remove');
     }
 
     // if user is not in the uids array
@@ -969,7 +971,7 @@ export function messageUnreactV1(
         tokenFound.authUserId
       )
     ) {
-      throw HTTPError(400, 'You have not reacted to this message');
+      throw HTTPError(badRequest, 'You have not reacted to this message');
     }
 
     // if user is in the uids array

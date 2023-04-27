@@ -7,6 +7,8 @@ import {
   getChannelIndex,
   getUserByToken,
   incrementMessageStat,
+  forbidden,
+  badRequest,
 } from './functionHelper';
 
 /**
@@ -27,20 +29,20 @@ export function standupStartV1(
 
   // Error Checking
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
   if (channel === undefined) {
-    throw HTTPError(400, 'Channel does not exist');
+    throw HTTPError(badRequest, 'Channel does not exist');
   }
   if (allMemberIds.includes(user.authUserId) === false) {
-    throw HTTPError(403, 'User is not registered in channel');
+    throw HTTPError(forbidden, 'User is not registered in channel');
   }
   if (length < 0) {
-    throw HTTPError(400, 'length should be a positive integer');
+    throw HTTPError(badRequest, 'length should be a positive integer');
   }
   const standUpDeets = standupActiveV1(token, channelId);
   if (standUpDeets.isActive) {
-    throw HTTPError(400, 'Standup is already active');
+    throw HTTPError(badRequest, 'Standup is already active');
   }
 
   const timeFinish = Math.floor(Date.now() / 1000) + length;
@@ -87,13 +89,13 @@ export function standupActiveV1(token: string, channelId: number) {
 
   // Error Checking
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
   if (channel === undefined) {
-    throw HTTPError(400, 'Channel does not exist');
+    throw HTTPError(badRequest, 'Channel does not exist');
   }
   if (allMemberIds.includes(user.authUserId) === false) {
-    throw HTTPError(403, 'User is not registered in channel');
+    throw HTTPError(forbidden, 'User is not registered in channel');
   }
 
   const channelIndex = getChannelIndex(channelId);
@@ -124,19 +126,19 @@ export function standupSendV1(
 
   // Error Checking
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
   if (channel === undefined) {
-    throw HTTPError(400, 'Channel does not exist');
+    throw HTTPError(badRequest, 'Channel does not exist');
   }
   if (allMemberIds.includes(user.authUserId) === false) {
-    throw HTTPError(403, 'User is not registered in channel');
+    throw HTTPError(forbidden, 'User is not registered in channel');
   }
   if (message.length < 1) {
-    throw HTTPError(400, 'Message is too short');
+    throw HTTPError(badRequest, 'Message is too short');
   }
   if (message.length > 1000) {
-    throw HTTPError(400, 'Message is too long');
+    throw HTTPError(badRequest, 'Message is too long');
   }
 
   const channelIndex = getChannelIndex(channelId);
@@ -146,7 +148,7 @@ export function standupSendV1(
 
   const timeNow = Math.floor(Date.now() / 1000);
   if (timeNow > standupDeets.timeFinish && standupDeets.isActive === false) {
-    throw HTTPError(400, 'Standup has finished');
+    throw HTTPError(badRequest, 'Standup has finished');
   }
 
   const newMessage = {
@@ -183,7 +185,7 @@ function standUpEnd(token: string, channelId: number) {
   const standUp = data.channels[channelIndex].standUp;
 
   if (user === undefined) {
-    throw HTTPError(403, 'Token is invalid');
+    throw HTTPError(forbidden, 'Token is invalid');
   }
 
   if (standUp.standUpMessage.length === 0) {
